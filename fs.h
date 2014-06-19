@@ -143,7 +143,8 @@ struct FsEntry
  */
 static inline void *fsFollow(void *handle, const char *path, const void *root)
 {
-  return ((struct FsHandleClass *)CLASS(handle))->follow(handle, path, root);
+  return ((const struct FsHandleClass *)CLASS(handle))->follow(handle, path,
+      root);
 }
 /*----------------------------------------------------------------------------*/
 /**
@@ -152,7 +153,7 @@ static inline void *fsFollow(void *handle, const char *path, const void *root)
  */
 static inline enum result fsSync(void *handle)
 {
-  return ((struct FsHandleClass *)CLASS(handle))->sync(handle);
+  return ((const struct FsHandleClass *)CLASS(handle))->sync(handle);
 }
 /*----------------------------------------------------------------------------*/
 /**
@@ -162,7 +163,7 @@ static inline enum result fsSync(void *handle)
  */
 static inline void *fsClone(void *node)
 {
-  return ((struct FsNodeClass *)CLASS(node))->clone(node);
+  return ((const struct FsNodeClass *)CLASS(node))->clone(node);
 }
 /*----------------------------------------------------------------------------*/
 /**
@@ -171,7 +172,7 @@ static inline void *fsClone(void *node)
  */
 static inline void fsFree(void *node)
 {
-  ((struct FsNodeClass *)CLASS(node))->free(node);
+  ((const struct FsNodeClass *)CLASS(node))->free(node);
 }
 /*----------------------------------------------------------------------------*/
 /**
@@ -184,7 +185,7 @@ static inline void fsFree(void *node)
 static inline enum result fsGet(void *node, enum fsNodeData type,
     void *data)
 {
-  return ((struct FsNodeClass *)CLASS(node))->get(node, type, data);
+  return ((const struct FsNodeClass *)CLASS(node))->get(node, type, data);
 }
 /*----------------------------------------------------------------------------*/
 /**
@@ -200,7 +201,7 @@ static inline enum result fsGet(void *node, enum fsNodeData type,
 static inline enum result fsLink(void *node, const struct FsMetadata *metadata,
     const void *target, void *result)
 {
-  return ((struct FsNodeClass *)CLASS(node))->link(node, metadata, target,
+  return ((const struct FsNodeClass *)CLASS(node))->link(node, metadata, target,
       result);
 }
 /*----------------------------------------------------------------------------*/
@@ -216,7 +217,8 @@ static inline enum result fsLink(void *node, const struct FsMetadata *metadata,
 static inline enum result fsMake(void *node, const struct FsMetadata *metadata,
     void *result)
 {
-  return ((struct FsNodeClass *)CLASS(node))->make(node, metadata, result);
+  return ((const struct FsNodeClass *)CLASS(node))->make(node, metadata,
+      result);
 }
 /*----------------------------------------------------------------------------*/
 /**
@@ -227,7 +229,7 @@ static inline enum result fsMake(void *node, const struct FsMetadata *metadata,
  */
 static inline enum result fsMount(void *node, void *handle)
 {
-  return ((struct FsNodeClass *)CLASS(node))->mount(node, handle);
+  return ((const struct FsNodeClass *)CLASS(node))->mount(node, handle);
 }
 /*----------------------------------------------------------------------------*/
 /**
@@ -238,7 +240,7 @@ static inline enum result fsMount(void *node, void *handle)
  */
 static inline void *fsOpen(void *node, access_t access)
 {
-  return ((struct FsNodeClass *)CLASS(node))->open(node, access);
+  return ((const struct FsNodeClass *)CLASS(node))->open(node, access);
 }
 /*----------------------------------------------------------------------------*/
 /**
@@ -251,7 +253,7 @@ static inline void *fsOpen(void *node, access_t access)
 static inline enum result fsSet(void *node, enum fsNodeData type,
     const void *data)
 {
-  return ((struct FsNodeClass *)CLASS(node))->set(node, type, data);
+  return ((const struct FsNodeClass *)CLASS(node))->set(node, type, data);
 }
 /*----------------------------------------------------------------------------*/
 /**
@@ -261,7 +263,7 @@ static inline enum result fsSet(void *node, enum fsNodeData type,
  */
 static inline enum result fsTruncate(void *node)
 {
-  return ((struct FsNodeClass *)CLASS(node))->truncate(node);
+  return ((const struct FsNodeClass *)CLASS(node))->truncate(node);
 }
 /*----------------------------------------------------------------------------*/
 /**
@@ -271,7 +273,7 @@ static inline enum result fsTruncate(void *node)
  */
 static inline enum result fsUnlink(void *node)
 {
-  return ((struct FsNodeClass *)CLASS(node))->unlink(node);
+  return ((const struct FsNodeClass *)CLASS(node))->unlink(node);
 }
 /*----------------------------------------------------------------------------*/
 /**
@@ -280,7 +282,7 @@ static inline enum result fsUnlink(void *node)
  */
 static inline void fsUnmount(void *node)
 {
-  ((struct FsNodeClass *)CLASS(node))->unmount(node);
+  ((const struct FsNodeClass *)CLASS(node))->unmount(node);
 }
 /*----------------------------------------------------------------------------*/
 /**
@@ -289,7 +291,7 @@ static inline void fsUnmount(void *node)
  */
 static inline enum result fsClose(void *entry)
 {
-  return ((struct FsEntryClass *)CLASS(entry))->close(entry);
+  return ((const struct FsEntryClass *)CLASS(entry))->close(entry);
 }
 /*----------------------------------------------------------------------------*/
 /**
@@ -299,7 +301,7 @@ static inline enum result fsClose(void *entry)
  */
 static inline bool fsEnd(void *entry)
 {
-  return ((struct FsEntryClass *)CLASS(entry))->end(entry);
+  return ((const struct FsEntryClass *)CLASS(entry))->end(entry);
 }
 /*----------------------------------------------------------------------------*/
 /**
@@ -311,7 +313,7 @@ static inline bool fsEnd(void *entry)
  */
 static inline enum result fsFetch(void *entry, void *node)
 {
-  return ((struct FsEntryClass *)CLASS(entry))->fetch(entry, node);
+  return ((const struct FsEntryClass *)CLASS(entry))->fetch(entry, node);
 }
 /*----------------------------------------------------------------------------*/
 /**
@@ -323,7 +325,8 @@ static inline enum result fsFetch(void *entry, void *node)
  */
 static inline uint32_t fsRead(void *entry, void *buffer, uint32_t length)
 {
-  return ((struct FsEntryClass *)CLASS(entry))->read(entry, buffer, length);
+  return ((const struct FsEntryClass *)CLASS(entry))->read(entry, buffer,
+      length);
 }
 /*----------------------------------------------------------------------------*/
 /**
@@ -336,7 +339,8 @@ static inline uint32_t fsRead(void *entry, void *buffer, uint32_t length)
 static inline enum result fsSeek(void *entry, uint64_t offset,
     enum fsSeekOrigin origin)
 {
-  return ((struct FsEntryClass *)CLASS(entry))->seek(entry, offset, origin);
+  return ((const struct FsEntryClass *)CLASS(entry))->seek(entry, offset,
+      origin);
 }
 /*----------------------------------------------------------------------------*/
 /**
@@ -346,7 +350,7 @@ static inline enum result fsSeek(void *entry, uint64_t offset,
  */
 static inline uint64_t fsTell(void *entry)
 {
-  return ((struct FsEntryClass *)CLASS(entry))->tell(entry);
+  return ((const struct FsEntryClass *)CLASS(entry))->tell(entry);
 }
 /*----------------------------------------------------------------------------*/
 /**
@@ -358,7 +362,8 @@ static inline uint64_t fsTell(void *entry)
  */
 static inline uint32_t fsWrite(void *entry, const void *buffer, uint32_t length)
 {
-  return ((struct FsEntryClass *)CLASS(entry))->write(entry, buffer, length);
+  return ((const struct FsEntryClass *)CLASS(entry))->write(entry, buffer,
+      length);
 }
 /*----------------------------------------------------------------------------*/
 #endif /* FS_H_ */

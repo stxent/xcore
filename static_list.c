@@ -25,8 +25,6 @@ static unsigned int countListNodes(const struct StaticListNode *current)
 enum result staticListInit(struct StaticList *list, unsigned int width,
     unsigned int capacity)
 {
-  struct StaticListNode *node;
-
   if (!capacity || capacity > USHRT_MAX)
     return E_VALUE;
 
@@ -36,7 +34,9 @@ enum result staticListInit(struct StaticList *list, unsigned int width,
 
   for (unsigned int pos = 0; pos < capacity; ++pos)
   {
-    node = (struct StaticListNode *)((char *)list->data
+    struct StaticListNode *node;
+
+    node = (struct StaticListNode *)((unsigned char *)list->data
         + (sizeof(struct StaticListNode *) + width) * pos);
     node->next = list->pool;
     list->pool = node;
@@ -67,7 +67,7 @@ void staticListClear(struct StaticList *list)
 /*----------------------------------------------------------------------------*/
 void *staticListErase(struct StaticList *list, void *node)
 {
-  struct StaticListNode *next, *target = node;
+  struct StaticListNode * const target = node;
 
   if (list->first != node)
   {
@@ -81,7 +81,8 @@ void *staticListErase(struct StaticList *list, void *node)
   else
     list->first = list->first->next;
 
-  next = target->next;
+  struct StaticListNode * const next = target->next;
+
   target->next = list->pool;
   list->pool = target;
 
@@ -90,7 +91,7 @@ void *staticListErase(struct StaticList *list, void *node)
 /*----------------------------------------------------------------------------*/
 enum result staticListPush(struct StaticList *list, const void *element)
 {
-  struct StaticListNode *node = list->pool;
+  struct StaticListNode * const node = list->pool;
 
   if (!node)
     return E_MEMORY;
