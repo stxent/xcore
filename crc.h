@@ -25,8 +25,8 @@ struct CrcEngine
 static inline uint32_t crcUpdate(void *engine, uint32_t previous,
     const uint8_t *buffer, uint32_t length)
 {
-  return ((struct CrcEngineClass *)CLASS(engine))->update(engine, previous,
-      buffer, length);
+  return ((const struct CrcEngineClass *)CLASS(engine))->update(engine,
+      previous, buffer, length);
 }
 /*----------------------------------------------------------------------------*/
 #endif /* CRC_H_ */
