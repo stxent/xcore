@@ -9,7 +9,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <list.h>
-#include <static_list.h>
 //------------------------------------------------------------------------------
 #define MAX_CAPACITY 16
 //------------------------------------------------------------------------------
@@ -23,13 +22,15 @@ struct DummyStruct
 void performListTest(void)
 {
   struct List list;
-  void *node;
+  struct ListNode *node;
   unsigned int index;
   enum result res;
 
   /* List initialization */
   res = listInit(&list, sizeof(struct DummyStruct));
   assert(res == E_OK);
+  assert(listCapacity(&list) == 0); /* Dynamic allocation */
+  assert(listSize(&list) == 0);
   assert(listEmpty(&list) == true);
 
   /* List filling */

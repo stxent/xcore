@@ -1,11 +1,8 @@
-PROJECT = lists
+PROJECT = test_list
 
-CFLAGS = -std=c11 -O0 -Wall -Wextra -Winline -pedantic
+CFLAGS += -std=c11 -O0 -Wall -Wextra
+CFLAGS += -Winline -Wcast-qual -pedantic -Wshadow
 CC = gcc
-
-ifneq ($(DEBUG), 0)
-	CFLAGS += -DDEBUG
-endif
 
 SOURCEDIRS = ./
 INCLUDEPATH = -I./ -I../../
