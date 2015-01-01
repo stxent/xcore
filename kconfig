@@ -1,0 +1,53 @@
+choice
+	prompt "Optimization level"
+	default OPTIMIZATIONS_DISABLED
+
+	config OPTIMIZATIONS_DISABLED
+		bool "None"
+
+	config OPTIMIZATIONS_SIZE
+		bool "Size"
+
+	config OPTIMIZATIONS_FULL
+		bool "Full"
+
+endchoice
+
+config OPT_LEVEL
+	string
+	default "none" if OPTIMIZATIONS_DISABLED
+	default "size" if OPTIMIZATIONS_SIZE
+	default "full" if OPTIMIZATIONS_FULL
+
+choice
+	prompt "Target architecture"
+	default TARGET_X86
+
+	config TARGET_X86
+		bool "x86"
+
+	config TARGET_X86_64
+		bool "x86-64"
+
+	config TARGET_CORTEX_M0
+		bool "ARM Cortex-M0"
+
+	config TARGET_CORTEX_M3
+		bool "ARM Cortex-M3"
+
+	config TARGET_CORTEX_M4
+		bool "ARM Cortex-M4"
+
+endchoice
+
+config TARGET
+	string
+	default "X86"       if TARGET_X86
+	default "X86-64"    if TARGET_X86_64
+	default "CORTEX-M0" if TARGET_CORTEX_M0
+	default "CORTEX-M3" if TARGET_CORTEX_M3
+	default "CORTEX-M4" if TARGET_CORTEX_M4
+
+config EXAMPLES
+	bool "Build code examples"
+	depends on TARGET_X86 || TARGET_X86_64
