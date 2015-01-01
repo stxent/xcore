@@ -1,19 +1,17 @@
 /*
- * crc/crc7.h
+ * memory.h
  * Copyright (C) 2014 xent
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
-#ifndef CRC_CRC7_H_
-#define CRC_CRC7_H_
+#ifndef MEMORY_H_
+#define MEMORY_H_
 /*----------------------------------------------------------------------------*/
-#include <crc.h>
+#include <libxcore/target.h>
 /*----------------------------------------------------------------------------*/
-extern const struct CrcEngineClass * const Crc7;
+#undef HEADER_PATH
+#define HEADER_PATH <core/CORE_TYPE/memory.h>
+#include HEADER_PATH
+#undef HEADER_PATH
 /*----------------------------------------------------------------------------*/
-struct Crc7
-{
-  struct CrcEngine parent;
-};
-/*----------------------------------------------------------------------------*/
-#endif /* CRC_CRC7_H_ */
+#endif /* MEMORY_H_ */

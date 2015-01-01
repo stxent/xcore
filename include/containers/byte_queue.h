@@ -1,11 +1,11 @@
 /*
- * byte_queue.h
+ * containers/byte_queue.h
  * Copyright (C) 2012 xent
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
-#ifndef BYTE_QUEUE_H_
-#define BYTE_QUEUE_H_
+#ifndef CONTAINERS_BYTE_QUEUE_H_
+#define CONTAINERS_BYTE_QUEUE_H_
 /*----------------------------------------------------------------------------*/
 #include <assert.h>
 #include <stdbool.h>
@@ -89,4 +89,4 @@ static inline unsigned int byteQueueSize(const struct ByteQueue *queue)
   return (unsigned int)queue->size;
 }
 /*----------------------------------------------------------------------------*/
-#endif /* BYTE_QUEUE_H_ */
+#endif /* CONTAINERS_BYTE_QUEUE_H_ */

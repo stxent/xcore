@@ -7,7 +7,7 @@
 #include <limits.h>
 #include <stdlib.h>
 #include <string.h>
-#include <byte_queue.h>
+#include <containers/byte_queue.h>
 /*----------------------------------------------------------------------------*/
 enum result byteQueueInit(struct ByteQueue *queue, unsigned int capacity)
 {

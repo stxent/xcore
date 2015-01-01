@@ -8,7 +8,7 @@
 #include <limits.h>
 #include <stdlib.h>
 #include <string.h>
-#include <queue.h>
+#include <containers/queue.h>
 /*----------------------------------------------------------------------------*/
 enum result queueInit(struct Queue *queue, unsigned int width,
     unsigned int capacity)

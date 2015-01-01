@@ -1,11 +1,11 @@
 /*
- * queue.h
+ * containers/queue.h
  * Copyright (C) 2012 xent
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
-#ifndef QUEUE_H_
-#define QUEUE_H_
+#ifndef CONTAINERS_QUEUE_H_
+#define CONTAINERS_QUEUE_H_
 /*----------------------------------------------------------------------------*/
 #include <stdbool.h>
 #include <error.h>
@@ -57,4 +57,4 @@ static inline unsigned int queueSize(const struct Queue *queue)
   return (unsigned int)queue->size;
 }
 /*----------------------------------------------------------------------------*/
-#endif /* QUEUE_H_ */
+#endif /* CONTAINERS_QUEUE_H_ */

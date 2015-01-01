@@ -1,11 +1,11 @@
 /*
- * static_list.h
+ * containers/static_list.h
  * Copyright (C) 2014 xent
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
-#ifndef STATIC_LIST_H_
-#define STATIC_LIST_H_
+#ifndef CONTAINERS_STATIC_LIST_H_
+#define CONTAINERS_STATIC_LIST_H_
 /*----------------------------------------------------------------------------*/
 #include <stdbool.h>
 #include <string.h>
@@ -64,4 +64,4 @@ static inline bool staticListFull(const struct StaticList *list)
   return list->pool == 0;
 }
 /*----------------------------------------------------------------------------*/
-#endif /* STATIC_LIST_H_ */
+#endif /* CONTAINERS_STATIC_LIST_H_ */

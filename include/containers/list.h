@@ -1,11 +1,11 @@
 /*
- * list.h
+ * containers/list.h
  * Copyright (C) 2014 xent
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
-#ifndef LIST_H_
-#define LIST_H_
+#ifndef CONTAINERS_LIST_H_
+#define CONTAINERS_LIST_H_
 /*----------------------------------------------------------------------------*/
 #include <stdbool.h>
 #include <string.h>
@@ -59,4 +59,4 @@ static inline bool listEmpty(const struct List *list)
   return list->first == 0;
 }
 /*----------------------------------------------------------------------------*/
-#endif /* LIST_H_ */
+#endif /* CONTAINERS_LIST_H_ */
