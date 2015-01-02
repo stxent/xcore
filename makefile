@@ -62,8 +62,8 @@ endif
 #Configure common paths and libraries
 INCLUDEPATH += -Iinclude
 OUTPUTDIR = build_$(PLATFORM)
-LIBRARYPATH += -L$(OUTPUTDIR)
-LIBRARIES += -l$(PROJECT)
+LDFLAGS += -L$(OUTPUTDIR)
+LDLIBS += -l$(PROJECT)
 
 #Configure compiler options
 CFLAGS += -std=c11 -Wall -Wcast-qual -Wextra -Winline -pedantic -Wshadow
@@ -79,6 +79,7 @@ LIBRARY_OBJECTS = $(LIBRARY_SOURCES:%.c=$(OUTPUTDIR)/%.o)
 TARGETS += $(LIBRARY_FILE)
 CSOURCES += $(LIBRARY_SOURCES)
 COBJECTS = $(CSOURCES:%.c=$(OUTPUTDIR)/%.o)
+CXXOBJECTS = $(CXXSOURCES:%.cpp=$(OUTPUTDIR)/%.o)
 
 ifeq ($(CONFIG_EXAMPLES),y)
   include examples/makefile
@@ -109,5 +110,5 @@ menuconfig:
 	kconfig-mconf kconfig
 
 ifneq ($(MAKECMDGOALS),clean)
-  -include $(COBJECTS:%.o=%.d)
+  -include $(COBJECTS:%.o=%.d) $(CXXOBJECTS:%.o=%.d)
 endif
