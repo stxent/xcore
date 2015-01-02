@@ -7,12 +7,12 @@ EXAMPLE_FILES = $(addprefix $(OUTPUTDIR)/bin/,$(EXAMPLES))
 TARGETS += $(EXAMPLE_FILES)
 
 define make-example
-	$(1)_CSOURCES := $(shell find $(EXAMPLES_DIR)/$(1) -name "*.c")
-	CSOURCES += $$($(1)_CSOURCES)
-	$(1)_CXXSOURCES := $(shell find $(EXAMPLES_DIR)/$(1) -name "*.cpp")
-	CXXSOURCES += $$($(1)_CXXSOURCES)
-	$(1)_SOURCES := $$($(1)_CSOURCES) $$($(1)_CXXSOURCES)
-	$(1)_OBJECTS := $$($(1)_SOURCES:%.c=$(OUTPUTDIR)/%.o)
+  $(1)_CSOURCES := $(shell find $(EXAMPLES_DIR)/$(1) -name *.c)
+  CSOURCES += $$($(1)_CSOURCES)
+  $(1)_CXXSOURCES := $(shell find $(EXAMPLES_DIR)/$(1) -name *.cpp)
+  CXXSOURCES += $$($(1)_CXXSOURCES)
+  $(1)_SOURCES := $$($(1)_CSOURCES) $$($(1)_CXXSOURCES)
+  $(1)_OBJECTS := $$($(1)_SOURCES:%.c=$(OUTPUTDIR)/%.o)
 endef
 
 $(foreach entry,$(EXAMPLES),$(eval $(call make-example,$(entry))))
