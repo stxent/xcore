@@ -15,6 +15,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <entity.h>
+#include <error.h>
 /*----------------------------------------------------------------------------*/
 #ifndef CONFIG_FILENAME_LENGTH
 #define CONFIG_FILENAME_LENGTH 64

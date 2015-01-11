@@ -9,10 +9,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <containers/byte_queue.h>
-//------------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 #define MAX_CAPACITY 16
-//------------------------------------------------------------------------------
-void performQueueTest(void)
+/*----------------------------------------------------------------------------*/
+static void performQueueTest(void)
 {
   const uint8_t *example = (const uint8_t *)"Extremely long string";
   uint8_t buffer[MAX_CAPACITY];
@@ -52,7 +52,7 @@ void performQueueTest(void)
 
   byteQueueDeinit(&queue);
 }
-//------------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 int main(void)
 {
   performQueueTest();
