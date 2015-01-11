@@ -78,7 +78,7 @@ static uint32_t engineUpdate(void *object __attribute__((unused)),
   {
     uint8_t value = *buffer++;
 
-    for (uint8_t index = 0; index < 8; ++index)
+    for (uint8_t bit = 0; bit < 8; ++bit)
     {
       crc <<= 1;
 
