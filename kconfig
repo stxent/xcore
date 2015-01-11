@@ -48,6 +48,24 @@ config TARGET
 	default "CORTEX-M3" if TARGET_CORTEX_M3
 	default "CORTEX-M4" if TARGET_CORTEX_M4
 
+menu "Modules"
+
+config CRC_CRC7
+	bool "CRC-7"
+
+config CRC7_BITWISE
+	bool "CRC-7 bitwise computation"
+	depends on CRC_CRC7
+
+config CRC_CRC16
+	bool "CRC-16-CCITT"
+
+config CRC16_BITWISE
+	bool "CRC-16-CCITT bitwise computation"
+	depends on CRC_CRC16
+
+endmenu
+
 config EXAMPLES
 	bool "Build code examples"
 	depends on TARGET_X86 || TARGET_X86_64

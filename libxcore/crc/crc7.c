@@ -20,6 +20,7 @@ static const struct CrcEngineClass engineTable = {
 /*----------------------------------------------------------------------------*/
 const struct CrcEngineClass * const Crc7 = &engineTable;
 /*----------------------------------------------------------------------------*/
+#ifndef CONFIG_CRC7_BITWISE
 static const uint8_t crcTable[256] = {
     0x00, 0x12, 0x24, 0x36, 0x48, 0x5A, 0x6C, 0x7E,
     0x90, 0x82, 0xB4, 0xA6, 0xD8, 0xCA, 0xFC, 0xEE,
@@ -54,6 +55,7 @@ static const uint8_t crcTable[256] = {
     0x1C, 0x0E, 0x38, 0x2A, 0x54, 0x46, 0x70, 0x62,
     0x8C, 0x9E, 0xA8, 0xBA, 0xC4, 0xD6, 0xE0, 0xF2
 };
+#endif
 /*----------------------------------------------------------------------------*/
 static enum result engineInit(void *object __attribute__((unused)),
     const void *configBase __attribute__((unused)))
@@ -71,8 +73,27 @@ static uint32_t engineUpdate(void *object __attribute__((unused)),
 {
   uint8_t crc = (uint8_t)previous;
 
+#ifdef CONFIG_CRC7_BITWISE
+  while (length--)
+  {
+    uint8_t value = *buffer++;
+
+    for (uint8_t index = 0; index < 8; ++index)
+    {
+      crc <<= 1;
+
+      if ((value & 0x80) ^ (crc & 0x80))
+        crc ^= 0x09;
+
+      value <<= 1;
+    }
+  }
+  crc &= ~0x80;
+#else
   while (length--)
     crc = crcTable[crc ^ *buffer++] ^ (crc << 7);
+  crc >>= 1;
+#endif
 
-  return (uint32_t)(crc >> 1);
+  return (uint32_t)crc;
 }

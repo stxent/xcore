@@ -20,6 +20,7 @@ static const struct CrcEngineClass engineTable = {
 /*----------------------------------------------------------------------------*/
 const struct CrcEngineClass * const Crc16 = &engineTable;
 /*----------------------------------------------------------------------------*/
+#ifndef CONFIG_CRC16_BITWISE
 /* CRC-16-CCITT table, polynomial 0x1021 */
 static const uint16_t crcTable[256] = {
   0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50A5, 0x60C6, 0x70E7,
@@ -55,6 +56,7 @@ static const uint16_t crcTable[256] = {
   0xEF1F, 0xFF3E, 0xCF5D, 0xDF7C, 0xAF9B, 0xBFBA, 0x8FD9, 0x9FF8,
   0x6E17, 0x7E36, 0x4E55, 0x5E74, 0x2E93, 0x3EB2, 0x0ED1, 0x1EF0
 };
+#endif
 /*----------------------------------------------------------------------------*/
 static enum result engineInit(void *object __attribute__((unused)),
     const void *configBase __attribute__((unused)))
@@ -70,8 +72,20 @@ static void engineDeinit(void *object __attribute__((unused)))
 static uint32_t engineUpdate(void *object __attribute__((unused)),
     uint32_t previous, const uint8_t *buffer, uint32_t length)
 {
-  while (length--)
-    previous = (previous << 8) ^ crcTable[(uint8_t)(previous >> 8) ^ *buffer++];
+  uint16_t crc = (uint16_t)previous;
 
-  return previous;
+#ifdef CONFIG_CRC16_BITWISE
+  while (length--)
+  {
+    crc ^= (uint16_t)(*buffer++) << 8;
+
+    for (uint8_t index = 0; index < 8; index++)
+      crc = crc & 0x8000 ? (crc << 1) ^ 0x1021 : crc << 1;
+  }
+#else
+  while (length--)
+    crc = (crc << 8) ^ crcTable[(uint8_t)(crc >> 8) ^ *buffer++];
+#endif
+
+  return (uint32_t)crc;
 }

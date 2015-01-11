@@ -73,13 +73,15 @@ CXXFLAGS += $(OPT_FLAGS) $(CPU_FLAGS) $(PLATFORM_FLAGS)
 
 #Search for project modules
 LIBRARY_FILE = $(OUTPUTDIR)/lib$(PROJECT).a
-LIBRARY_SOURCES := $(shell find libxcore -name *.c)
-LIBRARY_OBJECTS = $(LIBRARY_SOURCES:%.c=$(OUTPUTDIR)/%.o)
-
 TARGETS += $(LIBRARY_FILE)
-CSOURCES += $(LIBRARY_SOURCES)
+
 COBJECTS = $(CSOURCES:%.c=$(OUTPUTDIR)/%.o)
 CXXOBJECTS = $(CXXSOURCES:%.cpp=$(OUTPUTDIR)/%.o)
+
+include libxcore/makefile
+
+CFLAGS += $(CONFIG_FLAGS)
+CXXFLAGS += $(CONFIG_FLAGS)
 
 ifeq ($(CONFIG_EXAMPLES),y)
   include examples/makefile
