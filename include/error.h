@@ -44,7 +44,7 @@ enum result
   /** No data available. */
   E_EMPTY,
   /** No space left. */
-  E_OVERFLOW
+  E_FULL
 };
 /*----------------------------------------------------------------------------*/
 #endif /* ERROR_H_ */

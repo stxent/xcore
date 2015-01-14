@@ -96,9 +96,9 @@ struct FsNodeClass
 {
   CLASS_HEADER
 
-  void *(*clone)(void *);
+  void *(*clone)(const void *);
   void (*free)(void *);
-  enum result (*get)(void *, enum fsNodeData, void *);
+  enum result (*get)(const void *, enum fsNodeData, void *);
   enum result (*link)(void *, const struct FsMetadata *, const void *, void *);
   enum result (*make)(void *, const struct FsMetadata *, void *);
   enum result (*mount)(void *, void *);
@@ -119,11 +119,11 @@ struct FsEntryClass
   CLASS_HEADER
 
   enum result (*close)(void *);
-  bool (*end)(void *);
+  bool (*end)(const void *);
   enum result (*fetch)(void *, void *);
   uint32_t (*read)(void *, void *, uint32_t);
   enum result (*seek)(void *, uint64_t, enum fsSeekOrigin);
-  uint64_t (*tell)(void *);
+  uint64_t (*tell)(const void *);
   uint32_t (*write)(void *, const void *, uint32_t);
 };
 /*----------------------------------------------------------------------------*/
@@ -162,13 +162,13 @@ static inline enum result fsSync(void *handle)
  * @param node Pointer to a previously initialized node.
  * @return Pointer to an allocated node on success or zero otherwise.
  */
-static inline void *fsClone(void *node)
+static inline void *fsClone(const void *node)
 {
   return ((const struct FsNodeClass *)CLASS(node))->clone(node);
 }
 /*----------------------------------------------------------------------------*/
 /**
- * Free the memory allocated for a node.
+ * Free memory allocated for the node.
  * @param node Pointer to a previously allocated FsNode object.
  */
 static inline void fsFree(void *node)
@@ -183,7 +183,7 @@ static inline void fsFree(void *node)
  * @param data Pointer to a specified buffer to be filled.
  * @return @b E_OK on success.
  */
-static inline enum result fsGet(void *node, enum fsNodeData type,
+static inline enum result fsGet(const void *node, enum fsNodeData type,
     void *data)
 {
   return ((const struct FsNodeClass *)CLASS(node))->get(node, type, data);
@@ -191,9 +191,9 @@ static inline enum result fsGet(void *node, enum fsNodeData type,
 /*----------------------------------------------------------------------------*/
 /**
  * Create a link to an existing entry.
- * @param node The node pointing to a location where the link should be placed.
+ * @param node Node pointing to a location where the link should be placed.
  * @param metadata Pointer to a link information.
- * @param target The node pointing to an existing entry.
+ * @param target Node pointing to an existing entry.
  * @param result Pointer to a previously allocated node where the information
  * about newly created entry should be stored. May be left zero when such
  * information is not needed.
@@ -208,7 +208,7 @@ static inline enum result fsLink(void *node, const struct FsMetadata *metadata,
 /*----------------------------------------------------------------------------*/
 /**
  * Create a new entry.
- * @param node The node pointing to a location where new entry should be placed.
+ * @param node Node pointing to a location where new entry should be placed.
  * @param metadata Pointer to an entry information.
  * @param result Pointer to a previously allocated node where the information
  * about newly created entry should be stored. May be left zero when such
@@ -224,7 +224,7 @@ static inline enum result fsMake(void *node, const struct FsMetadata *metadata,
 /*----------------------------------------------------------------------------*/
 /**
  * Link filesystem handle with existing node.
- * @param node The node pointing to an existing directory node.
+ * @param node Node pointing to an existing directory.
  * @param handle Pointer to an initialized filesystem handle.
  * @return E_OK on success.
  */
@@ -235,7 +235,7 @@ static inline enum result fsMount(void *node, void *handle)
 /*----------------------------------------------------------------------------*/
 /**
  * Open an entry.
- * @param node The node with information about entry location.
+ * @param node Node with information about entry location.
  * @param access Requested access rights.
  * @return Pointer to a newly allocated entry on success or zero on error.
  */
@@ -246,7 +246,7 @@ static inline void *fsOpen(void *node, access_t access)
 /*----------------------------------------------------------------------------*/
 /**
  * Modify information about the node.
- * @param node The node with information about entry location.
+ * @param node Node with information about entry location.
  * @param type Information type.
  * @param data Pointer to a specified buffer to be saved.
  * @return @b E_OK on success.
@@ -259,7 +259,7 @@ static inline enum result fsSet(void *node, enum fsNodeData type,
 /*----------------------------------------------------------------------------*/
 /**
  * Truncate node data.
- * @param node The node with information about entry location.
+ * @param node Node with information about entry location.
  * @return E_OK on success.
  */
 static inline enum result fsTruncate(void *node)
@@ -269,7 +269,7 @@ static inline enum result fsTruncate(void *node)
 /*----------------------------------------------------------------------------*/
 /**
  * Remove entry information but preserve data.
- * @param node The node with information about entry location.
+ * @param node Node with information about entry location.
  * @return @b E_OK on success.
  */
 static inline enum result fsUnlink(void *node)
@@ -279,7 +279,7 @@ static inline enum result fsUnlink(void *node)
 /*----------------------------------------------------------------------------*/
 /**
  * Break the link between filesystem handles.
- * @param node The node with connection to other handle.
+ * @param node Node with connection to other handle.
  */
 static inline void fsUnmount(void *node)
 {
@@ -300,7 +300,7 @@ static inline enum result fsClose(void *entry)
  * @param entry Pointer to a previously opened entry.
  * @return @b true when reached the end of entry or @b false otherwise.
  */
-static inline bool fsEnd(void *entry)
+static inline bool fsEnd(const void *entry)
 {
   return ((const struct FsEntryClass *)CLASS(entry))->end(entry);
 }
@@ -349,7 +349,7 @@ static inline enum result fsSeek(void *entry, uint64_t offset,
  * @param entry Pointer to a previously opened entry.
  * @return Position in a file.
  */
-static inline uint64_t fsTell(void *entry)
+static inline uint64_t fsTell(const void *entry)
 {
   return ((const struct FsEntryClass *)CLASS(entry))->tell(entry);
 }
