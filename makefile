@@ -59,6 +59,19 @@ else
   OPT_FLAGS := $(CONFIG_OPT_LEVEL)
 endif
 
+#Setup build flags
+FLAG_NAMES += CONFIG_CRC_DEBUG CONFIG_UNICODE_DEBUG
+
+define append-flag
+  ifeq ($$($(1)),y)
+    CONFIG_FLAGS += -D$(1)
+  else ifneq ($$($(1)),)
+    CONFIG_FLAGS += -D$(1)=$$($(1))
+  endif
+endef
+
+$(foreach entry,$(FLAG_NAMES),$(eval $(call append-flag,$(entry))))
+
 #Configure common paths and libraries
 INCLUDEPATH += -Iinclude
 OUTPUTDIR = build_$(PLATFORM)
@@ -67,9 +80,9 @@ LDLIBS += -l$(PROJECT)
 
 #Configure compiler options
 CFLAGS += -std=c11 -Wall -Wcast-qual -Wextra -Winline -pedantic -Wshadow
-CFLAGS += $(OPT_FLAGS) $(CPU_FLAGS) $(PLATFORM_FLAGS)
+CFLAGS += $(OPT_FLAGS) $(CPU_FLAGS) $(PLATFORM_FLAGS) $(CONFIG_FLAGS)
 CXXFLAGS += -std=c++11 -Wall -Wcast-qual -Wextra -Winline -pedantic -Wshadow -Wold-style-cast
-CXXFLAGS += $(OPT_FLAGS) $(CPU_FLAGS) $(PLATFORM_FLAGS)
+CXXFLAGS += $(OPT_FLAGS) $(CPU_FLAGS) $(PLATFORM_FLAGS) $(CONFIG_FLAGS)
 
 #Search for project modules
 LIBRARY_FILE = $(OUTPUTDIR)/lib$(PROJECT).a
@@ -79,9 +92,6 @@ COBJECTS = $(CSOURCES:%.c=$(OUTPUTDIR)/%.o)
 CXXOBJECTS = $(CXXSOURCES:%.cpp=$(OUTPUTDIR)/%.o)
 
 include libxcore/makefile
-
-CFLAGS += $(CONFIG_FLAGS)
-CXXFLAGS += $(CONFIG_FLAGS)
 
 ifeq ($(CONFIG_EXAMPLES),y)
   include examples/makefile
