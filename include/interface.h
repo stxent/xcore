@@ -24,36 +24,56 @@ enum ifOption
   /** Bytes pending in the transmit buffer. */
   IF_PENDING,
 
+  /** The number of available input buffers in the scatter-gather chain. */
+  IF_RX_CAPACITY,
+  /** The number of available output buffers. */
+  IF_TX_CAPACITY,
+
   /** Unique identifier of the device. */
   IF_DEVICE,
-  /** Priority of the interrupts or the memory requests. */
+  /** Priority of interrupts or direct memory access requests. */
   IF_PRIORITY,
   /** Data rate. */
   IF_RATE,
 
-  /** Address inside the internal address space. */
+  /** Address within the internal address space of the device. */
   IF_ADDRESS,
+  /** Alignment of the buffer length for user space buffers. */
+  IF_ALIGNMENT,
   /** Size of the internal address space. */
   IF_SIZE,
-  /** Size of the single element in bits. */
+  /** Size of a data word in bits. */
   IF_WIDTH,
 
   /**
    * Get execution status of the last command. Returns @b E_OK when interface
-   * is ready to accept a new command.
+   * is ready to accept a new command. Data pointer should be set to zero.
    */
   IF_STATUS,
 
-  /** Select blocking mode for the interface. */
+  /**
+   * Select blocking mode for the interface. Data pointer should be set
+   * to zero.
+   */
   IF_BLOCKING,
-  /** Select non-blocking mode for the interface. */
+  /**
+   * Select non-blocking mode for the interface. Data pointer should be set
+   * to zero.
+   */
   IF_NONBLOCKING,
-  /** Select zero-copy mode for the interface. */
+  /**
+   * Select zero-copy mode for the interface. Data pointer should be set
+   * to zero. This mode is similar to the non-blocking mode except for
+   * user space buffers being unavailable until the transfer completion.
+   */
   IF_ZEROCOPY,
 
-  /** Acquire the interface. Returns @b E_OK on success or @b E_BUSY. */
+  /**
+   * Acquire the interface. Returns @b E_OK on success or @b E_BUSY.
+   * Data pointer should be set to zero.
+   */
   IF_ACQUIRE,
-  /** Release the interface. */
+  /** Release the interface. Data pointer should be set to zero. */
   IF_RELEASE,
 
   /** End of the list. */
