@@ -24,7 +24,12 @@ static void performListTest(void)
   struct List list;
   struct ListNode *node;
   unsigned int index;
+
+#ifndef NDEBUG
   enum result res;
+#else
+  enum result res __attribute__((unused));
+#endif
 
   /* List initialization */
   res = listInit(&list, sizeof(struct DummyStruct));

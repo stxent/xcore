@@ -28,7 +28,12 @@ static void performCrc7Test(void)
 {
   const uint32_t initial = 0;
   struct CrcEngine *crc7;
+
+#ifndef NDEBUG
   uint32_t result;
+#else
+  uint32_t result __attribute__((unused));
+#endif
 
   DEBUG_PRINT("Test CRC-7\n");
 
@@ -52,7 +57,12 @@ static void performCrc8DallasTest(void)
 {
   const uint32_t initial = 0;
   struct CrcEngine *crc8Dallas;
+
+#ifndef NDEBUG
   uint32_t result;
+#else
+  uint32_t result __attribute__((unused));
+#endif
 
   DEBUG_PRINT("Test CRC-8-Dallas\n");
 
@@ -76,7 +86,12 @@ static void performCrc16Test(void)
 {
   const uint32_t initial = 0xFFFF;
   struct CrcEngine *crc16;
+
+#ifndef NDEBUG
   uint32_t result;
+#else
+  uint32_t result __attribute__((unused));
+#endif
 
   DEBUG_PRINT("Test CRC-16\n");
 

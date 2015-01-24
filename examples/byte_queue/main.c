@@ -17,8 +17,14 @@ static void performQueueTest(void)
   const uint8_t *example = (const uint8_t *)"Extremely long string";
   uint8_t buffer[MAX_CAPACITY];
   struct ByteQueue queue;
+
+#ifndef NDEBUG
   unsigned int count;
   enum result res;
+#else
+  unsigned int count __attribute__((unused));
+  enum result res __attribute__((unused));
+#endif
 
   /* Check validity of the prerequisites */
   assert(strlen((const char *)example) > MAX_CAPACITY);
