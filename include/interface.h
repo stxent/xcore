@@ -101,6 +101,7 @@ struct Interface
  * @param interface Pointer to an Interface object.
  * @param callback Callback function.
  * @param argument Callback function argument.
+ * @return @b E_OK on success.
  */
 static inline enum result ifCallback(void *interface, void (*callback)(void *),
     void *argument)
