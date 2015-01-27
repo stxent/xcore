@@ -19,13 +19,13 @@ static const uint16_t yearLengths[] = {
     366, 365, 365, 365
 };
 /*----------------------------------------------------------------------------*/
-enum result rtcMakeEpochTime(time_t *result, const struct RtcTime *timestamp)
+enum result rtcMakeEpochTime(time64_t *result, const struct RtcTime *timestamp)
 {
   if (!timestamp->month || timestamp->month > 12)
     return E_VALUE;
 
   /* Stores how many seconds have passed from 01.01.1970, 00:00:00 */
-  time_t seconds = 0;
+  time64_t seconds = 0;
 
   /* If the current year is a leap one than add one day or 86400 seconds */
   if (!(timestamp->year % 4) && (timestamp->month > 2))
@@ -52,7 +52,7 @@ enum result rtcMakeEpochTime(time_t *result, const struct RtcTime *timestamp)
   return E_OK;
 }
 /*----------------------------------------------------------------------------*/
-void rtcMakeTime(struct RtcTime *timestamp, time_t epochTime)
+void rtcMakeTime(struct RtcTime *timestamp, time64_t epochTime)
 {
   /* TODO Add handling of negative times and years after 2100 */
   const uint64_t seconds = epochTime > 0 ? epochTime : -epochTime;

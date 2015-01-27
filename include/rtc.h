@@ -11,7 +11,7 @@
 #include <entity.h>
 #include <error.h>
 /*----------------------------------------------------------------------------*/
-typedef int64_t time_t;
+typedef int64_t time64_t;
 /*----------------------------------------------------------------------------*/
 struct RtcTime
 {
@@ -28,9 +28,9 @@ struct RtcClass
   CLASS_HEADER
 
   enum result (*callback)(void *, void (*)(void *), void *);
-  enum result (*setAlarm)(void *, time_t);
-  enum result (*setTime)(void *, time_t);
-  time_t (*time)(void *);
+  enum result (*setAlarm)(void *, time64_t);
+  enum result (*setTime)(void *, time64_t);
+  time64_t (*time)(void *);
 };
 /*----------------------------------------------------------------------------*/
 struct Rtc
@@ -58,7 +58,7 @@ static inline enum result rtcCallback(void *timer, void (*callback)(void *),
  * @param alarmTime Alarm time.
  * @return @b E_OK on success.
  */
-static inline enum result rtcSetAlarm(void *timer, time_t alarmTime)
+static inline enum result rtcSetAlarm(void *timer, time64_t alarmTime)
 {
   return ((const struct RtcClass *)CLASS(timer))->setAlarm(timer, alarmTime);
 }
@@ -69,7 +69,7 @@ static inline enum result rtcSetAlarm(void *timer, time_t alarmTime)
  * @param currentTime Current time.
  * @return @b E_OK on success.
  */
-static inline enum result rtcSetTime(void *timer, time_t currentTime)
+static inline enum result rtcSetTime(void *timer, time64_t currentTime)
 {
   return ((const struct RtcClass *)CLASS(timer))->setTime(timer, currentTime);
 }
@@ -81,12 +81,12 @@ static inline enum result rtcSetTime(void *timer, time_t currentTime)
  * @param timer Pointer to an Rtc object.
  * @return Current calendar time.
  */
-static inline time_t rtcTime(void *timer)
+static inline time64_t rtcTime(void *timer)
 {
   return ((const struct RtcClass *)CLASS(timer))->time(timer);
 }
 /*----------------------------------------------------------------------------*/
-enum result rtcMakeEpochTime(time_t *, const struct RtcTime *);
-void rtcMakeTime(struct RtcTime *, time_t);
+enum result rtcMakeEpochTime(time64_t *, const struct RtcTime *);
+void rtcMakeTime(struct RtcTime *, time64_t);
 /*----------------------------------------------------------------------------*/
 #endif /* RTC_H_ */
