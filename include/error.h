@@ -44,7 +44,10 @@ enum result
   /** No data available. */
   E_EMPTY,
   /** No space left. */
-  E_FULL
+  E_FULL,
+
+  /** End of the list. */
+  E_RESULT_END
 };
 /*----------------------------------------------------------------------------*/
 #endif /* ERROR_H_ */
