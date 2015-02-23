@@ -44,7 +44,7 @@ else
 endif
 
 #Setup build flags
-FLAG_NAMES += CONFIG_CRC_DEBUG CONFIG_UNICODE_DEBUG
+FLAG_NAMES += CONFIG_DEBUG
 
 define append-flag
   ifeq ($$($(1)),y)

@@ -7,105 +7,132 @@
 #include <memory.h>
 #include <unicode.h>
 /*----------------------------------------------------------------------------*/
-#ifdef CONFIG_UNICODE_DEBUG
-#include <stdio.h>
-#define DEBUG_PRINT(...) printf(__VA_ARGS__)
-#else
-#define DEBUG_PRINT(...) do {} while (0)
-#endif
+static const uint8_t startMark[] = {0x00, 0xC0, 0xE0, 0xF0};
 /*----------------------------------------------------------------------------*/
-#ifdef CONFIG_UNICODE_DEBUG
-static void dumpChar16String(const char16_t *array)
-{
-  while (*array)
-    DEBUG_PRINT("%04X ", (unsigned int)(*array++) & 0xFFFF);
-
-  DEBUG_PRINT("\n");
-}
-#endif
-/*----------------------------------------------------------------------------*/
-#ifdef CONFIG_UNICODE_DEBUG
-static void dumpChar8String(const char *array)
-{
-  while (*array)
-    DEBUG_PRINT("%02X ", (unsigned int)(*array++) & 0xFF);
-
-  DEBUG_PRINT("\n");
-}
-#endif
-/*----------------------------------------------------------------------------*/
-/* TODO Add surrogate pairs support */
 /* Convert the string from UTF-16LE terminated with 0 to UTF-8 string */
 uint16_t uFromUtf16(char *destination, const char16_t *source,
     uint16_t maxLength)
 {
-  char16_t value;
+  uint16_t count = maxLength - 1;
   char *output = destination;
 
-#ifdef CONFIG_UNICODE_DEBUG
-  dumpChar16String(source);
-#endif
-
-  while ((value = *source++) && output - destination < maxLength - 1)
+  while (count)
   {
-    value = fromLittleEndian16(value);
+    uint32_t value = (uint32_t)fromLittleEndian16(*source++);
+    uint8_t width = 0;
 
-    if (value <= 0x007F)
+    if (!value)
+      break;
+
+    if ((value & 0xF800) == 0xD800)
     {
-      *output++ = (char)value;
+      /* Check for high surrogate */
+      if (value > 0xDBFF)
+        continue;
+
+      const uint32_t surrogate = (uint32_t)fromLittleEndian16(*source++);
+
+      /* Check for low surrogate */
+      if (surrogate < 0xDC00 || surrogate > 0xDFFF)
+        continue;
+
+      value = (value & 0x03FF) << 10;
+      value |= surrogate & 0x03FF;
+      value += 0x10000;
     }
-    else if (value >= 0x0080 && value <= 0x07FF)
+
+    if (value < 0x0080)
     {
-      *output++ = (char)(0xC0 | (value >> 6));
-      *output++ = (char)(0x80 | (value & 0x003F));
+      width = 1;
     }
-    else
+    else if (value < 0x800)
     {
-      *output++ = (char)(0xE0 | (value >> 12));
-      *output++ = (char)(0x80 | ((value >> 6) & 0x003F));
-      *output++ = (char)(0x80 | (value & 0x003F));
+      width = 2;
     }
+    else if (value < 0x10000)
+    {
+      width = 3;
+    }
+    else if (value < 0x110000)
+    {
+      width = 4;
+    }
+
+    if (count < width)
+      break;
+
+    char *end = output + width;
+
+    switch (width)
+    {
+      case 4:
+        *--end = (value | 0x80) & 0xBF;
+        value >>= 6;
+      case 3:
+        *--end = (value | 0x80) & 0xBF;
+        value >>= 6;
+      case 2:
+        *--end = (value | 0x80) & 0xBF;
+        value >>= 6;
+      case 1:
+        *--end = value | startMark[width - 1];
+        break;
+    }
+
+    count -= width;
+    output += width;
   }
   *output = '\0';
-
-#ifdef CONFIG_UNICODE_DEBUG
-  dumpChar8String(destination);
-#endif
 
   return (uint16_t)(output - destination);
 }
 /*----------------------------------------------------------------------------*/
-/* TODO Add surrogate pairs support */
 /* Convert the string from UTF-8 terminated with 0 to UTF-16LE string */
 uint16_t uToUtf16(char16_t *destination, const char *source, uint16_t maxLength)
 {
   uint16_t count = 0;
-  char16_t code;
   uint8_t value;
 
   while ((value = *source++) && count < maxLength - 1)
   {
-    if (!(value & 0x80)) /* U+007F */
+    uint8_t width = 0;
+
+    if ((value & 0xE0) == 0xC0) /* U+0080 to U+07FF */
     {
-      *destination++ = (char16_t)value;
-      count++;
+      width = 1;
     }
-    if ((value & 0xE0) == 0xC0) /* U+07FF */
+    else if ((value & 0xF0) == 0xE0) /* U+0800 to U+FFFF */
     {
-      code = (char16_t)(value & 0x1F) << 6;
-      code |= (char16_t)(*source++ & 0x3F);
-      *destination++ = code;
-      count++;
+      width = 2;
     }
-    if ((value & 0xF0) == 0xE0) /* U+FFFF */
+    else if ((value & 0xF8) == 0xF0) /* U+10000 to U+1FFFFF */
     {
-      code = (char16_t)(value & 0x0F) << 12;
-      code |= (char16_t)(*source++ & 0x3F) << 6;
-      code |= (char16_t)(*source++ & 0x3F);
-      *destination++ = code;
-      count++;
+      width = 3;
+    }
+
+    uint32_t code = (uint32_t)(value & ~startMark[width]) << (6 * width);
+
+    while (width--)
+      code |= (uint32_t)(*source++ & 0x3F) << (6 * width);
+
+    if (code < 0x10000)
+    {
+      *destination++ = toLittleEndian16((uint16_t)code);
+      ++count;
+    }
+    else
+    {
+      uint16_t surrogate;
+
+      code -= 0x10000;
+      surrogate = 0xD800 | (uint16_t)((code >> 10) & 0x03FF);
+      *destination++ = toLittleEndian16(surrogate);
+      surrogate = 0xDC00 | (uint16_t)(code & 0x03FF);
+      *destination++ = toLittleEndian16(surrogate);
+      count += 2;
     }
   }
   *destination = '\0';
+
   return count;
 }

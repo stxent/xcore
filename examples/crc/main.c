@@ -10,8 +10,7 @@
 #include <string.h>
 #include <crc.h>
 /*----------------------------------------------------------------------------*/
-#ifdef CONFIG_CRC_DEBUG
-#include <stdio.h>
+#ifdef CONFIG_DEBUG
 #define DEBUG_PRINT(...) printf(__VA_ARGS__)
 #else
 #define DEBUG_PRINT(...) do {} while (0)
