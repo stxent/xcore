@@ -1,25 +1,4 @@
 choice
-	prompt "Optimization level"
-	default OPTIMIZATIONS_DISABLED
-
-	config OPTIMIZATIONS_DISABLED
-		bool "None"
-
-	config OPTIMIZATIONS_SIZE
-		bool "Size"
-
-	config OPTIMIZATIONS_FULL
-		bool "Full"
-
-endchoice
-
-config OPT_LEVEL
-	string
-	default "none" if OPTIMIZATIONS_DISABLED
-	default "size" if OPTIMIZATIONS_SIZE
-	default "full" if OPTIMIZATIONS_FULL
-
-choice
 	prompt "Target architecture"
 	default TARGET_X86
 
@@ -37,7 +16,6 @@ choice
 
 	config TARGET_CORTEX_M4
 		bool "ARM Cortex-M4"
-
 endchoice
 
 config TARGET
@@ -73,14 +51,37 @@ config CRC16_BITWISE
 
 endmenu
 
+menu "Build options"
+
+choice
+	prompt "Optimization level"
+	default OPTIMIZATIONS_DISABLED
+
+	config OPTIMIZATIONS_DISABLED
+		bool "None"
+
+	config OPTIMIZATIONS_SIZE
+		bool "Size"
+
+	config OPTIMIZATIONS_FULL
+		bool "Full"
+endchoice
+
+endmenu
+
+config OPTIMIZATIONS
+	string
+	default "none" if OPTIMIZATIONS_DISABLED
+	default "size" if OPTIMIZATIONS_SIZE
+	default "full" if OPTIMIZATIONS_FULL
+
 menu "Debug options"
 	depends on TARGET_X86 || TARGET_X86_64
 
 config DEBUG
-	bool "Debug messages"
-
-endmenu
+	bool "Enable debug messages"
 
 config EXAMPLES
 	bool "Build code examples"
-	depends on TARGET_X86 || TARGET_X86_64
+
+endmenu
