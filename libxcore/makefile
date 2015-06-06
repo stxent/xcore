@@ -5,7 +5,7 @@ CONTAINER_SOURCES := $(shell find libxcore/containers -name *.c)
 
 LIBRARY_SOURCES += $(CONTAINER_SOURCES)
 LIBRARY_SOURCES += libxcore/entity.c
-LIBRARY_SOURCES += libxcore/rtc.c
+LIBRARY_SOURCES += libxcore/realtime.c
 LIBRARY_SOURCES += libxcore/unicode.c
 
 ifeq ($(CONFIG_CRC_CRC7),y)

@@ -1,11 +1,11 @@
 /*
- * rtc.h
+ * realtime.h
  * Copyright (C) 2015 xent
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
-#ifndef RTC_H_
-#define RTC_H_
+#ifndef REALTIME_H_
+#define REALTIME_H_
 /*----------------------------------------------------------------------------*/
 #include <stdint.h>
 #include <entity.h>
@@ -13,7 +13,7 @@
 /*----------------------------------------------------------------------------*/
 typedef int64_t time64_t;
 /*----------------------------------------------------------------------------*/
-struct RtcTime
+struct RtDateTime
 {
   uint16_t year;
   uint8_t month;
@@ -23,7 +23,7 @@ struct RtcTime
   uint8_t second;
 };
 /*----------------------------------------------------------------------------*/
-struct RtcClass
+struct RtClockClass
 {
   CLASS_HEADER
 
@@ -33,60 +33,62 @@ struct RtcClass
   time64_t (*time)(void *);
 };
 /*----------------------------------------------------------------------------*/
-struct Rtc
+struct RtClock
 {
   struct Entity parent;
 };
 /*----------------------------------------------------------------------------*/
 /**
  * Set callback function and its argument.
- * @param timer Pointer to an Rtc object.
+ * @param clock Pointer to an RtClock object.
  * @param callback Callback function.
  * @param argument Callback function argument.
  * @return @b E_OK on success.
  */
-static inline enum result rtcCallback(void *timer, void (*callback)(void *),
+static inline enum result rtCallback(void *clock, void (*callback)(void *),
     void *argument)
 {
-  return ((const struct RtcClass *)CLASS(timer))->callback(timer, callback,
+  return ((const struct RtClockClass *)CLASS(clock))->callback(clock, callback,
       argument);
 }
 /*----------------------------------------------------------------------------*/
 /**
  * Set alarm time.
- * @param timer Pointer to an Rtc object.
+ * @param clock Pointer to an Rtc object.
  * @param alarmTime Alarm time.
  * @return @b E_OK on success.
  */
-static inline enum result rtcSetAlarm(void *timer, time64_t alarmTime)
+static inline enum result rtSetAlarm(void *clock, time64_t alarmTime)
 {
-  return ((const struct RtcClass *)CLASS(timer))->setAlarm(timer, alarmTime);
+  return ((const struct RtClockClass *)CLASS(clock))->setAlarm(clock,
+      alarmTime);
 }
 /*----------------------------------------------------------------------------*/
 /**
  * Set current time.
- * @param timer Pointer to an Rtc object.
+ * @param clock Pointer to an RtClock object.
  * @param currentTime Current time.
  * @return @b E_OK on success.
  */
-static inline enum result rtcSetTime(void *timer, time64_t currentTime)
+static inline enum result rtSetTime(void *clock, time64_t currentTime)
 {
-  return ((const struct RtcClass *)CLASS(timer))->setTime(timer, currentTime);
+  return ((const struct RtClockClass *)CLASS(clock))->setTime(clock,
+      currentTime);
 }
 /*----------------------------------------------------------------------------*/
 /**
  * Get current calendar time.
  * The value returned generally represents the number of seconds
  * since 00:00 hours, Jan 1, 1970 UTC.
- * @param timer Pointer to an Rtc object.
+ * @param clock Pointer to an RtClock object.
  * @return Current calendar time.
  */
-static inline time64_t rtcTime(void *timer)
+static inline time64_t rtTime(void *clock)
 {
-  return ((const struct RtcClass *)CLASS(timer))->time(timer);
+  return ((const struct RtClockClass *)CLASS(clock))->time(clock);
 }
 /*----------------------------------------------------------------------------*/
-enum result rtcMakeEpochTime(time64_t *, const struct RtcTime *);
-void rtcMakeTime(struct RtcTime *, time64_t);
+enum result rtMakeEpochTime(time64_t *, const struct RtDateTime *);
+void rtMakeTime(struct RtDateTime *, time64_t);
 /*----------------------------------------------------------------------------*/
-#endif /* RTC_H_ */
+#endif /* REALTIME_H_ */

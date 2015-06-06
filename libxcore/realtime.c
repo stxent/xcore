@@ -1,10 +1,10 @@
 /*
- * rtc.c
+ * realtime.c
  * Copyright (C) 2015 xent
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
-#include <rtc.h>
+#include "../include/realtime.h"
 /*----------------------------------------------------------------------------*/
 #define SECONDS_PER_DAY   86400
 #define SECONDS_PER_HOUR  3600
@@ -19,7 +19,7 @@ static const uint16_t yearLengths[] = {
     366, 365, 365, 365
 };
 /*----------------------------------------------------------------------------*/
-enum result rtcMakeEpochTime(time64_t *result, const struct RtcTime *timestamp)
+enum result rtMakeEpochTime(time64_t *result, const struct RtDateTime *timestamp)
 {
   if (!timestamp->month || timestamp->month > 12)
     return E_VALUE;
@@ -52,7 +52,7 @@ enum result rtcMakeEpochTime(time64_t *result, const struct RtcTime *timestamp)
   return E_OK;
 }
 /*----------------------------------------------------------------------------*/
-void rtcMakeTime(struct RtcTime *timestamp, time64_t epochTime)
+void rtMakeTime(struct RtDateTime *timestamp, time64_t epochTime)
 {
   /* TODO Add handling of negative times and years after 2100 */
   const uint64_t seconds = epochTime > 0 ? epochTime : -epochTime;
