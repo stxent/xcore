@@ -35,6 +35,7 @@ static void performQueueTest(void)
   assert(byteQueueCapacity(&queue) == MAX_CAPACITY);
   assert(byteQueueSize(&queue) == 0);
   assert(byteQueueEmpty(&queue) == true);
+  assert(byteQueueFull(&queue) == false);
 
   /* Queue filling */
   count = byteQueuePushArray(&queue, example, 1);
@@ -55,6 +56,7 @@ static void performQueueTest(void)
   assert(byteQueueCapacity(&queue) == MAX_CAPACITY);
   assert(byteQueueSize(&queue) == 0);
   assert(byteQueueEmpty(&queue) == true);
+  assert(byteQueueFull(&queue) == false);
 
   byteQueueDeinit(&queue);
 }

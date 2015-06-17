@@ -58,7 +58,7 @@ void queuePush(struct Queue *queue, const void *element)
 {
   assert(queue->size < queue->capacity);
 
-  memcpy((char *)queue->data + queue->width * queue->ceil, &element,
+  memcpy((char *)queue->data + queue->width * queue->ceil, element,
       queue->width);
 
   if (++queue->ceil == queue->capacity)

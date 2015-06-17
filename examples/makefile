@@ -23,6 +23,6 @@ $(EXAMPLE_FILES): $(LIBRARY_FILE) $$($$(notdir $$@)_OBJECTS)
 	$(CXX) $(CXXFLAGS) $^ $(LDFLAGS) $(LDLIBS) -o $@
 
 $(addprefix test_,$(EXAMPLES)):
-	valgrind --tool=memcheck --leak-check=yes --show-reachable=yes --num-callers=20 $(@:test_%=$(OUTPUTDIR)/bin/%)
+	valgrind --tool=memcheck --leak-check=full --show-reachable=yes --num-callers=32 $(@:test_%=$(OUTPUTDIR)/bin/%)
 
 test: $(addprefix test_,$(EXAMPLES))
