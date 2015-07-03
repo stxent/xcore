@@ -32,14 +32,14 @@ void byteQueueDeinit(struct ByteQueue *queue)
 unsigned int byteQueuePopArray(struct ByteQueue *queue, uint8_t *buffer,
     unsigned int length)
 {
-  unsigned short count, moved = 0;
-
   if (!queue->size)
     return 0;
 
+  unsigned short moved = 0;
+
   if (queue->ceil <= queue->floor)
   {
-    count = queue->capacity - queue->floor;
+    unsigned short count = queue->capacity - queue->floor;
 
     if (length < count)
       count = length;
@@ -60,7 +60,7 @@ unsigned int byteQueuePopArray(struct ByteQueue *queue, uint8_t *buffer,
 
   if (queue->ceil > queue->floor)
   {
-    count = queue->ceil - queue->floor;
+    unsigned short count = queue->ceil - queue->floor;
 
     if (length < count)
       count = length;
@@ -81,11 +81,14 @@ unsigned int byteQueuePopArray(struct ByteQueue *queue, uint8_t *buffer,
 unsigned int byteQueuePushArray(struct ByteQueue *queue, const uint8_t *buffer,
     unsigned int length)
 {
-  unsigned short count, moved = 0;
+  if (queue->size == queue->capacity)
+    return 0;
+
+  unsigned short moved = 0;
 
   if (queue->ceil >= queue->floor)
   {
-    count = queue->capacity - queue->ceil;
+    unsigned short count = queue->capacity - queue->ceil;
 
     if (length < count)
       count = length;
@@ -106,7 +109,7 @@ unsigned int byteQueuePushArray(struct ByteQueue *queue, const uint8_t *buffer,
 
   if (queue->ceil < queue->floor)
   {
-    count = queue->floor - queue->ceil;
+    unsigned short count = queue->floor - queue->ceil;
 
     if (length < count)
       count = length;
