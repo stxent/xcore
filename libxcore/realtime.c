@@ -19,7 +19,8 @@ static const uint16_t yearLengths[] = {
     366, 365, 365, 365
 };
 /*----------------------------------------------------------------------------*/
-enum result rtMakeEpochTime(time64_t *result, const struct RtDateTime *timestamp)
+enum result rtMakeEpochTime(time64_t *result,
+    const struct RtDateTime *timestamp)
 {
   if (!timestamp->month || timestamp->month > 12)
     return E_VALUE;

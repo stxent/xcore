@@ -21,6 +21,11 @@
 /*----------------------------------------------------------------------------*/
 static void dumpChar16String(const char16_t *array, unsigned int length)
 {
+#ifndef CONFIG_DEBUG
+  /* Suppress warnings */
+  (void)array;
+#endif
+
   DEBUG_PRINT("UTF-16: ");
   for (unsigned int index = 0; index < length; ++index)
     DEBUG_PRINT("%04X ", (unsigned int)array[index] & 0xFFFF);
@@ -29,6 +34,11 @@ static void dumpChar16String(const char16_t *array, unsigned int length)
 /*----------------------------------------------------------------------------*/
 static void dumpChar8String(const char *array, unsigned int length)
 {
+#ifndef CONFIG_DEBUG
+  /* Suppress warnings */
+  (void)array;
+#endif
+
   DEBUG_PRINT("UTF-8:  ");
   for (unsigned int index = 0; index < length; ++index)
     DEBUG_PRINT("%02X ", (unsigned int)array[index] & 0xFF);
