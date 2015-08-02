@@ -1,10 +1,14 @@
 #Copyright (C) 2015 xent
 #Project is distributed under the terms of the GNU General Public License v3.0
 
-EXAMPLES_DIR = examples
-EXAMPLES := $(shell find $(EXAMPLES_DIR) -mindepth 1 -maxdepth 1 -type d -printf "%f\n")
-EXAMPLE_FILES = $(addprefix $(OUTPUTDIR)/bin/,$(EXAMPLES))
-TARGETS += $(EXAMPLE_FILES)
+ifeq ($(CONFIG_EXAMPLES),y)
+  FLAG_NAMES += CONFIG_DEBUG
+
+  EXAMPLES_DIR = examples
+  EXAMPLES := $(shell find $(EXAMPLES_DIR) -mindepth 1 -maxdepth 1 -type d -printf "%f\n")
+  EXAMPLE_FILES = $(addprefix $(OUTPUTDIR)/bin/,$(EXAMPLES))
+  TARGETS += $(EXAMPLE_FILES)
+endif
 
 define make-example
   $(1)_CSOURCES := $(shell find $(EXAMPLES_DIR)/$(1) -name *.c)
