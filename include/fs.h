@@ -1,6 +1,6 @@
 /*
  * fs.h
- * Copyright (C) 2014 xent
+ * Copyright (C) 2015 xent
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
@@ -18,7 +18,7 @@
 #include <error.h>
 /*----------------------------------------------------------------------------*/
 #ifndef CONFIG_FILENAME_LENGTH
-#define CONFIG_FILENAME_LENGTH 64
+#define CONFIG_FILENAME_LENGTH 32
 #endif
 /*----------------------------------------------------------------------------*/
 typedef uint8_t access_t;
@@ -31,59 +31,36 @@ enum
   FS_ACCESS_WRITE = 0x02
 };
 /*----------------------------------------------------------------------------*/
-enum fsNodeData
+enum fsNodeAttribute
 {
-  /** Type and symbolic name of the node. */
-  FS_NODE_METADATA = 0,
+  /** Access rights to the node. */
+  FS_NODE_ACCESS,
+  /** Node payload. */
+  FS_NODE_DATA,
+  /** Numeric identifier of the node. */
+  FS_NODE_ID,
   /** Symbolic name of the node. */
   FS_NODE_NAME,
-  /** Type of the node. */
-  FS_NODE_TYPE,
-  /** Access rights to the node available for user. */
-  FS_NODE_ACCESS,
   /** Owner of the node. */
   FS_NODE_OWNER,
-  /** Node size in bytes or elements. */
+  /** Size of the payload in bytes. */
   FS_NODE_SIZE,
   /** Node change time. */
   FS_NODE_TIME
 };
 /*----------------------------------------------------------------------------*/
-enum fsNodeType
+struct FsAttributeDescriptor
 {
-  /** Unknown type. */
-  FS_TYPE_NONE = 0,
-  /** Directory entry. */
-  FS_TYPE_DIR,
-  /** Regular file. */
-  FS_TYPE_FILE,
-  /** Symbolic link. */
-  FS_TYPE_LINK
-};
-/*----------------------------------------------------------------------------*/
-enum fsSeekOrigin
-{
-  /** Beginning of file. */
-  FS_SEEK_SET = 0,
-  /** Current position of the file pointer. */
-  FS_SEEK_CUR,
-  /** End of file. */
-  FS_SEEK_END
-};
-/*----------------------------------------------------------------------------*/
-struct FsMetadata
-{
-  /** Symbolic name of the node. */
-  char name[CONFIG_FILENAME_LENGTH];
-  /** Type of the node. */
-  enum fsNodeType type;
+  const void *data;
+  uint32_t size;
+  enum fsNodeAttribute type;
 };
 /*----------------------------------------------------------------------------*/
 struct FsHandleClass
 {
   CLASS_HEADER
 
-  void *(*follow)(void *, const char *, const void *);
+  void *(*root)(void *);
   enum result (*sync)(void *);
 };
 /*----------------------------------------------------------------------------*/
@@ -96,17 +73,14 @@ struct FsNodeClass
 {
   CLASS_HEADER
 
-  void *(*clone)(const void *);
+  enum result (*create)(void *, const struct FsAttributeDescriptor *, uint8_t);
+  void *(*head)(void *);
   void (*free)(void *);
-  enum result (*get)(const void *, enum fsNodeData, void *);
-  enum result (*link)(void *, const struct FsMetadata *, const void *, void *);
-  enum result (*make)(void *, const struct FsMetadata *, void *);
-  enum result (*mount)(void *, void *);
-  void *(*open)(void *, access_t);
-  enum result (*set)(void *, enum fsNodeData, const void *);
-  enum result (*truncate)(void *);
-  enum result (*unlink)(void *);
-  void (*unmount)(void *);
+  enum result (*next)(void *);
+  uint32_t (*read)(void *, enum fsNodeAttribute, uint64_t, void *, uint32_t);
+  enum result (*remove)(void *, void *);
+  uint32_t (*write)(void *, enum fsNodeAttribute, uint64_t, const void *,
+      uint32_t);
 };
 /*----------------------------------------------------------------------------*/
 struct FsNode
@@ -114,257 +88,55 @@ struct FsNode
   struct Entity parent;
 };
 /*----------------------------------------------------------------------------*/
-struct FsEntryClass
+static inline void *fsHandleRoot(void *handle)
 {
-  CLASS_HEADER
-
-  enum result (*close)(void *);
-  bool (*end)(const void *);
-  enum result (*fetch)(void *, void *);
-  uint32_t (*read)(void *, void *, uint32_t);
-  enum result (*seek)(void *, uint64_t, enum fsSeekOrigin);
-  uint64_t (*tell)(const void *);
-  uint32_t (*write)(void *, const void *, uint32_t);
-};
-/*----------------------------------------------------------------------------*/
-struct FsEntry
-{
-  struct Entity parent;
-};
-/*----------------------------------------------------------------------------*/
-/**
- * Follow symbolic path and get node pointing to this entry.
- * @param handle Pointer to an FsHandle object.
- * @param path Path to an entry to be located.
- * @param root Local root entry. Zero value may be used to rewind search and
- * follow the path from global root entry.
- * @return Pointer to an allocated and filled node on success or zero otherwise.
- * Allocated node may belong to other handle when current one
- * has nested partitions.
- */
-static inline void *fsFollow(void *handle, const char *path, const void *root)
-{
-  return ((const struct FsHandleClass *)CLASS(handle))->follow(handle, path,
-      root);
+  return ((const struct FsHandleClass *)CLASS(handle))->root(handle);
 }
 /*----------------------------------------------------------------------------*/
-/**
- * Write information about changed entries to physical device.
- * @param handle Pointer to an FsHandle object.
- */
-static inline enum result fsSync(void *handle)
+static inline enum result fsHandleSync(void *handle)
 {
   return ((const struct FsHandleClass *)CLASS(handle))->sync(handle);
 }
 /*----------------------------------------------------------------------------*/
-/**
- * Allocate a new node.
- * @param node Pointer to a previously initialized node.
- * @return Pointer to an allocated node on success or zero otherwise.
- */
-static inline void *fsClone(const void *node)
+static inline enum result fsNodeCreate(void *parent,
+    const struct FsAttributeDescriptor *descriptors, uint8_t count)
 {
-  return ((const struct FsNodeClass *)CLASS(node))->clone(node);
+  return ((const struct FsNodeClass *)CLASS(parent))->create(parent,
+      descriptors, count);
 }
 /*----------------------------------------------------------------------------*/
-/**
- * Free memory allocated for the node.
- * @param node Pointer to a previously allocated FsNode object.
- */
-static inline void fsFree(void *node)
+static inline void *fsNodeHead(void *node)
+{
+  return ((const struct FsNodeClass *)CLASS(node))->head(node);
+}
+/*----------------------------------------------------------------------------*/
+static inline void fsNodeFree(void *node)
 {
   ((const struct FsNodeClass *)CLASS(node))->free(node);
 }
 /*----------------------------------------------------------------------------*/
-/**
- * Load information about the node.
- * @param node The node with information about entry location.
- * @param type Information type.
- * @param data Pointer to a specified buffer to be filled.
- * @return @b E_OK on success.
- */
-static inline enum result fsGet(const void *node, enum fsNodeData type,
-    void *data)
+static inline enum result fsNodeNext(void *node)
 {
-  return ((const struct FsNodeClass *)CLASS(node))->get(node, type, data);
+  return ((const struct FsNodeClass *)CLASS(node))->next(node);
 }
 /*----------------------------------------------------------------------------*/
-/**
- * Create a link to an existing entry.
- * @param node Node pointing to a location where the link should be placed.
- * @param metadata Pointer to a link information.
- * @param target Node pointing to an existing entry.
- * @param result Pointer to a previously allocated node where the information
- * about newly created entry should be stored. May be left zero when such
- * information is not needed.
- * @return E_OK on success.
- */
-static inline enum result fsLink(void *node, const struct FsMetadata *metadata,
-    const void *target, void *result)
+static inline uint32_t fsNodeRead(void *node, enum fsNodeAttribute attribute,
+    uint64_t position, void *buffer, uint32_t length)
 {
-  return ((const struct FsNodeClass *)CLASS(node))->link(node, metadata, target,
-      result);
+  return ((const struct FsNodeClass *)CLASS(node))->read(node, attribute,
+      position, buffer, length);
 }
 /*----------------------------------------------------------------------------*/
-/**
- * Create a new entry.
- * @param node Node pointing to a location where new entry should be placed.
- * @param metadata Pointer to an entry information.
- * @param result Pointer to a previously allocated node where the information
- * about newly created entry should be stored. May be left zero when such
- * information is not needed.
- * @return E_OK on success.
- */
-static inline enum result fsMake(void *node, const struct FsMetadata *metadata,
-    void *result)
+static inline enum result fsNodeRemove(void *parent, void *node)
 {
-  return ((const struct FsNodeClass *)CLASS(node))->make(node, metadata,
-      result);
+  return ((const struct FsNodeClass *)CLASS(parent))->remove(parent, node);
 }
 /*----------------------------------------------------------------------------*/
-/**
- * Link filesystem handle with existing node.
- * @param node Node pointing to an existing directory.
- * @param handle Pointer to an initialized filesystem handle.
- * @return E_OK on success.
- */
-static inline enum result fsMount(void *node, void *handle)
+static inline uint32_t fsNodeWrite(void *node, enum fsNodeAttribute attribute,
+    uint64_t position, const void *buffer, uint32_t length)
 {
-  return ((const struct FsNodeClass *)CLASS(node))->mount(node, handle);
-}
-/*----------------------------------------------------------------------------*/
-/**
- * Open an entry.
- * @param node Node with information about entry location.
- * @param access Requested access rights.
- * @return Pointer to a newly allocated entry on success or zero on error.
- */
-static inline void *fsOpen(void *node, access_t access)
-{
-  return ((const struct FsNodeClass *)CLASS(node))->open(node, access);
-}
-/*----------------------------------------------------------------------------*/
-/**
- * Modify information about the node.
- * @param node Node with information about entry location.
- * @param type Information type.
- * @param data Pointer to a specified buffer to be saved.
- * @return @b E_OK on success.
- */
-static inline enum result fsSet(void *node, enum fsNodeData type,
-    const void *data)
-{
-  return ((const struct FsNodeClass *)CLASS(node))->set(node, type, data);
-}
-/*----------------------------------------------------------------------------*/
-/**
- * Truncate node data.
- * @param node Node with information about entry location.
- * @return E_OK on success.
- */
-static inline enum result fsTruncate(void *node)
-{
-  return ((const struct FsNodeClass *)CLASS(node))->truncate(node);
-}
-/*----------------------------------------------------------------------------*/
-/**
- * Remove entry information but preserve data.
- * @param node Node with information about entry location.
- * @return @b E_OK on success.
- */
-static inline enum result fsUnlink(void *node)
-{
-  return ((const struct FsNodeClass *)CLASS(node))->unlink(node);
-}
-/*----------------------------------------------------------------------------*/
-/**
- * Break the link between filesystem handles.
- * @param node Node with connection to other handle.
- */
-static inline void fsUnmount(void *node)
-{
-  ((const struct FsNodeClass *)CLASS(node))->unmount(node);
-}
-/*----------------------------------------------------------------------------*/
-/**
- * Close entry and free descriptor data.
- * @param entry Pointer to a previously opened entry.
- */
-static inline enum result fsClose(void *entry)
-{
-  return ((const struct FsEntryClass *)CLASS(entry))->close(entry);
-}
-/*----------------------------------------------------------------------------*/
-/**
- * Check whether a position in entry reached the end of entry.
- * @param entry Pointer to a previously opened entry.
- * @return @b true when reached the end of entry or @b false otherwise.
- */
-static inline bool fsEnd(const void *entry)
-{
-  return ((const struct FsEntryClass *)CLASS(entry))->end(entry);
-}
-/*----------------------------------------------------------------------------*/
-/**
- * Read next directory entry.
- * @param entry Pointer to a previously opened entry.
- * @param node Pointer to a previously allocated node where the information
- * about next entry should be stored.
- * @return E_OK on success.
- */
-static inline enum result fsFetch(void *entry, void *node)
-{
-  return ((const struct FsEntryClass *)CLASS(entry))->fetch(entry, node);
-}
-/*----------------------------------------------------------------------------*/
-/**
- * Read block of data from the entry.
- * @param entry Pointer to a previously opened entry.
- * @param buffer Pointer to a buffer with a size of at least @b length bytes.
- * @param length Number of data bytes to be read.
- * @return E_OK on success.
- */
-static inline uint32_t fsRead(void *entry, void *buffer, uint32_t length)
-{
-  return ((const struct FsEntryClass *)CLASS(entry))->read(entry, buffer,
-      length);
-}
-/*----------------------------------------------------------------------------*/
-/**
- * Set the position in the entry to a new position.
- * @param entry Pointer to a previously opened entry.
- * @param offset Number of bytes to offset from origin.
- * @param origin Position used as reference for the offset.
- * @return E_OK on success.
- */
-static inline enum result fsSeek(void *entry, uint64_t offset,
-    enum fsSeekOrigin origin)
-{
-  return ((const struct FsEntryClass *)CLASS(entry))->seek(entry, offset,
-      origin);
-}
-/*----------------------------------------------------------------------------*/
-/**
- * Get the current position in entry.
- * @param entry Pointer to a previously opened entry.
- * @return Position in a file.
- */
-static inline uint64_t fsTell(const void *entry)
-{
-  return ((const struct FsEntryClass *)CLASS(entry))->tell(entry);
-}
-/*----------------------------------------------------------------------------*/
-/**
- * Write block of data to entry.
- * @param entry Pointer to a previously opened entry.
- * @param buffer Pointer to a buffer with a size of at least @b length bytes.
- * @param length Number of data bytes to be written.
- * @return E_OK on success.
- */
-static inline uint32_t fsWrite(void *entry, const void *buffer, uint32_t length)
-{
-  return ((const struct FsEntryClass *)CLASS(entry))->write(entry, buffer,
-      length);
+  return ((const struct FsNodeClass *)CLASS(node))->write(node, attribute,
+      position, buffer, length);
 }
 /*----------------------------------------------------------------------------*/
 #endif /* FS_H_ */
