@@ -59,6 +59,7 @@ static void performStringComparison(const char *input, unsigned int inputLength,
   (void)sampleLength;
 #endif
 
+  /* Check conversion from UTF-8 to UTF-16 */
   count = uToUtf16(frontBuffer, input, sizeof(frontBuffer));
   assert(count == sampleLength);
   for (unsigned int index = 0; index <= count; ++index)
@@ -67,6 +68,11 @@ static void performStringComparison(const char *input, unsigned int inputLength,
   }
   dumpChar16String(frontBuffer, count);
 
+  /* Check length estimation of the resulting UTF-16 string */
+  count = uLengthToUtf16(input);
+  assert(count == sampleLength);
+
+  /* Check conversion from UTF-16 to UTF-8 */
   count = uFromUtf16(backBuffer, frontBuffer, sizeof(backBuffer));
   assert(count == inputLength);
   for (unsigned int index = 0; index <= count; ++index)
@@ -74,6 +80,10 @@ static void performStringComparison(const char *input, unsigned int inputLength,
     assert(backBuffer[index] == input[index]);
   }
   dumpChar8String(backBuffer, count);
+
+  /* Check length estimation of the resulting UTF-8 string */
+  count = uLengthFromUtf16(frontBuffer);
+  assert(count == inputLength);
 }
 /*----------------------------------------------------------------------------*/
 static void performUtf8ToUtf16(void)

@@ -12,7 +12,9 @@
 /* Type for Unicode UTF-16 characters */
 typedef uint16_t char16_t;
 /*----------------------------------------------------------------------------*/
-uint16_t uFromUtf16(char *, const char16_t *, uint16_t);
-uint16_t uToUtf16(char16_t *, const char *, uint16_t);
+unsigned int uLengthFromUtf16(const char16_t *);
+unsigned int uLengthToUtf16(const char *);
+unsigned int uFromUtf16(char *, const char16_t *, unsigned int);
+unsigned int uToUtf16(char16_t *, const char *, unsigned int);
 /*----------------------------------------------------------------------------*/
 #endif /* UNICODE_H_ */
