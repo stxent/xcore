@@ -6,7 +6,7 @@
 
 /**
  * @file
- * Abstract filesystem interface for embedded applications.
+ * Abstract file system interface for embedded applications.
  */
 
 #ifndef FS_H_
@@ -22,6 +22,7 @@
 #endif
 /*----------------------------------------------------------------------------*/
 typedef uint8_t access_t;
+typedef uint32_t length_t;
 /*----------------------------------------------------------------------------*/
 enum
 {
@@ -31,7 +32,7 @@ enum
   FS_ACCESS_WRITE = 0x02
 };
 /*----------------------------------------------------------------------------*/
-enum fsNodeAttribute
+enum fsFieldType
 {
   /** Access rights to the node. */
   FS_NODE_ACCESS,
@@ -43,17 +44,15 @@ enum fsNodeAttribute
   FS_NODE_NAME,
   /** Owner of the node. */
   FS_NODE_OWNER,
-  /** Size of the payload in bytes. */
-  FS_NODE_SIZE,
   /** Node change time. */
   FS_NODE_TIME
 };
 /*----------------------------------------------------------------------------*/
-struct FsAttributeDescriptor
+struct FsFieldDescriptor
 {
   const void *data;
-  uint32_t size;
-  enum fsNodeAttribute type;
+  length_t length;
+  enum fsFieldType type;
 };
 /*----------------------------------------------------------------------------*/
 struct FsHandleClass
@@ -73,14 +72,16 @@ struct FsNodeClass
 {
   CLASS_HEADER
 
-  enum result (*create)(void *, const struct FsAttributeDescriptor *, uint8_t);
+  enum result (*create)(void *, const struct FsFieldDescriptor *, uint8_t);
   void *(*head)(void *);
   void (*free)(void *);
+  enum result (*length)(void *, enum fsFieldType, length_t *);
   enum result (*next)(void *);
-  uint32_t (*read)(void *, enum fsNodeAttribute, uint64_t, void *, uint32_t);
+  enum result (*read)(void *, enum fsFieldType, length_t, void *,
+      length_t, length_t *);
   enum result (*remove)(void *, void *);
-  uint32_t (*write)(void *, enum fsNodeAttribute, uint64_t, const void *,
-      uint32_t);
+  enum result (*write)(void *, enum fsFieldType, length_t, const void *,
+      length_t, length_t *);
 };
 /*----------------------------------------------------------------------------*/
 struct FsNode
@@ -88,55 +89,131 @@ struct FsNode
   struct Entity parent;
 };
 /*----------------------------------------------------------------------------*/
+/**
+ * Get a root node of the file system tree.
+ * @param node Pointer to a file system handle.
+ * @return Pointer to a new FsNode object.
+ */
 static inline void *fsHandleRoot(void *handle)
 {
   return ((const struct FsHandleClass *)CLASS(handle))->root(handle);
 }
 /*----------------------------------------------------------------------------*/
+/**
+ * Write information about changed entries to the physical device.
+ * @param handle Pointer to a file system handle.
+ */
 static inline enum result fsHandleSync(void *handle)
 {
   return ((const struct FsHandleClass *)CLASS(handle))->sync(handle);
 }
 /*----------------------------------------------------------------------------*/
+/**
+ * Create a new node.
+ * @param node Root node where the new node should be placed.
+ * @param descriptors Pointer to an array of field descriptors
+ * with supplementary information about the new node.
+ * @param number Number of descriptors in the array.
+ * @return E_OK on success.
+ */
 static inline enum result fsNodeCreate(void *parent,
-    const struct FsAttributeDescriptor *descriptors, uint8_t count)
+    const struct FsFieldDescriptor *descriptors, uint8_t number)
 {
   return ((const struct FsNodeClass *)CLASS(parent))->create(parent,
-      descriptors, count);
+      descriptors, number);
 }
 /*----------------------------------------------------------------------------*/
+/**
+ * Get a first node from the chain of descendant nodes.
+ * @param node Pointer to an FsNode object.
+ * @return Pointer to a new object with basic information about the first node.
+ */
 static inline void *fsNodeHead(void *node)
 {
   return ((const struct FsNodeClass *)CLASS(node))->head(node);
 }
 /*----------------------------------------------------------------------------*/
+/**
+ * Free memory allocated for the node.
+ * @param node Pointer to a previously allocated FsNode object.
+ */
 static inline void fsNodeFree(void *node)
 {
   ((const struct FsNodeClass *)CLASS(node))->free(node);
 }
 /*----------------------------------------------------------------------------*/
+/**
+ * Read length of the specified field.
+ * @param node Pointer to an FsNode object.
+ * @param type Unique field identifier.
+ * @param length Pointer to a buffer where the result of the operation
+ * will be placed.
+ * @return @b E_OK on success, @b E_INVALID when the field is not supported.
+ */
+static inline enum result fsNodeLength(void *node, enum fsFieldType type,
+    length_t *length)
+{
+  return ((const struct FsNodeClass *)CLASS(node))->length(node, type, length);
+}
+/*----------------------------------------------------------------------------*/
+/**
+ * Read basic information about the next node in the chain.
+ * @param node Pointer to an FsNode object.
+ * @return @b E_OK on success, @b E_ENTRY when @b node is the last node
+ * in the chain.
+ */
 static inline enum result fsNodeNext(void *node)
 {
   return ((const struct FsNodeClass *)CLASS(node))->next(node);
 }
 /*----------------------------------------------------------------------------*/
-static inline uint32_t fsNodeRead(void *node, enum fsNodeAttribute attribute,
-    uint64_t position, void *buffer, uint32_t length)
+/**
+ * Read supplementary information about the node.
+ * @param node Pointer to an FsNode object.
+ * @param type Unique field identifier.
+ * @param position Offset from the beginning of the field.
+ * @param buffer Pointer to a buffer with a size of at least @b length bytes.
+ * @param length Number of data bytes to be read.
+ * @param read Pointer to a buffer where the result of the operation
+ * will be placed. May be left zero when the result is not needed.
+ * @return @b E_OK on success, @b E_INVALID when this type of operation is not
+ * supported.
+ */
+static inline enum result fsNodeRead(void *node, enum fsFieldType type,
+    length_t position, void *buffer, length_t length, length_t *read)
 {
-  return ((const struct FsNodeClass *)CLASS(node))->read(node, attribute,
-      position, buffer, length);
+  return ((const struct FsNodeClass *)CLASS(node))->read(node, type, position,
+      buffer, length, read);
 }
 /*----------------------------------------------------------------------------*/
+/**
+ * Remove entry and make the space it was using available for reuse.
+ * @param parent Root node where the @b node to be removed is located.
+ * @param node Node to be removed.
+ * @return @b E_OK on success.
+ */
 static inline enum result fsNodeRemove(void *parent, void *node)
 {
   return ((const struct FsNodeClass *)CLASS(parent))->remove(parent, node);
 }
 /*----------------------------------------------------------------------------*/
-static inline uint32_t fsNodeWrite(void *node, enum fsNodeAttribute attribute,
-    uint64_t position, const void *buffer, uint32_t length)
+/**
+ * Write supplementary information about the node.
+ * @param node Pointer to an FsNode object.
+ * @param type Unique field identifier.
+ * @param position Offset from the beginning of the data.
+ * @param buffer Pointer to a buffer with a size of at least @b length bytes.
+ * @param length Number of data bytes to be written.
+ * @param written Pointer to a buffer where the result of the operation
+ * will be placed. May be left zero when the result is not needed.
+ * @return @b E_OK on success, @b E_INVALID when this type of operation is not
+ * supported.
+ */
+static inline enum result fsNodeWrite(void *node, enum fsFieldType type,
+    length_t position, const void *buffer, length_t length, length_t *written)
 {
-  return ((const struct FsNodeClass *)CLASS(node))->write(node, attribute,
-      position, buffer, length);
+  return ((const struct FsNodeClass *)CLASS(node))->write(node, type, position,
+      buffer, length, written);
 }
 /*----------------------------------------------------------------------------*/
 #endif /* FS_H_ */
