@@ -10,6 +10,12 @@
 #include <stdbool.h>
 #include <stdint.h>
 /*----------------------------------------------------------------------------*/
+#define TO_BIG_ENDIAN_16(value) \
+    (((value) << 8) & 0xFF00) | (((value) >> 8) & 0x00FF)
+#define TO_LITTLE_ENDIAN_16(value)      (value)
+#define FROM_BIG_ENDIAN_16(value)       TO_BIG_ENDIAN_16(value)
+#define FROM_LITTLE_ENDIAN_16(value)    TO_LITTLE_ENDIAN_16(value)
+/*----------------------------------------------------------------------------*/
 static inline uint64_t toBigEndian64(uint64_t value)
 {
   return __builtin_bswap64(value);
