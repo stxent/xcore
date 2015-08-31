@@ -22,19 +22,19 @@ static unsigned int countListNodes(const struct ListNode *current)
 /*----------------------------------------------------------------------------*/
 static void freeListChain(struct ListNode *current)
 {
-  struct ListNode *buffer;
+  struct ListNode *next;
 
   while (current)
   {
-    buffer = current;
-    current = current->next;
-    free(buffer);
+    next = current->next;
+    free(current);
+    current = next;
   }
 }
 /*----------------------------------------------------------------------------*/
 enum result listInit(struct List *list, unsigned int width)
 {
-  list->first = list->pool = 0;
+  list->first = 0;
   list->width = width;
 
   return E_OK;
@@ -43,20 +43,13 @@ enum result listInit(struct List *list, unsigned int width)
 void listDeinit(struct List *list)
 {
   freeListChain(list->first);
-  freeListChain(list->pool);
 }
 /*----------------------------------------------------------------------------*/
 void listClear(struct List *list)
 {
   if (list->first)
   {
-    struct ListNode *current = list->first;
-
-    while (current->next)
-      current = current->next;
-
-    current->next = list->pool;
-    list->pool = list->first;
+    freeListChain(list->first);
     list->first = 0;
   }
 }
@@ -77,28 +70,18 @@ struct ListNode *listErase(struct List *list, struct ListNode *node)
 
   struct ListNode * const next = node->next;
 
-  node->next = list->pool;
-  list->pool = node;
+  free(node);
 
   return next;
 }
 /*----------------------------------------------------------------------------*/
 enum result listPush(struct List *list, const void *element)
 {
-  struct ListNode *node;
+  struct ListNode * const node =
+      malloc(sizeof(struct ListNode *) + list->width);
 
-  if (list->pool)
-  {
-    node = list->pool;
-    list->pool = list->pool->next;
-  }
-  else
-  {
-    node = malloc(sizeof(struct ListNode *) + list->width);
-
-    if (!node)
-      return E_MEMORY;
-  }
+  if (!node)
+    return E_MEMORY;
 
   memcpy(node->data, element, list->width);
   node->next = 0;
@@ -120,7 +103,7 @@ enum result listPush(struct List *list, const void *element)
 /*----------------------------------------------------------------------------*/
 unsigned int listCapacity(const struct List *list)
 {
-  return countListNodes(list->first) + countListNodes(list->pool);
+  return countListNodes(list->first);
 }
 /*----------------------------------------------------------------------------*/
 unsigned int listSize(const struct List *list)

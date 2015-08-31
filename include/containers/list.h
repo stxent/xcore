@@ -23,8 +23,6 @@ struct List
 {
   /** First element of the list containing data nodes. */
   struct ListNode *first;
-  /** First element of the free nodes list. */
-  struct ListNode *pool;
   /** Size of each element in bytes. */
   unsigned int width;
 };

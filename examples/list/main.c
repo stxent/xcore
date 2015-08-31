@@ -88,14 +88,14 @@ static void performListTest(void)
     node = listNext(node);
   }
 
-  assert(listCapacity(&list) == MAX_CAPACITY);
+  assert(listCapacity(&list) == MAX_CAPACITY / 2);
   assert(listSize(&list) == MAX_CAPACITY / 2);
   assert(listEmpty(&list) == false);
 
   /* Erasure of all elements */
   listClear(&list);
 
-  assert(listCapacity(&list) == MAX_CAPACITY);
+  assert(listCapacity(&list) == 0);
   assert(listSize(&list) == 0);
   assert(listEmpty(&list) == true);
 
