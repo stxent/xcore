@@ -15,6 +15,8 @@ void *init(const void *descriptor, const void *arguments)
   if (!base || !base->size || !(entity = malloc(base->size)))
     return 0;
 
+  entity->descriptor = base;
+
   if (base->init)
   {
     enum result res;
@@ -26,7 +28,6 @@ void *init(const void *descriptor, const void *arguments)
     }
   }
 
-  entity->descriptor = base;
   return entity;
 }
 /*----------------------------------------------------------------------------*/
