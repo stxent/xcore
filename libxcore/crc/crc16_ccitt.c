@@ -1,26 +1,26 @@
 /*
- * crc16.c
+ * crc16_ccitt.c
  * Copyright (C) 2013 xent
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
-#include <crc/crc16.h>
+#include <crc/crc16_ccitt.h>
 /*----------------------------------------------------------------------------*/
 static enum result engineInit(void *, const void *);
 static void engineDeinit(void *);
 static uint32_t engineUpdate(void *, uint32_t, const uint8_t *, uint32_t);
 /*----------------------------------------------------------------------------*/
 static const struct CrcEngineClass engineTable = {
-    .size = sizeof(struct Crc16),
+    .size = sizeof(struct Crc16Ccitt),
     .init = engineInit,
     .deinit = engineDeinit,
 
     .update = engineUpdate
 };
 /*----------------------------------------------------------------------------*/
-const struct CrcEngineClass * const Crc16 = &engineTable;
+const struct CrcEngineClass * const Crc16Ccitt = &engineTable;
 /*----------------------------------------------------------------------------*/
-#ifndef CONFIG_CRC16_BITWISE
+#ifndef CONFIG_CRC16_CCITT_BITWISE
 /* CRC-16-CCITT table, polynomial 0x1021 */
 static const uint16_t crcTable[256] = {
     0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50A5, 0x60C6, 0x70E7,
@@ -74,7 +74,7 @@ static uint32_t engineUpdate(void *object __attribute__((unused)),
 {
   uint16_t crc = (uint16_t)previous;
 
-#ifdef CONFIG_CRC16_BITWISE
+#ifdef CONFIG_CRC16_CCITT_BITWISE
   while (length--)
   {
     crc ^= (uint16_t)(*buffer++) << 8;

@@ -35,19 +35,26 @@ config CRC7_BITWISE
 	bool "CRC-7 bitwise computation"
 	depends on CRC_CRC7
 
-config CRC_CRC8DALLAS
+config CRC_CRC8_DALLAS
 	bool "CRC-8-Dallas"
 
-config CRC8DALLAS_BITWISE
+config CRC8_DALLAS_BITWISE
 	bool "CRC-8-Dallas bitwise computation"
-	depends on CRC_CRC8DALLAS
+	depends on CRC_CRC8_DALLAS
 
-config CRC_CRC16
+config CRC_CRC16_CCITT
 	bool "CRC-16-CCITT"
 
-config CRC16_BITWISE
+config CRC16_CCITT_BITWISE
 	bool "CRC-16-CCITT bitwise computation"
-	depends on CRC_CRC16
+	depends on CRC_CRC16_CCITT
+
+config CRC_CRC32
+	bool "CRC-32"
+
+config CRC32_BITWISE
+	bool "CRC-32 bitwise computation"
+	depends on CRC_CRC32
 
 endmenu
 

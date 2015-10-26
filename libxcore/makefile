@@ -1,7 +1,10 @@
 #Copyright (C) 2015 xent
 #Project is distributed under the terms of the GNU General Public License v3.0
 
-PROJECT_FLAGS += CONFIG_CRC7_BITWISE CONFIG_CRC8DALLAS_BITWISE CONFIG_CRC16_BITWISE
+PROJECT_FLAGS += CONFIG_CRC7_BITWISE
+PROJECT_FLAGS += CONFIG_CRC8_DALLAS_BITWISE
+PROJECT_FLAGS += CONFIG_CRC16_CCITT_BITWISE
+PROJECT_FLAGS += CONFIG_CRC32_BITWISE
 
 CONTAINER_SOURCES := $(shell find libxcore/containers -name *.c)
 
@@ -14,12 +17,16 @@ ifeq ($(CONFIG_CRC_CRC7),y)
   LIBRARY_SOURCES += libxcore/crc/crc7.c
 endif
 
-ifeq ($(CONFIG_CRC_CRC8DALLAS),y)
-  LIBRARY_SOURCES += libxcore/crc/crc8dallas.c
+ifeq ($(CONFIG_CRC_CRC8_DALLAS),y)
+  LIBRARY_SOURCES += libxcore/crc/crc8_dallas.c
 endif
 
-ifeq ($(CONFIG_CRC_CRC16),y)
-  LIBRARY_SOURCES += libxcore/crc/crc16.c
+ifeq ($(CONFIG_CRC_CRC16_CCITT),y)
+  LIBRARY_SOURCES += libxcore/crc/crc16_ccitt.c
+endif
+
+ifeq ($(CONFIG_CRC_CRC32),y)
+  LIBRARY_SOURCES += libxcore/crc/crc32.c
 endif
 
 LIBRARY_OBJECTS = $(LIBRARY_SOURCES:%.c=$(OUTPUT_DIR)/%.o)

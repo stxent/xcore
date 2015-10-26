@@ -1,10 +1,10 @@
 /*
- * crc8dallas.c
+ * crc8_dallas.c
  * Copyright (C) 2015 xent
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
-#include <crc/crc8dallas.h>
+#include <crc/crc8_dallas.h>
 /*----------------------------------------------------------------------------*/
 static enum result engineInit(void *, const void *);
 static void engineDeinit(void *);
@@ -20,7 +20,7 @@ static const struct CrcEngineClass engineTable = {
 /*----------------------------------------------------------------------------*/
 const struct CrcEngineClass * const Crc8Dallas = &engineTable;
 /*----------------------------------------------------------------------------*/
-#ifndef CONFIG_CRC8DALLAS_BITWISE
+#ifndef CONFIG_CRC8_DALLAS_BITWISE
 static const uint8_t crcTable[256] = {
     0x00, 0x5E, 0xBC, 0xE2, 0x61, 0x3F, 0xDD, 0x83,
     0xC2, 0x9C, 0x7E, 0x20, 0xA3, 0xFD, 0x1F, 0x41,
@@ -73,7 +73,7 @@ static uint32_t engineUpdate(void *object __attribute__((unused)),
 {
   uint8_t crc = (uint8_t)previous;
 
-#ifdef CONFIG_CRC8DALLAS_BITWISE
+#ifdef CONFIG_CRC8_DALLAS_BITWISE
   while (length--)
   {
     uint8_t value = *buffer++;
