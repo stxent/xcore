@@ -2,22 +2,22 @@
 #Project is distributed under the terms of the GNU General Public License v3.0
 
 PROJECT := xcore
-PROJECTDIR := $(shell pwd)
+PROJECT_DIR := $(shell pwd)
 
 CONFIG_FILE ?= .config
 CROSS_COMPILE ?= arm-none-eabi-
 
 -include $(CONFIG_FILE)
-OPTION_NAMES += PLATFORM
+BUILD_FLAGS += PLATFORM
 
-#Process configuration options
-define process-option
+#Expand build flags
+define process-flag
   $(1) := $$(CONFIG_$(1):"%"=%)
 endef
 
-$(foreach entry,$(OPTION_NAMES),$(eval $(call process-option,$(entry))))
+$(foreach entry,$(BUILD_FLAGS),$(eval $(call process-flag,$(entry))))
 
-#Select build type
+#Process build flags
 ifneq ($(findstring x86,$(PLATFORM)),)
   AR := ar
   CC := gcc
@@ -48,35 +48,36 @@ else
 endif
 
 #Configure common paths and libraries
-INCLUDEPATH += -Iinclude
-OUTPUTDIR = build_$(PLATFORM)
-LDFLAGS += -L$(OUTPUTDIR)
+INCLUDE_PATH += -Iinclude
+OUTPUT_DIR := build_$(PLATFORM)
+OPTION_FILE := $(OUTPUT_DIR)/.options
+LDFLAGS += -L$(OUTPUT_DIR)
 LDLIBS += -l$(PROJECT)
 
 #Configure compiler options
 CFLAGS += -std=c11 -Wall -Wextra -Winline -pedantic -Wshadow -Wcast-qual
-CFLAGS += $(OPT_FLAGS) $(CPU_FLAGS) $(CONFIG_FLAGS)
+CFLAGS += $(OPT_FLAGS) $(CPU_FLAGS) @$(OPTION_FILE)
 CXXFLAGS += -std=c++11 -Wall -Wextra -Winline -pedantic -Wshadow -Wold-style-cast -Wcast-qual
 CXXFLAGS += -fno-exceptions -fno-rtti
-CXXFLAGS += $(OPT_FLAGS) $(CPU_FLAGS) $(CONFIG_FLAGS)
+CXXFLAGS += $(OPT_FLAGS) $(CPU_FLAGS) @$(OPTION_FILE)
 
 #Other makefiles of the project
 include lib$(PROJECT)/makefile
 include examples/makefile
 
-#Process project options
+#Process auxiliary project options
 define append-flag
   ifeq ($$($(1)),y)
-    CONFIG_FLAGS += -D$(1)
+    OPTION_STRING += -D$(1)
   else ifneq ($$($(1)),)
-    CONFIG_FLAGS += -D$(1)=$$($(1))
+    OPTION_STRING += -D$(1)=$$($(1))
   endif
 endef
 
-$(foreach entry,$(FLAG_NAMES),$(eval $(call append-flag,$(entry))))
+$(foreach entry,$(PROJECT_FLAGS),$(eval $(call append-flag,$(entry))))
 
-COBJECTS = $(CSOURCES:%.c=$(OUTPUTDIR)/%.o)
-CXXOBJECTS = $(CXXSOURCES:%.cpp=$(OUTPUTDIR)/%.o)
+COBJECTS = $(CSOURCES:%.c=$(OUTPUT_DIR)/%.o)
+CXXOBJECTS = $(CXXSOURCES:%.cpp=$(OUTPUT_DIR)/%.o)
 
 #Define default targets
 .PHONY: all clean menuconfig
@@ -85,21 +86,28 @@ CXXOBJECTS = $(CXXSOURCES:%.cpp=$(OUTPUTDIR)/%.o)
 
 all: $(TARGETS)
 
-$(OUTPUTDIR)/%.o: %.c
+$(OUTPUT_DIR)/%.o: %.c
 	@mkdir -p $(@D)
-	$(CC) -c $(CFLAGS) $(INCLUDEPATH) -MMD -MF $(@:%.o=%.d) -MT $@ $< -o $@
+	$(CC) -c $(CFLAGS) $(INCLUDE_PATH) -MMD -MF $(@:%.o=%.d) -MT $@ $< -o $@
 
-$(OUTPUTDIR)/%.o: %.cpp
+$(OUTPUT_DIR)/%.o: %.cpp
 	@mkdir -p $(@D)
-	$(CXX) -c $(CXXFLAGS) $(INCLUDEPATH) -MMD -MF $(@:%.o=%.d) -MT $@ $< -o $@
+	$(CXX) -c $(CXXFLAGS) $(INCLUDE_PATH) -MMD -MF $(@:%.o=%.d) -MT $@ $< -o $@
+
+$(OPTION_FILE): $(CONFIG_FILE)
+	@mkdir -p $(@D)
+	@echo '$(OPTION_STRING)' > $@
 
 clean:
-	rm -f $(COBJECTS:%.o=%.d) $(COBJECTS) $(CXXOBJECTS:%.o=%.d) $(CXXOBJECTS)
+	rm -f $(COBJECTS:%.o=%.d) $(COBJECTS)
+	rm -f $(CXXOBJECTS:%.o=%.d) $(CXXOBJECTS)
 	rm -f $(TARGETS)
+	rm -f $(OPTION_FILE)
 
 menuconfig:
 	kconfig-mconf kconfig
 
 ifneq ($(MAKECMDGOALS),clean)
-  -include $(COBJECTS:%.o=%.d) $(CXXOBJECTS:%.o=%.d)
+  -include $(COBJECTS:%.o=%.d)
+  -include $(CXXOBJECTS:%.o=%.d)
 endif
