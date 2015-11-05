@@ -80,6 +80,13 @@ config OPTIMIZATIONS
 	default "size" if OPTIMIZATIONS_SIZE
 	default "full" if OPTIMIZATIONS_FULL
 
+config FPU
+	bool "FPU"
+	default y
+	help
+	  This enables Floating Point Unit.
+	depends on TARGET_CORTEX_M4
+
 endmenu
 
 menu "Debug options"

@@ -33,6 +33,9 @@ else ifneq ($(findstring cortex-m,$(PLATFORM)),)
   CXX := $(CROSS_COMPILE)g++
   CPU_FLAGS += -mcpu=$(PLATFORM) -mthumb
   CPU_FLAGS += -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections
+  ifeq ($(CONFIG_FPU),y)
+    CPU_FLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
+  endif
 else ifneq ($(MAKECMDGOALS),menuconfig)
   $(error Target architecture is undefined)
 endif
