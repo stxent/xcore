@@ -45,7 +45,10 @@ enum fsFieldType
   /** Owner of the node. */
   FS_NODE_OWNER,
   /** Node change time. */
-  FS_NODE_TIME
+  FS_NODE_TIME,
+
+  /** End of the list. */
+  FS_TYPE_END
 };
 /*----------------------------------------------------------------------------*/
 struct FsFieldDescriptor

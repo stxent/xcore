@@ -35,14 +35,14 @@ unsigned int byteQueuePopArray(struct ByteQueue *queue, uint8_t *buffer,
   if (!queue->size)
     return 0;
 
-  unsigned short moved = 0;
+  unsigned short bytesToRead = (unsigned short)length;
 
   if (queue->ceil <= queue->floor)
   {
     unsigned short count = queue->capacity - queue->floor;
 
-    if (length < count)
-      count = length;
+    if (bytesToRead < count)
+      count = bytesToRead;
 
     if (count)
     {
@@ -50,11 +50,9 @@ unsigned int byteQueuePopArray(struct ByteQueue *queue, uint8_t *buffer,
       queue->floor += count;
       if (queue->floor == queue->capacity)
         queue->floor = 0;
-      queue->size -= count;
 
       buffer += count;
-      moved += count;
-      length -= count;
+      bytesToRead -= count;
     }
   }
 
@@ -62,36 +60,37 @@ unsigned int byteQueuePopArray(struct ByteQueue *queue, uint8_t *buffer,
   {
     unsigned short count = queue->ceil - queue->floor;
 
-    if (length < count)
-      count = length;
+    if (bytesToRead < count)
+      count = bytesToRead;
 
     if (count)
     {
       memcpy(buffer, queue->data + queue->floor, count);
       queue->floor += count;
-      queue->size -= count;
-
-      moved += count;
+      bytesToRead -= count;
     }
   }
 
-  return (unsigned int)moved;
+  const unsigned short bytesRead = length - bytesToRead;
+
+  queue->size -= bytesRead;
+  return (unsigned int)bytesRead;
 }
 /*----------------------------------------------------------------------------*/
 unsigned int byteQueuePushArray(struct ByteQueue *queue, const uint8_t *buffer,
     unsigned int length)
 {
-  if (queue->size == queue->capacity)
+  if (queue->capacity == queue->size)
     return 0;
 
-  unsigned short moved = 0;
+  unsigned short bytesToWrite = (unsigned short)length;
 
   if (queue->ceil >= queue->floor)
   {
     unsigned short count = queue->capacity - queue->ceil;
 
-    if (length < count)
-      count = length;
+    if (bytesToWrite < count)
+      count = bytesToWrite;
 
     if (count)
     {
@@ -99,11 +98,9 @@ unsigned int byteQueuePushArray(struct ByteQueue *queue, const uint8_t *buffer,
       queue->ceil = queue->ceil + count;
       if (queue->ceil == queue->capacity)
         queue->ceil = 0;
-      queue->size += count;
 
       buffer += count;
-      moved += count;
-      length -= count;
+      bytesToWrite -= count;
     }
   }
 
@@ -111,18 +108,19 @@ unsigned int byteQueuePushArray(struct ByteQueue *queue, const uint8_t *buffer,
   {
     unsigned short count = queue->floor - queue->ceil;
 
-    if (length < count)
-      count = length;
+    if (bytesToWrite < count)
+      count = bytesToWrite;
 
     if (count)
     {
       memcpy(queue->data + queue->ceil, buffer, count);
       queue->ceil += count;
-      queue->size += count;
-
-      moved += count;
+      bytesToWrite -= count;
     }
   }
 
-  return (unsigned int)moved;
+  const unsigned short bytesWritten = length - bytesToWrite;
+
+  queue->size += bytesWritten;
+  return (unsigned int)bytesWritten;
 }
