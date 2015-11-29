@@ -45,8 +45,11 @@ void queuePop(struct Queue *queue, void *element)
 {
   assert(queue->size);
 
-  memcpy(element, (char *)queue->data + queue->width * queue->floor,
-      queue->width);
+  if (element)
+  {
+    memcpy(element, (char *)queue->data + queue->width * queue->floor,
+        queue->width);
+  }
 
   if (++queue->floor == queue->capacity)
     queue->floor = 0;

@@ -22,11 +22,10 @@ struct DummyStruct
 static void performQueueTest(void)
 {
   struct Queue queue;
-
-#ifndef NDEBUG
   enum result res;
-#else
-  enum result res __attribute__((unused));
+
+#ifdef NDEBUG
+  (void)res;
 #endif
 
   /* Queue initialization */
@@ -37,7 +36,7 @@ static void performQueueTest(void)
   assert(queueEmpty(&queue) == true);
   assert(queueFull(&queue) == false);
 
-  /* Queue filling */
+  /* Fill queue */
   int index = 0;
 
   while (queueSize(&queue) != queueCapacity(&queue))
@@ -56,6 +55,7 @@ static void performQueueTest(void)
   assert(queueEmpty(&queue) == false);
   assert(queueFull(&queue) == true);
 
+  /* Clear queue and check content */
   index = 0;
   while (!queueEmpty(&queue))
   {
@@ -71,6 +71,29 @@ static void performQueueTest(void)
   assert(queueSize(&queue) == 0);
   assert(queueEmpty(&queue) == true);
   assert(queueFull(&queue) == false);
+
+  /* Push single element */
+  const struct DummyStruct singleton = {
+      .a = 17,
+      .b = 23,
+      .c = {29}
+  };
+  struct DummyStruct singletonCheck;
+
+  queuePush(&queue, &singleton);
+  queuePeek(&queue, &singletonCheck);
+  assert(singletonCheck.a == singleton.a);
+  assert(singletonCheck.b == singleton.b);
+  assert(singletonCheck.c[0] == singleton.c[0]);
+  queuePop(&queue, 0);
+  assert(queueSize(&queue) == 0);
+  assert(queueEmpty(&queue) == true);
+
+  /* Check clearing */
+  queuePush(&queue, &singleton);
+  assert(queueSize(&queue) == 1);
+  queueClear(&queue);
+  assert(queueSize(&queue) == 0);
 
   queueDeinit(&queue);
 }
