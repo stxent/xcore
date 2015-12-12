@@ -75,6 +75,45 @@ struct ListNode *listErase(struct List *list, struct ListNode *node)
   return next;
 }
 /*----------------------------------------------------------------------------*/
+struct ListNode *listFind(struct List *list, const void *element)
+{
+  struct ListNode *node = list->first;
+
+  while (node)
+  {
+    if (!memcmp(node->data, element, list->width))
+      return node;
+    node = node->next;
+  }
+
+  return 0;
+}
+/*----------------------------------------------------------------------------*/
+enum result listInsert(struct List *list, struct ListNode *previous,
+    const void *element)
+{
+  struct ListNode * const node =
+      malloc(sizeof(struct ListNode *) + list->width);
+
+  if (!node)
+    return E_MEMORY;
+
+  memcpy(node->data, element, list->width);
+
+  if (!previous)
+  {
+    node->next = list->first;
+    list->first = node;
+  }
+  else
+  {
+    node->next = previous->next;
+    previous->next = node;
+  }
+
+  return E_OK;
+}
+/*----------------------------------------------------------------------------*/
 enum result listPush(struct List *list, const void *element)
 {
   struct ListNode * const node =

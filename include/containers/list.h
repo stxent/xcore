@@ -31,6 +31,8 @@ enum result listInit(struct List *, unsigned int);
 void listDeinit(struct List *);
 void listClear(struct List *);
 struct ListNode *listErase(struct List *, struct ListNode *);
+struct ListNode *listFind(struct List *, const void *);
+enum result listInsert(struct List *, struct ListNode *, const void *);
 enum result listPush(struct List *, const void *);
 
 unsigned int listCapacity(const struct List *);
