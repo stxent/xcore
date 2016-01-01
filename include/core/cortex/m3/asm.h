@@ -36,6 +36,55 @@ static inline void __interruptsEnable(void)
   __asm__ volatile ("CPSIE i");
 }
 /*----------------------------------------------------------------------------*/
+static inline uint32_t __interruptsGetBasePriority(void)
+{
+  uint32_t priority;
+
+  __asm__ volatile (
+      "MRS %[priority], BASEPRI"
+      : [priority] "=r" (priority)
+  );
+  return priority;
+}
+/*----------------------------------------------------------------------------*/
+static inline uint32_t __interruptsGetState(void)
+{
+  uint32_t state;
+
+  __asm__ volatile (
+      "MRS %[state], PRIMASK"
+      : [state] "=r" (state)
+  );
+  return state;
+}
+/*----------------------------------------------------------------------------*/
+static inline void __interruptsSetBasePriority(uint32_t priority)
+{
+  __asm__ volatile (
+      "MSR BASEPRI_MAX, %[priority]"
+      :
+      : [priority] "r" (priority)
+  );
+}
+/*----------------------------------------------------------------------------*/
+static inline void __interruptsSetState(uint32_t state)
+{
+  __asm__ volatile (
+      "MSR PRIMASK, %[state]"
+      :
+      : [state] "r" (state)
+  );
+}
+/*----------------------------------------------------------------------------*/
+static inline void __interruptsResetBasePriority(uint32_t priority)
+{
+  __asm__ volatile (
+      "MSR BASEPRI, %[priority]"
+      :
+      : [priority] "r" (priority)
+  );
+}
+/*----------------------------------------------------------------------------*/
 static inline uint32_t __ldrex(volatile uint32_t *address)
 {
   uint32_t result;

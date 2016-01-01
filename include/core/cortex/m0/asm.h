@@ -31,6 +31,26 @@ static inline void __interruptsEnable(void)
   __asm__ volatile ("CPSIE i");
 }
 /*----------------------------------------------------------------------------*/
+static inline uint32_t __interruptsGetState(void)
+{
+  uint32_t state;
+
+  __asm__ volatile (
+      "MRS %[state], PRIMASK"
+      : [state] "=r" (state)
+  );
+  return state;
+}
+/*----------------------------------------------------------------------------*/
+static inline void __interruptsSetState(uint32_t state)
+{
+  __asm__ volatile (
+      "MSR PRIMASK, %[state]"
+      :
+      : [state] "r" (state)
+  );
+}
+/*----------------------------------------------------------------------------*/
 static inline uint32_t __rev(uint32_t value)
 {
   uint32_t result;
