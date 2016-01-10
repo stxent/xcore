@@ -19,7 +19,7 @@ struct CrcEngineClass
 /*----------------------------------------------------------------------------*/
 struct CrcEngine
 {
-  struct Entity parent;
+  struct Entity base;
 };
 /*----------------------------------------------------------------------------*/
 static inline uint32_t crcUpdate(void *engine, uint32_t previous,

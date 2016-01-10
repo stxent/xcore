@@ -68,7 +68,7 @@ struct FsHandleClass
 /*----------------------------------------------------------------------------*/
 struct FsHandle
 {
-  struct Entity parent;
+  struct Entity base;
 };
 /*----------------------------------------------------------------------------*/
 struct FsNodeClass
@@ -89,12 +89,12 @@ struct FsNodeClass
 /*----------------------------------------------------------------------------*/
 struct FsNode
 {
-  struct Entity parent;
+  struct Entity base;
 };
 /*----------------------------------------------------------------------------*/
 /**
  * Get a root node of the file system tree.
- * @param node Pointer to a file system handle.
+ * @param handle Pointer to a file system handle.
  * @return Pointer to a new FsNode object.
  */
 static inline void *fsHandleRoot(void *handle)
@@ -113,16 +113,16 @@ static inline enum result fsHandleSync(void *handle)
 /*----------------------------------------------------------------------------*/
 /**
  * Create a new node.
- * @param node Root node where the new node should be placed.
+ * @param root Root node where the new node should be placed.
  * @param descriptors Pointer to an array of field descriptors
  * with supplementary information about the new node.
  * @param number Number of descriptors in the array.
  * @return E_OK on success.
  */
-static inline enum result fsNodeCreate(void *parent,
+static inline enum result fsNodeCreate(void *root,
     const struct FsFieldDescriptor *descriptors, uint8_t number)
 {
-  return ((const struct FsNodeClass *)CLASS(parent))->create(parent,
+  return ((const struct FsNodeClass *)CLASS(root))->create(root,
       descriptors, number);
 }
 /*----------------------------------------------------------------------------*/
@@ -191,13 +191,13 @@ static inline enum result fsNodeRead(void *node, enum fsFieldType type,
 /*----------------------------------------------------------------------------*/
 /**
  * Remove entry and make the space it was using available for reuse.
- * @param parent Root node where the @b node to be removed is located.
+ * @param root Root node where the @b node to be removed is located.
  * @param node Node to be removed.
  * @return @b E_OK on success.
  */
-static inline enum result fsNodeRemove(void *parent, void *node)
+static inline enum result fsNodeRemove(void *root, void *node)
 {
-  return ((const struct FsNodeClass *)CLASS(parent))->remove(parent, node);
+  return ((const struct FsNodeClass *)CLASS(root))->remove(root, node);
 }
 /*----------------------------------------------------------------------------*/
 /**

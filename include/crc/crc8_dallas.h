@@ -13,7 +13,7 @@ extern const struct CrcEngineClass * const Crc8Dallas;
 /*----------------------------------------------------------------------------*/
 struct Crc8Dallas
 {
-  struct CrcEngine parent;
+  struct CrcEngine base;
 };
 /*----------------------------------------------------------------------------*/
 #endif /* CRC_CRC8_DALLAS_H_ */

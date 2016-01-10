@@ -13,7 +13,7 @@ extern const struct CrcEngineClass * const Crc32;
 /*----------------------------------------------------------------------------*/
 struct Crc32
 {
-  struct CrcEngine parent;
+  struct CrcEngine base;
 };
 /*----------------------------------------------------------------------------*/
 #endif /* CRC_CRC32_H_ */
