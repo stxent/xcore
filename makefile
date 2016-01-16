@@ -89,17 +89,17 @@ CXXOBJECTS = $(CXXSOURCES:%.cpp=$(OUTPUT_DIR)/%.o)
 
 all: $(TARGETS)
 
-$(OUTPUT_DIR)/%.o: %.c
+$(OUTPUT_DIR)/%.o: %.c $(OPTION_FILE)
 	@mkdir -p $(@D)
 	$(CC) -c $(CFLAGS) $(INCLUDE_PATH) -MMD -MF $(@:%.o=%.d) -MT $@ $< -o $@
 
-$(OUTPUT_DIR)/%.o: %.cpp
+$(OUTPUT_DIR)/%.o: %.cpp $(OPTION_FILE)
 	@mkdir -p $(@D)
 	$(CXX) -c $(CXXFLAGS) $(INCLUDE_PATH) -MMD -MF $(@:%.o=%.d) -MT $@ $< -o $@
 
 $(OPTION_FILE): $(CONFIG_FILE)
 	@mkdir -p $(@D)
-	@echo '$(OPTION_STRING)' > $@
+	echo '$(OPTION_STRING)' > $@
 
 clean:
 	rm -f $(COBJECTS:%.o=%.d) $(COBJECTS)
