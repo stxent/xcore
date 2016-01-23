@@ -10,6 +10,11 @@
 #include <stdbool.h>
 #include "asm.h"
 /*----------------------------------------------------------------------------*/
+static inline uint32_t countLeadingZeros32(uint32_t value)
+{
+  return __clz(value);
+}
+/*----------------------------------------------------------------------------*/
 static inline uint64_t toBigEndian64(uint64_t value)
 {
   return (uint64_t)__rev(value) << 32 | (uint64_t)__rev(value >> 32);

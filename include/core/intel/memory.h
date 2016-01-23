@@ -9,12 +9,25 @@
 /*----------------------------------------------------------------------------*/
 #include <stdbool.h>
 #include <stdint.h>
+#include "asm.h"
 /*----------------------------------------------------------------------------*/
 #define TO_BIG_ENDIAN_16(value) \
-    (((value) << 8) & 0xFF00) | (((value) >> 8) & 0x00FF)
+    ((((value) << 8) & 0xFF00) | (((value) >> 8) & 0x00FF))
 #define TO_LITTLE_ENDIAN_16(value)      (value)
 #define FROM_BIG_ENDIAN_16(value)       TO_BIG_ENDIAN_16(value)
 #define FROM_LITTLE_ENDIAN_16(value)    TO_LITTLE_ENDIAN_16(value)
+
+#define TO_BIG_ENDIAN_32(value) \
+    ((((value) << 24) & 0xFF000000) | (((value) << 8) & 0x00FF0000) \
+    | (((value) >> 24) & 0x000000FF) | (((value) >> 8) & 0x0000FF00))
+#define TO_LITTLE_ENDIAN_32(value)      (value)
+#define FROM_BIG_ENDIAN_32(value)       TO_BIG_ENDIAN_32(value)
+#define FROM_LITTLE_ENDIAN_32(value)    TO_LITTLE_ENDIAN_32(value)
+/*----------------------------------------------------------------------------*/
+static inline uint32_t countLeadingZeros32(uint32_t value)
+{
+  return __builtin_clz(value);
+}
 /*----------------------------------------------------------------------------*/
 static inline uint64_t toBigEndian64(uint64_t value)
 {
@@ -28,7 +41,7 @@ static inline uint32_t toBigEndian32(uint32_t value)
 /*----------------------------------------------------------------------------*/
 static inline uint16_t toBigEndian16(uint16_t value)
 {
-  return value >> 8 | value << 8;
+  return __builtin_bswap16(value);
 }
 /*----------------------------------------------------------------------------*/
 static inline uint64_t toLittleEndian64(uint64_t value)

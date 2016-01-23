@@ -11,6 +11,18 @@
 /*----------------------------------------------------------------------------*/
 #define barrier() __asm__ volatile ("" : : : "memory")
 /*----------------------------------------------------------------------------*/
+static inline uint32_t __clz(uint32_t value)
+{
+  uint32_t result;
+
+  __asm__ volatile (
+      "CLZ %[result], %[value]"
+      : [result] "=r" (result)
+      : [value] "r" (value)
+  );
+  return result;
+}
+/*----------------------------------------------------------------------------*/
 static inline void __dmb(void)
 {
   __asm__ volatile ("DMB");
