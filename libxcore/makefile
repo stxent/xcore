@@ -13,6 +13,11 @@ LIBRARY_SOURCES += libxcore/entity.c
 LIBRARY_SOURCES += libxcore/realtime.c
 LIBRARY_SOURCES += libxcore/unicode.c
 
+ifneq ($(findstring cortex,$(PLATFORM)),)
+  LIBRARY_SOURCES_CORE := $(shell find libxcore/core/$(subst -,/,$(PLATFORM)) -name *.c)
+  LIBRARY_SOURCES += $(LIBRARY_SOURCES_CORE)
+endif
+
 ifeq ($(CONFIG_CRC_CRC7),y)
   LIBRARY_SOURCES += libxcore/crc/crc7.c
 endif

@@ -133,6 +133,18 @@ static inline uint16_t __ldrexh(volatile uint16_t *address)
   return result;
 }
 /*----------------------------------------------------------------------------*/
+static inline uint32_t __rbit(uint32_t value)
+{
+  uint32_t result;
+
+  __asm__ volatile (
+      "RBIT %[result], %[value]"
+      : [result] "=r" (result)
+      : [value] "r" (value)
+  );
+  return result;
+}
+/*----------------------------------------------------------------------------*/
 static inline uint32_t __rev(uint32_t value)
 {
   uint32_t result;

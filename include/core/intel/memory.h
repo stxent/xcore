@@ -26,6 +26,7 @@
 /*----------------------------------------------------------------------------*/
 static inline uint32_t countLeadingZeros32(uint32_t value)
 {
+  /* If input value is 0, the result is undefined */
   return __builtin_clz(value);
 }
 /*----------------------------------------------------------------------------*/
