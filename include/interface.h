@@ -30,16 +30,16 @@ enum ifOption
   IF_TX_CAPACITY,
 
   /** Unique identifier of the device. */
-  IF_DEVICE,
+  IF_ADDRESS,
   /** Priority of interrupts or direct memory access requests. */
   IF_PRIORITY,
   /** Data rate. */
   IF_RATE,
 
-  /** Address within the internal address space of the device. */
-  IF_ADDRESS,
   /** Alignment of the buffer length for user space buffers. */
   IF_ALIGNMENT,
+  /** Address within the internal address space of the device. */
+  IF_POSITION,
   /** Size of the internal address space. */
   IF_SIZE,
   /** Size of a data word in bits. */
