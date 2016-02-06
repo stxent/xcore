@@ -21,7 +21,7 @@ static const char *dataString = "Informatization";
 /*----------------------------------------------------------------------------*/
 const struct CrcEngineClass * const Crc7;
 const struct CrcEngineClass * const Crc8Dallas;
-const struct CrcEngineClass * const Crc16Ccitt;
+const struct CrcEngineClass * const Crc16CCITT;
 const struct CrcEngineClass * const Crc32;
 /*----------------------------------------------------------------------------*/
 static void performCrc7Test(void)
@@ -76,7 +76,7 @@ static void performCrc8DallasTest(void)
   (void)result;
 }
 /*----------------------------------------------------------------------------*/
-static void performCrc16CcittTest(void)
+static void performCrc16CCITTTest(void)
 {
   const char * const name = "CRC-16-CCITT";
   const uint32_t initial = 0xFFFF;
@@ -85,7 +85,7 @@ static void performCrc16CcittTest(void)
 
   DEBUG_PRINT("Test %s\n", name);
 
-  engine = init(Crc16Ccitt, 0);
+  engine = init(Crc16CCITT, 0);
   assert(engine != 0);
 
   result = crcUpdate(engine, initial, (const uint8_t *)emptyString,
@@ -134,15 +134,15 @@ int main(void)
   DEBUG_PRINT("CRC-8-Dallas module location: 0x%08lX\n",
       (unsigned long)Crc8Dallas);
   DEBUG_PRINT("CRC-16-CCITT module location: 0x%08lX\n",
-      (unsigned long)Crc16Ccitt);
+      (unsigned long)Crc16CCITT);
   DEBUG_PRINT("CRC-32 module location: 0x%08lX\n", (unsigned long)Crc32);
 
   if (Crc7)
     performCrc7Test();
   if (Crc8Dallas)
     performCrc8DallasTest();
-  if (Crc16Ccitt)
-    performCrc16CcittTest();
+  if (Crc16CCITT)
+    performCrc16CCITTTest();
   if (Crc32)
     performCrc32Test();
 

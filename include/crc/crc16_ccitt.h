@@ -9,9 +9,9 @@
 /*----------------------------------------------------------------------------*/
 #include <crc.h>
 /*----------------------------------------------------------------------------*/
-extern const struct CrcEngineClass * const Crc16Ccitt;
+extern const struct CrcEngineClass * const Crc16CCITT;
 /*----------------------------------------------------------------------------*/
-struct Crc16Ccitt
+struct Crc16CCITT
 {
   struct CrcEngine base;
 };

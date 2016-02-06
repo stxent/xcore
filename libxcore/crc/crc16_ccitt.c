@@ -11,14 +11,14 @@ static void engineDeinit(void *);
 static uint32_t engineUpdate(void *, uint32_t, const uint8_t *, uint32_t);
 /*----------------------------------------------------------------------------*/
 static const struct CrcEngineClass engineTable = {
-    .size = sizeof(struct Crc16Ccitt),
+    .size = sizeof(struct Crc16CCITT),
     .init = engineInit,
     .deinit = engineDeinit,
 
     .update = engineUpdate
 };
 /*----------------------------------------------------------------------------*/
-const struct CrcEngineClass * const Crc16Ccitt = &engineTable;
+const struct CrcEngineClass * const Crc16CCITT = &engineTable;
 /*----------------------------------------------------------------------------*/
 #ifndef CONFIG_CRC16_CCITT_BITWISE
 /* CRC-16-CCITT table, polynomial 0x1021 */
