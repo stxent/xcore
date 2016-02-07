@@ -41,13 +41,15 @@ else ifneq ($(MAKECMDGOALS),menuconfig)
 endif
 
 ifeq ($(CONFIG_OPTIMIZATIONS),"full")
-  OPT_FLAGS := -O3 -DNDEBUG
+  OPT_FLAGS += -O3 -DNDEBUG
 else ifeq ($(CONFIG_OPTIMIZATIONS),"size")
-  OPT_FLAGS := -Os -DNDEBUG
+  OPT_FLAGS += -Os -DNDEBUG
 else ifeq ($(CONFIG_OPTIMIZATIONS),"none")
-  OPT_FLAGS := -O0 -g3
+  OPT_FLAGS += -O0 -g3
+else ifeq ($(CONFIG_OPTIMIZATIONS),"debug")
+  OPT_FLAGS += -Og -g3
 else
-  OPT_FLAGS := $(CONFIG_OPTIMIZATIONS)
+  OPT_FLAGS += $(CONFIG_OPTIMIZATIONS)
 endif
 
 #Configure common paths and libraries

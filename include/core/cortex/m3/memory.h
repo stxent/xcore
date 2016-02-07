@@ -8,7 +8,7 @@
 #define CORE_CORTEX_M3_MEMORY_H_
 /*----------------------------------------------------------------------------*/
 #include <stdbool.h>
-#include "asm.h"
+#include <core/cortex/m3/asm.h>
 /*----------------------------------------------------------------------------*/
 static inline uint32_t countLeadingZeros32(uint32_t value)
 {
