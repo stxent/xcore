@@ -12,7 +12,7 @@
 #ifndef INTERFACE_H_
 #define INTERFACE_H_
 /*----------------------------------------------------------------------------*/
-#include <stdint.h>
+#include <stddef.h>
 #include <entity.h>
 #include <error.h>
 /*----------------------------------------------------------------------------*/
@@ -87,8 +87,8 @@ struct InterfaceClass
   enum result (*callback)(void *, void (*)(void *), void *);
   enum result (*get)(void *, enum ifOption, void *);
   enum result (*set)(void *, enum ifOption, const void *);
-  uint32_t (*read)(void *, uint8_t *, uint32_t);
-  uint32_t (*write)(void *, const uint8_t *, uint32_t);
+  size_t (*read)(void *, void *, size_t);
+  size_t (*write)(void *, const void *, size_t);
 };
 /*----------------------------------------------------------------------------*/
 struct Interface
@@ -145,7 +145,7 @@ static inline enum result ifSet(void *interface, enum ifOption option,
  * @param length Number of bytes to be read.
  * @return The total number of elements successfully read is returned.
  */
-static inline uint32_t ifRead(void *interface, uint8_t *buffer, uint32_t length)
+static inline size_t ifRead(void *interface, void *buffer, size_t length)
 {
   return ((const struct InterfaceClass *)CLASS(interface))->read(interface,
       buffer, length);
@@ -158,8 +158,7 @@ static inline uint32_t ifRead(void *interface, uint8_t *buffer, uint32_t length)
  * @param length Number of bytes to be written.
  * @return The total number of elements successfully written is returned.
  */
-static inline uint32_t ifWrite(void *interface, const uint8_t *buffer,
-    uint32_t length)
+static inline size_t ifWrite(void *interface, const void *buffer, size_t length)
 {
   return ((const struct InterfaceClass *)CLASS(interface))->write(interface,
       buffer, length);
