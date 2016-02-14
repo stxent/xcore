@@ -7,9 +7,9 @@
 #include <stdlib.h>
 #include <containers/list.h>
 /*----------------------------------------------------------------------------*/
-static unsigned int countListNodes(const struct ListNode *current)
+static size_t countListNodes(const struct ListNode *current)
 {
-  unsigned int result = 0;
+  size_t result = 0;
 
   while (current)
   {
@@ -32,7 +32,7 @@ static void freeListChain(struct ListNode *current)
   }
 }
 /*----------------------------------------------------------------------------*/
-enum result listInit(struct List *list, unsigned int width)
+enum result listInit(struct List *list, size_t width)
 {
   list->first = 0;
   list->width = width;
@@ -66,7 +66,9 @@ struct ListNode *listErase(struct List *list, struct ListNode *node)
     current->next = node->next;
   }
   else
+  {
     list->first = list->first->next;
+  }
 
   struct ListNode * const next = node->next;
 
@@ -93,7 +95,7 @@ enum result listInsert(struct List *list, struct ListNode *previous,
     const void *element)
 {
   struct ListNode * const node =
-      malloc(sizeof(struct ListNode *) + list->width);
+      malloc(offsetof(struct ListNode, data) + list->width);
 
   if (!node)
     return E_MEMORY;
@@ -117,7 +119,7 @@ enum result listInsert(struct List *list, struct ListNode *previous,
 enum result listPush(struct List *list, const void *element)
 {
   struct ListNode * const node =
-      malloc(sizeof(struct ListNode *) + list->width);
+      malloc(offsetof(struct ListNode, data) + list->width);
 
   if (!node)
     return E_MEMORY;
@@ -135,17 +137,19 @@ enum result listPush(struct List *list, const void *element)
     current->next = node;
   }
   else
+  {
     list->first = node;
+  }
 
   return E_OK;
 }
 /*----------------------------------------------------------------------------*/
-unsigned int listCapacity(const struct List *list)
+size_t listCapacity(const struct List *list)
 {
   return countListNodes(list->first);
 }
 /*----------------------------------------------------------------------------*/
-unsigned int listSize(const struct List *list)
+size_t listSize(const struct List *list)
 {
   return countListNodes(list->first);
 }

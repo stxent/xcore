@@ -8,6 +8,7 @@
 #define CONTAINERS_QUEUE_H_
 /*----------------------------------------------------------------------------*/
 #include <stdbool.h>
+#include <stddef.h>
 #include <error.h>
 /*----------------------------------------------------------------------------*/
 struct Queue
@@ -15,26 +16,26 @@ struct Queue
   void *data;
 
   /** Maximum capacity of the queue. */
-  unsigned short capacity;
+  size_t capacity;
   /** Current number of elements in the queue. */
-  unsigned short size;
+  size_t size;
   /** Index of the last element. */
-  unsigned short ceil;
+  size_t ceil;
   /** Index of the first element. */
-  unsigned short floor;
+  size_t floor;
   /** Size of each element in bytes. */
-  unsigned int width;
+  size_t width;
 };
 /*----------------------------------------------------------------------------*/
-enum result queueInit(struct Queue *, unsigned int, unsigned int);
+enum result queueInit(struct Queue *, size_t, size_t);
 void queueDeinit(struct Queue *);
 void queuePeek(const struct Queue *, void *);
 void queuePop(struct Queue *, void *);
 void queuePush(struct Queue *, const void *);
 /*----------------------------------------------------------------------------*/
-static inline unsigned int queueCapacity(const struct Queue *queue)
+static inline size_t queueCapacity(const struct Queue *queue)
 {
-  return (unsigned int)queue->capacity;
+  return queue->capacity;
 }
 /*----------------------------------------------------------------------------*/
 static inline void queueClear(struct Queue *queue)
@@ -52,9 +53,9 @@ static inline bool queueFull(const struct Queue *queue)
   return queue->size == queue->capacity;
 }
 /*----------------------------------------------------------------------------*/
-static inline unsigned int queueSize(const struct Queue *queue)
+static inline size_t queueSize(const struct Queue *queue)
 {
-  return (unsigned int)queue->size;
+  return queue->size;
 }
 /*----------------------------------------------------------------------------*/
 #endif /* CONTAINERS_QUEUE_H_ */

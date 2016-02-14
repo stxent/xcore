@@ -5,16 +5,15 @@
  */
 
 #include <assert.h>
-#include <limits.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <containers/queue.h>
 /*----------------------------------------------------------------------------*/
-enum result queueInit(struct Queue *queue, unsigned int width,
-    unsigned int capacity)
+enum result queueInit(struct Queue *queue, size_t width, size_t capacity)
 {
   /* Resulting capacity is lower than the maximum possible input value */
-  if (!capacity || capacity > USHRT_MAX)
+  if (!capacity)
     return E_VALUE;
 
   queue->data = malloc(width * capacity);
@@ -22,7 +21,7 @@ enum result queueInit(struct Queue *queue, unsigned int width,
     return E_MEMORY;
 
   queue->width = width;
-  queue->capacity = (unsigned short)capacity;
+  queue->capacity = capacity;
   queueClear(queue);
 
   return E_OK;
@@ -37,8 +36,10 @@ void queuePeek(const struct Queue *queue, void *element)
 {
   assert(queue->size);
 
-  memcpy(element, (char *)queue->data + queue->width * queue->floor,
-      queue->width);
+  const uintptr_t position =
+      (uintptr_t)queue->data + queue->width * queue->floor;
+
+  memcpy(element, (const void *)position, queue->width);
 }
 /*----------------------------------------------------------------------------*/
 void queuePop(struct Queue *queue, void *element)
@@ -47,13 +48,14 @@ void queuePop(struct Queue *queue, void *element)
 
   if (element)
   {
-    memcpy(element, (char *)queue->data + queue->width * queue->floor,
-        queue->width);
+    const uintptr_t position =
+        (uintptr_t)queue->data + queue->width * queue->floor;
+
+    memcpy(element, (const void *)position, queue->width);
   }
 
   if (++queue->floor == queue->capacity)
     queue->floor = 0;
-
   --queue->size;
 }
 /*----------------------------------------------------------------------------*/
@@ -61,11 +63,12 @@ void queuePush(struct Queue *queue, const void *element)
 {
   assert(queue->size < queue->capacity);
 
-  memcpy((char *)queue->data + queue->width * queue->ceil, element,
-      queue->width);
+  const uintptr_t position =
+      (uintptr_t)queue->data + queue->width * queue->ceil;
+
+  memcpy((void *)position, element, queue->width);
 
   if (++queue->ceil == queue->capacity)
     queue->ceil = 0;
-
   ++queue->size;
 }

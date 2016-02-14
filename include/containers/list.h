@@ -8,6 +8,7 @@
 #define CONTAINERS_LIST_H_
 /*----------------------------------------------------------------------------*/
 #include <stdbool.h>
+#include <stddef.h>
 #include <string.h>
 #include <error.h>
 /*----------------------------------------------------------------------------*/
@@ -24,10 +25,10 @@ struct List
   /** First element of the list containing data nodes. */
   struct ListNode *first;
   /** Size of each element in bytes. */
-  unsigned int width;
+  size_t width;
 };
 /*----------------------------------------------------------------------------*/
-enum result listInit(struct List *, unsigned int);
+enum result listInit(struct List *, size_t);
 void listDeinit(struct List *);
 void listClear(struct List *);
 struct ListNode *listErase(struct List *, struct ListNode *);
@@ -35,8 +36,8 @@ struct ListNode *listFind(struct List *, const void *);
 enum result listInsert(struct List *, struct ListNode *, const void *);
 enum result listPush(struct List *, const void *);
 
-unsigned int listCapacity(const struct List *);
-unsigned int listSize(const struct List *);
+size_t listCapacity(const struct List *);
+size_t listSize(const struct List *);
 /*----------------------------------------------------------------------------*/
 static inline void listData(const struct List *list,
     const struct ListNode *node, void *element)

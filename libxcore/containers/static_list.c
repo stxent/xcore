@@ -5,13 +5,13 @@
  */
 
 #include <assert.h>
-#include <limits.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <containers/static_list.h>
 /*----------------------------------------------------------------------------*/
-static unsigned int countListNodes(const struct StaticListNode *current)
+static size_t countListNodes(const struct StaticListNode *current)
 {
-  unsigned int result = 0;
+  size_t result = 0;
 
   while (current)
   {
@@ -22,24 +22,27 @@ static unsigned int countListNodes(const struct StaticListNode *current)
   return result;
 }
 /*----------------------------------------------------------------------------*/
-enum result staticListInit(struct StaticList *list, unsigned int width,
-    unsigned int capacity)
+enum result staticListInit(struct StaticList *list, size_t width,
+    size_t capacity)
 {
-  if (!capacity || capacity > USHRT_MAX)
+  if (!capacity)
     return E_VALUE;
 
-  list->data = malloc((sizeof(struct StaticListNode *) + width) * capacity);
+  const size_t nodeSize = offsetof(struct StaticListNode, data) + width;
+
+  list->data = malloc(nodeSize * capacity);
   list->first = list->pool = 0;
   list->width = width;
 
-  for (unsigned int pos = 0; pos < capacity; ++pos)
-  {
-    struct StaticListNode *node;
+  uintptr_t position = (uintptr_t)list->data;
 
-    node = (struct StaticListNode *)((unsigned char *)list->data
-        + (sizeof(struct StaticListNode *) + width) * pos);
+  for (size_t index = 0; index < capacity; ++index)
+  {
+    struct StaticListNode * const node = (struct StaticListNode *)position;
+
     node->next = list->pool;
     list->pool = node;
+    position += nodeSize;
   }
 
   return E_OK;
@@ -79,7 +82,9 @@ void *staticListErase(struct StaticList *list, void *node)
     current->next = target->next;
   }
   else
+  {
     list->first = list->first->next;
+  }
 
   struct StaticListNode * const next = target->next;
 
@@ -105,12 +110,12 @@ enum result staticListPush(struct StaticList *list, const void *element)
   return E_OK;
 }
 /*----------------------------------------------------------------------------*/
-unsigned int staticListCapacity(const struct StaticList *list)
+size_t staticListCapacity(const struct StaticList *list)
 {
   return countListNodes(list->pool);
 }
 /*----------------------------------------------------------------------------*/
-unsigned int staticListSize(const struct StaticList *list)
+size_t staticListSize(const struct StaticList *list)
 {
   return countListNodes(list->first);
 }

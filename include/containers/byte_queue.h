@@ -9,6 +9,7 @@
 /*----------------------------------------------------------------------------*/
 #include <assert.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
 #include <error.h>
 /*----------------------------------------------------------------------------*/
@@ -16,29 +17,30 @@ struct ByteQueue
 {
   uint8_t *data;
   /** Maximum capacity of the queue. */
-  unsigned short capacity;
+  size_t capacity;
   /** Current number of elements in the queue. */
-  unsigned short size;
+  size_t size;
   /** Index of the last element. */
-  unsigned short ceil;
+  size_t ceil;
   /** Index of the first element. */
-  unsigned short floor;
+  size_t floor;
 };
 /*----------------------------------------------------------------------------*/
-enum result byteQueueInit(struct ByteQueue *, unsigned int);
+enum result byteQueueInit(struct ByteQueue *, size_t);
 void byteQueueDeinit(struct ByteQueue *);
-unsigned int byteQueuePopArray(struct ByteQueue *, uint8_t *, unsigned int);
-unsigned int byteQueuePushArray(struct ByteQueue *, const uint8_t *,
-    unsigned int);
+size_t byteQueuePopArray(struct ByteQueue *, void *, size_t);
+size_t byteQueuePushArray(struct ByteQueue *, const void *, size_t);
 /*----------------------------------------------------------------------------*/
-static inline unsigned int byteQueueCapacity(const struct ByteQueue *queue)
+static inline size_t byteQueueCapacity(const struct ByteQueue *queue)
 {
-  return (unsigned int)queue->capacity;
+  return queue->capacity;
 }
 /*----------------------------------------------------------------------------*/
 static inline void byteQueueClear(struct ByteQueue *queue)
 {
-  queue->floor = queue->ceil = queue->size = 0;
+  queue->size = 0;
+  queue->ceil = 0;
+  queue->floor = 0;
 }
 /*----------------------------------------------------------------------------*/
 static inline bool byteQueueEmpty(const struct ByteQueue *queue)
@@ -84,9 +86,9 @@ static inline void byteQueuePush(struct ByteQueue *queue, uint8_t value)
   ++queue->size;
 }
 /*----------------------------------------------------------------------------*/
-static inline unsigned int byteQueueSize(const struct ByteQueue *queue)
+static inline size_t byteQueueSize(const struct ByteQueue *queue)
 {
-  return (unsigned int)queue->size;
+  return queue->size;
 }
 /*----------------------------------------------------------------------------*/
 #endif /* CONTAINERS_BYTE_QUEUE_H_ */

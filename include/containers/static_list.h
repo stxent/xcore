@@ -8,6 +8,7 @@
 #define CONTAINERS_STATIC_LIST_H_
 /*----------------------------------------------------------------------------*/
 #include <stdbool.h>
+#include <stddef.h>
 #include <string.h>
 #include <error.h>
 /*----------------------------------------------------------------------------*/
@@ -26,17 +27,17 @@ struct StaticList
   /** First element of the free nodes list. */
   struct StaticListNode *pool;
   /** Size of each element in bytes. */
-  unsigned int width;
+  size_t width;
 };
 /*----------------------------------------------------------------------------*/
-enum result staticListInit(struct StaticList *, unsigned int, unsigned int);
+enum result staticListInit(struct StaticList *, size_t, size_t);
 void staticListDeinit(struct StaticList *);
 void staticListClear(struct StaticList *);
 void *staticListErase(struct StaticList *, void *);
 enum result staticListPush(struct StaticList *, const void *);
 
-unsigned int staticListCapacity(const struct StaticList *);
-unsigned int staticListSize(const struct StaticList *);
+size_t staticListCapacity(const struct StaticList *);
+size_t staticListSize(const struct StaticList *);
 /*----------------------------------------------------------------------------*/
 static inline void staticListData(struct StaticList *list, const void *node,
     void *element)
