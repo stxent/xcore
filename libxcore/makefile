@@ -6,7 +6,7 @@ PROJECT_FLAGS += CONFIG_CRC8_DALLAS_BITWISE
 PROJECT_FLAGS += CONFIG_CRC16_CCITT_BITWISE
 PROJECT_FLAGS += CONFIG_CRC32_BITWISE
 
-CONTAINER_SOURCES := $(shell find libxcore/containers -name *.c)
+CONTAINER_SOURCES := $(wildcard libxcore/containers/*.c)
 
 LIBRARY_SOURCES += $(CONTAINER_SOURCES)
 LIBRARY_SOURCES += libxcore/entity.c
@@ -14,7 +14,7 @@ LIBRARY_SOURCES += libxcore/realtime.c
 LIBRARY_SOURCES += libxcore/unicode.c
 
 ifneq ($(findstring cortex,$(PLATFORM)),)
-  LIBRARY_SOURCES_CORE := $(shell find libxcore/core/$(subst -,/,$(PLATFORM)) -name *.c)
+  LIBRARY_SOURCES_CORE := $(wildcard libxcore/core/$(subst -,/,$(PLATFORM))/*.c)
   LIBRARY_SOURCES += $(LIBRARY_SOURCES_CORE)
 endif
 

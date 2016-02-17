@@ -10,13 +10,13 @@
 static const uint8_t startMark[] = {0x00, 0xC0, 0xE0, 0xF0};
 /*----------------------------------------------------------------------------*/
 /* Get length of the resulting string */
-unsigned int uLengthFromUtf16(const char16_t *source)
+size_t uLengthFromUtf16(const char16_t *source)
 {
-  unsigned int length = 0;
+  size_t length = 0;
 
   while (*source)
   {
-    uint32_t value = (uint32_t)fromLittleEndian16(*source++);
+    uint32_t value = fromLittleEndian16(*source++);
 
     if ((value & 0xF800) == 0xD800)
     {
@@ -24,7 +24,7 @@ unsigned int uLengthFromUtf16(const char16_t *source)
       if (value > 0xDBFF)
         continue;
 
-      const uint32_t surrogate = (uint32_t)fromLittleEndian16(*source++);
+      const uint32_t surrogate = fromLittleEndian16(*source++);
 
       /* Check for low surrogate */
       if (surrogate < 0xDC00 || surrogate > 0xDFFF)
@@ -35,7 +35,7 @@ unsigned int uLengthFromUtf16(const char16_t *source)
       value += 0x10000;
     }
 
-    uint8_t width = 0;
+    unsigned int width = 0;
 
     if (value < 0x0080)
       width = 1;
@@ -52,14 +52,14 @@ unsigned int uLengthFromUtf16(const char16_t *source)
   return length;
 }
 /*----------------------------------------------------------------------------*/
-unsigned int uLengthToUtf16(const char *source)
+size_t uLengthToUtf16(const char *source)
 {
-  unsigned int length = 0;
+  size_t length = 0;
   uint8_t value;
 
   while ((value = *source++))
   {
-    uint8_t width = 0;
+    unsigned int width = 0;
 
     if ((value & 0xE0) == 0xC0) /* U+0080 to U+07FF */
       width = 1;
@@ -76,16 +76,15 @@ unsigned int uLengthToUtf16(const char *source)
 }
 /*----------------------------------------------------------------------------*/
 /* Convert the string from UTF-16LE terminated with 0 to UTF-8 string */
-unsigned int uFromUtf16(char *destination, const char16_t *source,
-    unsigned int maxLength)
+size_t uFromUtf16(char *destination, const char16_t *source, size_t maxLength)
 {
-  unsigned int count = maxLength - 1;
+  size_t count = maxLength - 1;
   char *output = destination;
 
   while (count)
   {
-    uint32_t value = (uint32_t)fromLittleEndian16(*source++);
-    uint8_t width = 0;
+    uint32_t value = fromLittleEndian16(*source++);
+    unsigned int width = 0;
 
     if (!value)
       break;
@@ -96,7 +95,7 @@ unsigned int uFromUtf16(char *destination, const char16_t *source,
       if (value > 0xDBFF)
         continue;
 
-      const uint32_t surrogate = (uint32_t)fromLittleEndian16(*source++);
+      const uint32_t surrogate = fromLittleEndian16(*source++);
 
       /* Check for low surrogate */
       if (surrogate < 0xDC00 || surrogate > 0xDFFF)
@@ -142,19 +141,18 @@ unsigned int uFromUtf16(char *destination, const char16_t *source,
   }
   *output = '\0';
 
-  return (unsigned int)(output - destination);
+  return output - destination;
 }
 /*----------------------------------------------------------------------------*/
 /* Convert the string from UTF-8 terminated with 0 to UTF-16LE string */
-unsigned int uToUtf16(char16_t *destination, const char *source,
-    unsigned int maxLength)
+size_t uToUtf16(char16_t *destination, const char *source, size_t maxLength)
 {
-  unsigned int count = 0;
+  size_t count = 0;
   uint8_t value;
 
   while ((value = *source++) && count < maxLength - 1)
   {
-    uint8_t width = 0;
+    unsigned int width = 0;
 
     if ((value & 0xE0) == 0xC0) /* U+0080 to U+07FF */
       width = 1;
@@ -163,14 +161,14 @@ unsigned int uToUtf16(char16_t *destination, const char *source,
     else if ((value & 0xF8) == 0xF0) /* U+10000 to U+1FFFFF */
       width = 3;
 
-    uint32_t code = (uint32_t)(value & ~startMark[width]) << (6 * width);
+    uint32_t code = (value & ~startMark[width]) << (6 * width);
 
     while (width--)
-      code |= (uint32_t)(*source++ & 0x3F) << (6 * width);
+      code |= (*source++ & 0x3F) << (6 * width);
 
     if (code < 0x10000)
     {
-      *destination++ = toLittleEndian16((uint16_t)code);
+      *destination++ = toLittleEndian16(code);
       ++count;
     }
     else
@@ -178,9 +176,9 @@ unsigned int uToUtf16(char16_t *destination, const char *source,
       uint16_t surrogate;
 
       code -= 0x10000;
-      surrogate = 0xD800 | (uint16_t)((code >> 10) & 0x03FF);
+      surrogate = 0xD800 | ((code >> 10) & 0x03FF);
       *destination++ = toLittleEndian16(surrogate);
-      surrogate = 0xDC00 | (uint16_t)(code & 0x03FF);
+      surrogate = 0xDC00 | (code & 0x03FF);
       *destination++ = toLittleEndian16(surrogate);
       count += 2;
     }

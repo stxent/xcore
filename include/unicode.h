@@ -7,14 +7,15 @@
 #ifndef UNICODE_H_
 #define UNICODE_H_
 /*----------------------------------------------------------------------------*/
+#include <stddef.h>
 #include <stdint.h>
 /*----------------------------------------------------------------------------*/
 /* Type for Unicode UTF-16 characters */
 typedef uint16_t char16_t;
 /*----------------------------------------------------------------------------*/
-unsigned int uLengthFromUtf16(const char16_t *);
-unsigned int uLengthToUtf16(const char *);
-unsigned int uFromUtf16(char *, const char16_t *, unsigned int);
-unsigned int uToUtf16(char16_t *, const char *, unsigned int);
+size_t uLengthFromUtf16(const char16_t *);
+size_t uLengthToUtf16(const char *);
+size_t uFromUtf16(char *, const char16_t *, size_t);
+size_t uToUtf16(char16_t *, const char *, size_t);
 /*----------------------------------------------------------------------------*/
 #endif /* UNICODE_H_ */
