@@ -12,7 +12,7 @@
 #ifndef FS_H_
 #define FS_H_
 /*----------------------------------------------------------------------------*/
-#include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
 #include <entity.h>
 #include <error.h>
@@ -75,7 +75,7 @@ struct FsNodeClass
 {
   CLASS_HEADER
 
-  enum result (*create)(void *, const struct FsFieldDescriptor *, uint8_t);
+  enum result (*create)(void *, const struct FsFieldDescriptor *, size_t);
   void *(*head)(void *);
   void (*free)(void *);
   enum result (*length)(void *, enum fsFieldType, length_t *);
@@ -120,7 +120,7 @@ static inline enum result fsHandleSync(void *handle)
  * @return E_OK on success.
  */
 static inline enum result fsNodeCreate(void *root,
-    const struct FsFieldDescriptor *descriptors, uint8_t number)
+    const struct FsFieldDescriptor *descriptors, size_t number)
 {
   return ((const struct FsNodeClass *)CLASS(root))->create(root,
       descriptors, number);
