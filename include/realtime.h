@@ -4,8 +4,8 @@
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
-#ifndef REALTIME_H_
-#define REALTIME_H_
+#ifndef XCORE_REALTIME_H_
+#define XCORE_REALTIME_H_
 /*----------------------------------------------------------------------------*/
 #include <stdint.h>
 #include <entity.h>
@@ -91,4 +91,4 @@ static inline time64_t rtTime(void *clock)
 enum result rtMakeEpochTime(time64_t *, const struct RtDateTime *);
 void rtMakeTime(struct RtDateTime *, time64_t);
 /*----------------------------------------------------------------------------*/
-#endif /* REALTIME_H_ */
+#endif /* XCORE_REALTIME_H_ */

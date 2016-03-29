@@ -4,8 +4,8 @@
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
-#ifndef CONTAINERS_STATIC_LIST_H_
-#define CONTAINERS_STATIC_LIST_H_
+#ifndef XCORE_CONTAINERS_STATIC_LIST_H_
+#define XCORE_CONTAINERS_STATIC_LIST_H_
 /*----------------------------------------------------------------------------*/
 #include <stdbool.h>
 #include <stddef.h>
@@ -65,4 +65,4 @@ static inline bool staticListFull(const struct StaticList *list)
   return list->pool == 0;
 }
 /*----------------------------------------------------------------------------*/
-#endif /* CONTAINERS_STATIC_LIST_H_ */
+#endif /* XCORE_CONTAINERS_STATIC_LIST_H_ */

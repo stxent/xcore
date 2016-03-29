@@ -9,8 +9,8 @@
  * Abstract file system interface for embedded applications.
  */
 
-#ifndef FS_H_
-#define FS_H_
+#ifndef XCORE_FS_H_
+#define XCORE_FS_H_
 /*----------------------------------------------------------------------------*/
 #include <stddef.h>
 #include <stdint.h>
@@ -219,4 +219,4 @@ static inline enum result fsNodeWrite(void *node, enum fsFieldType type,
       buffer, length, written);
 }
 /*----------------------------------------------------------------------------*/
-#endif /* FS_H_ */
+#endif /* XCORE_FS_H_ */

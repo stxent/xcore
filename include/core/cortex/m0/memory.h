@@ -4,8 +4,8 @@
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
-#ifndef CORE_CORTEX_M0_MEMORY_H_
-#define CORE_CORTEX_M0_MEMORY_H_
+#ifndef XCORE_CORE_CORTEX_M0_MEMORY_H_
+#define XCORE_CORE_CORTEX_M0_MEMORY_H_
 /*----------------------------------------------------------------------------*/
 #include <stdbool.h>
 #include <core/cortex/m0/asm.h>
@@ -74,4 +74,4 @@ static inline uint16_t fromLittleEndian16(uint16_t value)
 /*----------------------------------------------------------------------------*/
 bool compareExchangePointer(void **, const void *, void *);
 /*----------------------------------------------------------------------------*/
-#endif /* CORE_CORTEX_M0_MEMORY_H_ */
+#endif /* XCORE_CORE_CORTEX_M0_MEMORY_H_ */

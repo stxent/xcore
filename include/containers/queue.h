@@ -4,8 +4,8 @@
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
-#ifndef CONTAINERS_QUEUE_H_
-#define CONTAINERS_QUEUE_H_
+#ifndef XCORE_CONTAINERS_QUEUE_H_
+#define XCORE_CONTAINERS_QUEUE_H_
 /*----------------------------------------------------------------------------*/
 #include <stdbool.h>
 #include <stddef.h>
@@ -58,4 +58,4 @@ static inline size_t queueSize(const struct Queue *queue)
   return queue->size;
 }
 /*----------------------------------------------------------------------------*/
-#endif /* CONTAINERS_QUEUE_H_ */
+#endif /* XCORE_CONTAINERS_QUEUE_H_ */

@@ -4,8 +4,8 @@
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
-#ifndef CRC_H_
-#define CRC_H_
+#ifndef XCORE_CRC_H_
+#define XCORE_CRC_H_
 /*----------------------------------------------------------------------------*/
 #include <stdint.h>
 #include <entity.h>
@@ -29,4 +29,4 @@ static inline uint32_t crcUpdate(void *engine, uint32_t previous,
       previous, buffer, length);
 }
 /*----------------------------------------------------------------------------*/
-#endif /* CRC_H_ */
+#endif /* XCORE_CRC_H_ */

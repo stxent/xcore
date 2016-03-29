@@ -4,8 +4,8 @@
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
-#ifndef CRC_CRC16_CCITT_H_
-#define CRC_CRC16_CCITT_H_
+#ifndef XCORE_CRC_CRC16_CCITT_H_
+#define XCORE_CRC_CRC16_CCITT_H_
 /*----------------------------------------------------------------------------*/
 #include <crc.h>
 /*----------------------------------------------------------------------------*/
@@ -16,4 +16,4 @@ struct Crc16CCITT
   struct CrcEngine base;
 };
 /*----------------------------------------------------------------------------*/
-#endif /* CRC_CRC16_CCITT_H_ */
+#endif /* XCORE_CRC_CRC16_CCITT_H_ */

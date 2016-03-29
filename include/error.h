@@ -6,11 +6,11 @@
 
 /**
  * @file
- * Error code definitions.
+ * A list of system error codes.
  */
 
-#ifndef ERROR_H_
-#define ERROR_H_
+#ifndef XCORE_ERROR_H_
+#define XCORE_ERROR_H_
 /*----------------------------------------------------------------------------*/
 enum result
 {
@@ -50,4 +50,4 @@ enum result
   E_RESULT_END
 };
 /*----------------------------------------------------------------------------*/
-#endif /* ERROR_H_ */
+#endif /* XCORE_ERROR_H_ */

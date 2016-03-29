@@ -4,8 +4,8 @@
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
-#ifndef CORE_CORTEX_MEMORY_H_
-#define CORE_CORTEX_MEMORY_H_
+#ifndef XCORE_CORE_CORTEX_MEMORY_H_
+#define XCORE_CORE_CORTEX_MEMORY_H_
 /*----------------------------------------------------------------------------*/
 #undef HEADER_PATH
 #define HEADER_PATH <core/CORE_TYPE/CORE/memory.h>
@@ -24,4 +24,4 @@
 #define FROM_BIG_ENDIAN_32(value)       TO_BIG_ENDIAN_32(value)
 #define FROM_LITTLE_ENDIAN_32(value)    TO_LITTLE_ENDIAN_32(value)
 /*----------------------------------------------------------------------------*/
-#endif /* CORE_CORTEX_MEMORY_H_ */
+#endif /* XCORE_CORE_CORTEX_MEMORY_H_ */

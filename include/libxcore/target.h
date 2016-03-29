@@ -4,8 +4,8 @@
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
-#ifndef LIBXCORE_TARGET_H_
-#define LIBXCORE_TARGET_H_
+#ifndef XCORE_LIBXCORE_TARGET_H_
+#define XCORE_LIBXCORE_TARGET_H_
 /*----------------------------------------------------------------------------*/
 #if defined(__i386__)
 #define CORE            x86
@@ -26,4 +26,4 @@
 #error "Target architecture is undefined"
 #endif
 /*----------------------------------------------------------------------------*/
-#endif /* LIBXCORE_TARGET_H_ */
+#endif /* XCORE_LIBXCORE_TARGET_H_ */

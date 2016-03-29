@@ -4,8 +4,8 @@
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
-#ifndef ENTITY_H_
-#define ENTITY_H_
+#ifndef XCORE_ENTITY_H_
+#define XCORE_ENTITY_H_
 /*----------------------------------------------------------------------------*/
 #include <error.h>
 /*----------------------------------------------------------------------------*/
@@ -29,4 +29,4 @@ struct Entity
 void *init(const void *, const void *);
 void deinit(void *);
 /*----------------------------------------------------------------------------*/
-#endif /* ENTITY_H_ */
+#endif /* XCORE_ENTITY_H_ */

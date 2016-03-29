@@ -4,8 +4,8 @@
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
-#ifndef BITS_H_
-#define BITS_H_
+#ifndef XCORE_BITS_H_
+#define XCORE_BITS_H_
 /*----------------------------------------------------------------------------*/
 #define BIT(shift)                      (1UL << (shift))
 #define BIT_FIELD(value, shift)         ((unsigned long)(value) << (shift))
@@ -17,4 +17,4 @@
 #define TO_STRING(text)                 #text
 #define EXPAND_TO_STRING(text)          TO_STRING(text)
 /*----------------------------------------------------------------------------*/
-#endif /* BITS_H_ */
+#endif /* XCORE_BITS_H_ */

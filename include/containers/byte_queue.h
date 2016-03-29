@@ -4,8 +4,8 @@
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
-#ifndef CONTAINERS_BYTE_QUEUE_H_
-#define CONTAINERS_BYTE_QUEUE_H_
+#ifndef XCORE_CONTAINERS_BYTE_QUEUE_H_
+#define XCORE_CONTAINERS_BYTE_QUEUE_H_
 /*----------------------------------------------------------------------------*/
 #include <assert.h>
 #include <stdbool.h>
@@ -91,4 +91,4 @@ static inline size_t byteQueueSize(const struct ByteQueue *queue)
   return queue->size;
 }
 /*----------------------------------------------------------------------------*/
-#endif /* CONTAINERS_BYTE_QUEUE_H_ */
+#endif /* XCORE_CONTAINERS_BYTE_QUEUE_H_ */

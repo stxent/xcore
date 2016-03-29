@@ -4,8 +4,8 @@
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
-#ifndef MEMORY_H_
-#define MEMORY_H_
+#ifndef XCORE_MEMORY_H_
+#define XCORE_MEMORY_H_
 /*----------------------------------------------------------------------------*/
 #include <libxcore/target.h>
 /*----------------------------------------------------------------------------*/
@@ -14,4 +14,4 @@
 #include HEADER_PATH
 #undef HEADER_PATH
 /*----------------------------------------------------------------------------*/
-#endif /* MEMORY_H_ */
+#endif /* XCORE_MEMORY_H_ */

@@ -9,8 +9,8 @@
  * Abstract interface for peripherals with input and output capability.
  */
 
-#ifndef INTERFACE_H_
-#define INTERFACE_H_
+#ifndef XCORE_INTERFACE_H_
+#define XCORE_INTERFACE_H_
 /*----------------------------------------------------------------------------*/
 #include <stddef.h>
 #include <entity.h>
@@ -164,4 +164,4 @@ static inline size_t ifWrite(void *interface, const void *buffer, size_t length)
       buffer, length);
 }
 /*----------------------------------------------------------------------------*/
-#endif /* INTERFACE_H_ */
+#endif /* XCORE_INTERFACE_H_ */

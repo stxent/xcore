@@ -4,9 +4,9 @@
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
-#ifndef CORE_INTEL_ASM_H_
-#define CORE_INTEL_ASM_H_
+#ifndef XCORE_CORE_INTEL_ASM_H_
+#define XCORE_CORE_INTEL_ASM_H_
 /*----------------------------------------------------------------------------*/
 #define barrier() __asm__ volatile ("" : : : "memory")
 /*----------------------------------------------------------------------------*/
-#endif /* CORE_INTEL_ASM_H_ */
+#endif /* XCORE_CORE_INTEL_ASM_H_ */
