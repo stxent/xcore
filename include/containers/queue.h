@@ -23,7 +23,7 @@ struct Queue
   size_t ceil;
   /** Index of the first element. */
   size_t floor;
-  /** Size of each element in bytes. */
+  /** Size in bytes of each element. */
   size_t width;
 };
 /*----------------------------------------------------------------------------*/

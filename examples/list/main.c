@@ -10,7 +10,7 @@
 #include <string.h>
 #include <containers/list.h>
 /*----------------------------------------------------------------------------*/
-#define MAX_CAPACITY 16
+#define MAX_CAPACITY 17
 /*----------------------------------------------------------------------------*/
 struct DummyStruct
 {
@@ -19,11 +19,40 @@ struct DummyStruct
   int16_t c[6];
 };
 /*----------------------------------------------------------------------------*/
+static bool compareElements(const struct DummyStruct *,
+    const struct DummyStruct *);
+struct DummyStruct createElement(size_t);
+static void performListTest(void);
+/*----------------------------------------------------------------------------*/
+static bool compareElements(const struct DummyStruct *a,
+    const struct DummyStruct *b)
+{
+  if (a->a != b->a)
+    return false;
+  else if (a->b != b->b)
+    return false;
+  else if (memcmp(a->c, b->c, sizeof(a->c)))
+    return false;
+  else
+    return true;
+}
+/*----------------------------------------------------------------------------*/
+struct DummyStruct createElement(size_t index)
+{
+  const struct DummyStruct element = {
+      .a = index * 2,
+      .b = -index * 3,
+      .c = {-index, index + 1, -index + 2, index + 3, -index + 4, index + 5}
+  };
+
+  return element;
+}
+/*----------------------------------------------------------------------------*/
 static void performListTest(void)
 {
   struct List list;
   struct ListNode *node;
-  unsigned int index;
+  size_t index;
 
 #ifndef NDEBUG
   enum result res;
@@ -41,13 +70,9 @@ static void performListTest(void)
   /* List filling */
   for (index = 0; index < MAX_CAPACITY; ++index)
   {
-    struct DummyStruct object = {
-        .a = (int64_t)index * 8,
-        .b = (int32_t)index * 4,
-        .c = {(int16_t)index}
-    };
+    const struct DummyStruct element = createElement(index);
 
-    res = listPush(&list, &object);
+    res = listPush(&list, &element);
     assert(res == E_OK);
   }
 
@@ -55,19 +80,46 @@ static void performListTest(void)
   assert(listSize(&list) == MAX_CAPACITY);
   assert(listEmpty(&list) == false);
 
-  /* Iteration through elements */
+  /* Find elements */
+  const struct DummyStruct firstElement = createElement(0);
+  const struct DummyStruct centralElement = createElement(MAX_CAPACITY / 2);
+  const struct DummyStruct lastElement = createElement(MAX_CAPACITY - 1);
+
+  struct DummyStruct unknownElement = centralElement;
+  struct ListNode *foundNode;
+
+  unknownElement.a = -1;
+
+  foundNode = listFind(&list, &unknownElement);
+  assert(foundNode == 0);
+  foundNode = listFind(&list, &firstElement);
+  assert(foundNode != 0);
+  foundNode = listFind(&list, &centralElement);
+  assert(foundNode != 0);
+  foundNode = listFind(&list, &lastElement);
+  assert(foundNode != 0);
+
+#ifdef NDEBUG
+  (void)foundNode;
+#endif
+
+  /* Iterating through elements */
   index = 0;
   node = listFirst(&list);
 
   while (node)
   {
-    struct DummyStruct object;
+    const struct DummyStruct referenceElement = createElement(index);
+    struct DummyStruct element;
+    bool result;
 
-    listData(&list, node, &object);
+    listData(&list, node, &element);
+    result = compareElements(&element, &referenceElement);
+    assert(result == true);
 
-    assert(object.a == (int64_t)index * 8);
-    assert(object.b == (int32_t)index * 4);
-    assert(object.c[0] == (int16_t)index);
+#ifdef NDEBUG
+    (void)result;
+#endif
 
     ++index;
     node = listNext(node);
@@ -88,8 +140,8 @@ static void performListTest(void)
     node = listNext(node);
   }
 
-  assert(listCapacity(&list) == MAX_CAPACITY / 2);
-  assert(listSize(&list) == MAX_CAPACITY / 2);
+  assert(listCapacity(&list) == MAX_CAPACITY - MAX_CAPACITY / 2);
+  assert(listSize(&list) == MAX_CAPACITY - MAX_CAPACITY / 2);
   assert(listEmpty(&list) == false);
 
   /* Erasure of all elements */

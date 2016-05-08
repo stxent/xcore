@@ -31,6 +31,10 @@ static void performCrc7Test(void)
   struct CrcEngine *engine;
   uint32_t result;
 
+#ifndef CONFIG_DEBUG
+  (void)name;
+#endif
+
   DEBUG_PRINT("Test %s\n", name);
 
   engine = init(Crc7, 0);
@@ -56,6 +60,10 @@ static void performCrc8DallasTest(void)
   const uint32_t initial = 0;
   struct CrcEngine *engine;
   uint32_t result;
+
+#ifndef CONFIG_DEBUG
+  (void)name;
+#endif
 
   DEBUG_PRINT("Test %s\n", name);
 
@@ -83,6 +91,10 @@ static void performCrc16CCITTTest(void)
   struct CrcEngine *engine;
   uint32_t result;
 
+#ifndef CONFIG_DEBUG
+  (void)name;
+#endif
+
   DEBUG_PRINT("Test %s\n", name);
 
   engine = init(Crc16CCITT, 0);
@@ -109,6 +121,10 @@ static void performCrc32Test(void)
   struct CrcEngine *engine;
   uint32_t result;
 
+#ifndef CONFIG_DEBUG
+  (void)name;
+#endif
+
   DEBUG_PRINT("Test %s\n", name);
 
   engine = init(Crc32, 0);
@@ -130,12 +146,10 @@ static void performCrc32Test(void)
 /*----------------------------------------------------------------------------*/
 int main(void)
 {
-  DEBUG_PRINT("CRC-7 module location: 0x%08lX\n", (unsigned long)Crc7);
-  DEBUG_PRINT("CRC-8-Dallas module location: 0x%08lX\n",
-      (unsigned long)Crc8Dallas);
-  DEBUG_PRINT("CRC-16-CCITT module location: 0x%08lX\n",
-      (unsigned long)Crc16CCITT);
-  DEBUG_PRINT("CRC-32 module location: 0x%08lX\n", (unsigned long)Crc32);
+  DEBUG_PRINT("CRC-7 table location: %8p\n", (const void *)Crc7);
+  DEBUG_PRINT("CRC-8-Dallas table location: %8p\n", (const void *)Crc8Dallas);
+  DEBUG_PRINT("CRC-16-CCITT table location: %8p\n", (const void *)Crc16CCITT);
+  DEBUG_PRINT("CRC-32 table location: %8p\n", (const void *)Crc32);
 
   if (Crc7)
     performCrc7Test();

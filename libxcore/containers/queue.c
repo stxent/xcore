@@ -12,7 +12,6 @@
 /*----------------------------------------------------------------------------*/
 enum result queueInit(struct Queue *queue, size_t width, size_t capacity)
 {
-  /* Resulting capacity is lower than the maximum possible input value */
   if (!capacity)
     return E_VALUE;
 
@@ -20,8 +19,8 @@ enum result queueInit(struct Queue *queue, size_t width, size_t capacity)
   if (!queue->data)
     return E_MEMORY;
 
-  queue->width = width;
   queue->capacity = capacity;
+  queue->width = width;
   queueClear(queue);
 
   return E_OK;
@@ -34,7 +33,7 @@ void queueDeinit(struct Queue *queue)
 /*----------------------------------------------------------------------------*/
 void queuePeek(const struct Queue *queue, void *element)
 {
-  assert(queue->size);
+  assert(queue->size > 0);
 
   const uintptr_t position =
       (uintptr_t)queue->data + queue->width * queue->floor;
@@ -44,7 +43,7 @@ void queuePeek(const struct Queue *queue, void *element)
 /*----------------------------------------------------------------------------*/
 void queuePop(struct Queue *queue, void *element)
 {
-  assert(queue->size);
+  assert(queue->size > 0);
 
   if (element)
   {

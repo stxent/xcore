@@ -24,7 +24,7 @@ struct List
 {
   /** First element of the list containing data nodes. */
   struct ListNode *first;
-  /** Size of each element in bytes. */
+  /** Size in bytes of each element. */
   size_t width;
 };
 /*----------------------------------------------------------------------------*/
