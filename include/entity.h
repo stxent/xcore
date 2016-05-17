@@ -7,10 +7,11 @@
 #ifndef XCORE_ENTITY_H_
 #define XCORE_ENTITY_H_
 /*----------------------------------------------------------------------------*/
+#include <stddef.h>
 #include <error.h>
 /*----------------------------------------------------------------------------*/
 #define CLASS_HEADER \
-    unsigned int size;\
+    size_t size;\
     enum result (*init)(void *, const void *);\
     void (*deinit)(void *);
 

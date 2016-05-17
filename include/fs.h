@@ -12,10 +12,8 @@
 #ifndef XCORE_FS_H_
 #define XCORE_FS_H_
 /*----------------------------------------------------------------------------*/
-#include <stddef.h>
 #include <stdint.h>
 #include <entity.h>
-#include <error.h>
 /*----------------------------------------------------------------------------*/
 #ifndef CONFIG_FILENAME_LENGTH
 #define CONFIG_FILENAME_LENGTH 32

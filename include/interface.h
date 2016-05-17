@@ -12,9 +12,7 @@
 #ifndef XCORE_INTERFACE_H_
 #define XCORE_INTERFACE_H_
 /*----------------------------------------------------------------------------*/
-#include <stddef.h>
 #include <entity.h>
-#include <error.h>
 /*----------------------------------------------------------------------------*/
 /** Interface options. */
 enum ifOption
