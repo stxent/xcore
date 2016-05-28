@@ -54,7 +54,7 @@ endif
 
 #Configure common paths and libraries
 INCLUDE_PATH += -Iinclude
-OUTPUT_DIR := build_$(PLATFORM)
+OUTPUT_DIR ?= build_$(PLATFORM)
 OPTION_FILE := $(OUTPUT_DIR)/.options
 LDFLAGS += -L$(OUTPUT_DIR)
 LDLIBS += -l$(PROJECT)
