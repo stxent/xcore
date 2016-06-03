@@ -5,7 +5,7 @@
  */
 
 #include <stdlib.h>
-#include <entity.h>
+#include <xcore/entity.h>
 /*----------------------------------------------------------------------------*/
 void *init(const void *descriptor, const void *arguments)
 {

@@ -5,7 +5,7 @@
  */
 
 #include <stdlib.h>
-#include <containers/list.h>
+#include <xcore/containers/list.h>
 /*----------------------------------------------------------------------------*/
 static size_t countListNodes(const struct ListNode *current)
 {

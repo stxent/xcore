@@ -5,7 +5,7 @@
  */
 
 #include <stdlib.h>
-#include <containers/vector.h>
+#include <xcore/containers/vector.h>
 /*----------------------------------------------------------------------------*/
 enum result vectorInit(struct Vector *vector, size_t width, size_t capacity)
 {

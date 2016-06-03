@@ -4,7 +4,7 @@
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
-#include <crc/crc7.h>
+#include <xcore/crc/crc7.h>
 /*----------------------------------------------------------------------------*/
 static enum result engineInit(void *, const void *);
 static void engineDeinit(void *);

@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <containers/queue.h>
+#include <xcore/containers/queue.h>
 /*----------------------------------------------------------------------------*/
 #ifdef CONFIG_DEBUG
 #define DEBUG_PRINT(...) printf(__VA_ARGS__)

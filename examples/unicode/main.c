@@ -8,8 +8,8 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-#include <bits.h>
-#include <unicode.h>
+#include <xcore/bits.h>
+#include <xcore/unicode.h>
 /*----------------------------------------------------------------------------*/
 #ifdef CONFIG_DEBUG
 #define DEBUG_PRINT(...) printf(__VA_ARGS__)

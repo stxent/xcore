@@ -7,7 +7,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <containers/byte_queue.h>
+#include <xcore/containers/byte_queue.h>
 /*----------------------------------------------------------------------------*/
 enum result byteQueueInit(struct ByteQueue *queue, size_t capacity)
 {

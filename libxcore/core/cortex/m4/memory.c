@@ -4,7 +4,7 @@
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
-#include <memory.h>
+#include <xcore/memory.h>
 /*----------------------------------------------------------------------------*/
 bool compareExchangePointer(void **pointer, const void *expected, void *desired)
 {

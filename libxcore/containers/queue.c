@@ -8,7 +8,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <containers/queue.h>
+#include <xcore/containers/queue.h>
 /*----------------------------------------------------------------------------*/
 enum result queueInit(struct Queue *queue, size_t width, size_t capacity)
 {

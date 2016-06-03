@@ -8,7 +8,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-#include <crc.h>
+#include <xcore/crc.h>
 /*----------------------------------------------------------------------------*/
 #ifdef CONFIG_DEBUG
 #define DEBUG_PRINT(...) printf(__VA_ARGS__)

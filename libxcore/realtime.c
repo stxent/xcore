@@ -4,7 +4,7 @@
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
-#include <realtime.h>
+#include <xcore/realtime.h>
 /*----------------------------------------------------------------------------*/
 #define SECONDS_PER_DAY   86400
 #define SECONDS_PER_HOUR  3600

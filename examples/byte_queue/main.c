@@ -8,7 +8,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-#include <containers/byte_queue.h>
+#include <xcore/containers/byte_queue.h>
 /*----------------------------------------------------------------------------*/
 #define MAX_CAPACITY 50
 /*----------------------------------------------------------------------------*/

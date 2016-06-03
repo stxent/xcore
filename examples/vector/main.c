@@ -10,8 +10,8 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-#include <bits.h>
-#include <containers/vector.h>
+#include <xcore/bits.h>
+#include <xcore/containers/vector.h>
 /*----------------------------------------------------------------------------*/
 #ifdef CONFIG_DEBUG
 #define DEBUG_PRINT(...) printf(__VA_ARGS__)

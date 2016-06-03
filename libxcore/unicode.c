@@ -4,8 +4,8 @@
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
-#include <memory.h>
-#include <unicode.h>
+#include <xcore/memory.h>
+#include <xcore/unicode.h>
 /*----------------------------------------------------------------------------*/
 static const uint8_t startMark[] = {0x00, 0xC0, 0xE0, 0xF0};
 /*----------------------------------------------------------------------------*/
