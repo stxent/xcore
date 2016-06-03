@@ -77,12 +77,15 @@ choice
 		bool "Debug"
 endchoice
 
-config OPTIMIZATIONS
-	string
-	default "none" if OPTIMIZATIONS_DISABLED
-	default "size" if OPTIMIZATIONS_SIZE
-	default "full" if OPTIMIZATIONS_FULL
-	default "debug" if OPTIMIZATIONS_DEBUG
+config ASSERTIONS
+	bool "Enable assertions"
+	depends on (OPTIMIZATIONS_DISABLED || OPTIMIZATIONS_DEBUG)
+	default y
+
+config LTO
+	bool "Link Time Optimization"
+	depends on (OPTIMIZATIONS_SIZE || OPTIMIZATIONS_FULL)
+	default y
 
 config FPU
 	bool "FPU"

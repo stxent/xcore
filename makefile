@@ -40,16 +40,22 @@ else ifneq ($(MAKECMDGOALS),menuconfig)
   $(error Target architecture is undefined)
 endif
 
-ifeq ($(CONFIG_OPTIMIZATIONS),"full")
-  OPT_FLAGS += -O3 -DNDEBUG
-else ifeq ($(CONFIG_OPTIMIZATIONS),"size")
-  OPT_FLAGS += -Os -DNDEBUG
-else ifeq ($(CONFIG_OPTIMIZATIONS),"none")
-  OPT_FLAGS += -O0 -g3
-else ifeq ($(CONFIG_OPTIMIZATIONS),"debug")
+ifeq ($(CONFIG_LTO),y)
+  OPT_FLAGS += -flto -ffat-lto-objects
+endif
+
+ifeq ($(CONFIG_OPTIMIZATIONS_SIZE),y)
+  OPT_FLAGS += -Os
+else ifeq ($(CONFIG_OPTIMIZATIONS_FULL),y)
+  OPT_FLAGS += -O3
+else ifeq ($(CONFIG_OPTIMIZATIONS_DEBUG),y)
   OPT_FLAGS += -Og -g3
 else
-  OPT_FLAGS += $(CONFIG_OPTIMIZATIONS)
+  OPT_FLAGS += -O0 -g3
+endif
+
+ifneq ($(CONFIG_ASSERTIONS),y)
+  OPT_FLAGS += -DNDEBUG
 endif
 
 #Configure common paths and libraries
