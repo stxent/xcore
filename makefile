@@ -58,6 +58,12 @@ ifneq ($(CONFIG_ASSERTIONS),y)
   OPT_FLAGS += -DNDEBUG
 endif
 
+ifeq ($(VERBOSE),)
+  Q := @
+else
+  Q :=
+endif
+
 #Configure common paths and libraries
 INCLUDE_PATH += -Iinclude
 OUTPUT_DIR ?= build_$(PLATFORM)
@@ -98,16 +104,18 @@ CXXOBJECTS = $(CXXSOURCES:%.cpp=$(OUTPUT_DIR)/%.o)
 all: $(TARGETS)
 
 $(OUTPUT_DIR)/%.o: %.c $(OPTION_FILE)
+	@echo "$(CC): $@"
 	@mkdir -p $(@D)
-	$(CC) -c $(CFLAGS) $(INCLUDE_PATH) -MMD -MF $(@:%.o=%.d) -MT $@ $< -o $@
+	$(Q)$(CC) -c $(CFLAGS) $(INCLUDE_PATH) -MMD -MF $(@:%.o=%.d) -MT $@ $< -o $@
 
 $(OUTPUT_DIR)/%.o: %.cpp $(OPTION_FILE)
+	@echo "$(CXX): $@"
 	@mkdir -p $(@D)
-	$(CXX) -c $(CXXFLAGS) $(INCLUDE_PATH) -MMD -MF $(@:%.o=%.d) -MT $@ $< -o $@
+	$(Q)$(CXX) -c $(CXXFLAGS) $(INCLUDE_PATH) -MMD -MF $(@:%.o=%.d) -MT $@ $< -o $@
 
 $(OPTION_FILE): $(CONFIG_FILE)
 	@mkdir -p $(@D)
-	echo '$(OPTION_STRING)' > $@
+	$(Q)echo '$(OPTION_STRING)' > $@
 
 clean:
 	rm -f $(COBJECTS:%.o=%.d) $(COBJECTS)

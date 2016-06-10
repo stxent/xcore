@@ -23,8 +23,9 @@ $(foreach entry,$(EXAMPLES),$(eval $(call make-example,$(entry))))
 
 .SECONDEXPANSION:
 $(EXAMPLE_FILES): $(LIBRARY_FILE) $$($$(notdir $$@)_OBJECTS)
+	@echo "$(CXX): $@"
 	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) $^ $(LDFLAGS) $(LDLIBS) -o $@
+	$(Q)$(CXX) $(CXXFLAGS) $^ $(LDFLAGS) $(LDLIBS) -o $@
 
 $(addprefix test_,$(EXAMPLES)):
 	valgrind --tool=memcheck --leak-check=full --show-reachable=yes --num-callers=32 $(@:test_%=$(OUTPUT_DIR)/bin/%)

@@ -41,4 +41,5 @@ LIBRARY_FILE = $(OUTPUT_DIR)/lib$(PROJECT).a
 TARGETS += $(LIBRARY_FILE)
 
 $(LIBRARY_FILE): $(LIBRARY_OBJECTS)
-	$(AR) -r $@ $^
+	@echo "$(AR): $@"
+	$(Q)$(AR) -c -r $@ $^
