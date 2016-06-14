@@ -22,11 +22,6 @@ enum ifOption
   /** Bytes pending in the transmit buffer. */
   IF_PENDING,
 
-  /** The number of available input buffers in the scatter-gather chain. */
-  IF_RX_CAPACITY,
-  /** The number of available output buffers. */
-  IF_TX_CAPACITY,
-
   /** Unique identifier of the device. */
   IF_ADDRESS,
   /** Priority of interrupts or direct memory access requests. */
@@ -73,6 +68,11 @@ enum ifOption
   IF_ACQUIRE,
   /** Release the interface. Data pointer should be set to zero. */
   IF_RELEASE,
+
+  /** The number of available input buffers in a scatter-gather chain. */
+  IF_RX_CAPACITY,
+  /** The number of available output buffers. */
+  IF_TX_CAPACITY,
 
   /** End of the list. */
   IF_OPTION_END
