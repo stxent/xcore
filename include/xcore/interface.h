@@ -17,9 +17,9 @@
 /** Interface options. */
 enum ifOption
 {
-  /** Bytes available in the receive buffer. */
+  /** Elements available in the receive queue. */
   IF_AVAILABLE,
-  /** Bytes pending in the transmit buffer. */
+  /** Elements pending in the transmit queue. */
   IF_PENDING,
 
   /** Unique identifier of the device. */
@@ -68,11 +68,6 @@ enum ifOption
   IF_ACQUIRE,
   /** Release the interface. Data pointer should be set to zero. */
   IF_RELEASE,
-
-  /** The number of available input buffers in a scatter-gather chain. */
-  IF_RX_CAPACITY,
-  /** The number of available output buffers. */
-  IF_TX_CAPACITY,
 
   /** End of the list. */
   IF_OPTION_END
