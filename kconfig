@@ -30,6 +30,7 @@ menu "Modules"
 
 config CRC_CRC7
 	bool "CRC-7"
+	default y
 
 config CRC7_BITWISE
 	bool "CRC-7 bitwise computation"
@@ -37,6 +38,7 @@ config CRC7_BITWISE
 
 config CRC_CRC8_DALLAS
 	bool "CRC-8-Dallas"
+	default y
 
 config CRC8_DALLAS_BITWISE
 	bool "CRC-8-Dallas bitwise computation"
@@ -44,6 +46,7 @@ config CRC8_DALLAS_BITWISE
 
 config CRC_CRC16_CCITT
 	bool "CRC-16-CCITT"
+	default y
 
 config CRC16_CCITT_BITWISE
 	bool "CRC-16-CCITT bitwise computation"
@@ -51,6 +54,7 @@ config CRC16_CCITT_BITWISE
 
 config CRC_CRC32
 	bool "CRC-32"
+	default y
 
 config CRC32_BITWISE
 	bool "CRC-32 bitwise computation"
@@ -89,10 +93,10 @@ config LTO
 
 config FPU
 	bool "FPU"
+	depends on TARGET_CORTEX_M4
 	default y
 	help
 	  This enables Floating Point Unit.
-	depends on TARGET_CORTEX_M4
 
 endmenu
 
@@ -104,5 +108,6 @@ config DEBUG
 
 config EXAMPLES
 	bool "Build code examples"
+	default y
 
 endmenu
