@@ -6,20 +6,6 @@
 
 #include <xcore/crc/crc16_ccitt.h>
 /*----------------------------------------------------------------------------*/
-static enum result engineInit(void *, const void *);
-static void engineDeinit(void *);
-static uint32_t engineUpdate(void *, uint32_t, const uint8_t *, uint32_t);
-/*----------------------------------------------------------------------------*/
-static const struct CrcEngineClass engineTable = {
-    .size = sizeof(struct Crc16CCITT),
-    .init = engineInit,
-    .deinit = engineDeinit,
-
-    .update = engineUpdate
-};
-/*----------------------------------------------------------------------------*/
-const struct CrcEngineClass * const Crc16CCITT = &engineTable;
-/*----------------------------------------------------------------------------*/
 #ifndef CONFIG_CRC16_CCITT_BITWISE
 /* CRC-16-CCITT table, polynomial 0x1021 */
 static const uint16_t crcTable[256] = {
@@ -58,34 +44,22 @@ static const uint16_t crcTable[256] = {
 };
 #endif
 /*----------------------------------------------------------------------------*/
-static enum result engineInit(void *object __attribute__((unused)),
-    const void *configBase __attribute__((unused)))
+uint16_t crc16CCITTUpdate(uint16_t crc, const void *buffer, size_t length)
 {
-  return E_OK;
-}
-/*----------------------------------------------------------------------------*/
-static void engineDeinit(void *object __attribute__((unused)))
-{
-
-}
-/*----------------------------------------------------------------------------*/
-static uint32_t engineUpdate(void *object __attribute__((unused)),
-    uint32_t previous, const uint8_t *buffer, uint32_t length)
-{
-  uint16_t crc = (uint16_t)previous;
+  const uint8_t *pointer = buffer;
 
 #ifdef CONFIG_CRC16_CCITT_BITWISE
   while (length--)
   {
-    crc ^= (uint16_t)(*buffer++) << 8;
+    crc ^= *pointer++ << 8;
 
-    for (uint8_t bit = 0; bit < 8; ++bit)
+    for (unsigned int bit = 0; bit < 8; ++bit)
       crc = crc & 0x8000 ? (crc << 1) ^ 0x1021 : crc << 1;
   }
 #else
   while (length--)
-    crc = (crc << 8) ^ crcTable[(uint8_t)(crc >> 8) ^ *buffer++];
+    crc = (crc << 8) ^ crcTable[(uint8_t)(crc >> 8) ^ *pointer++];
 #endif
 
-  return (uint32_t)crc;
+  return crc;
 }

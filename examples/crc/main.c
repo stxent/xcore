@@ -8,7 +8,10 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-#include <xcore/crc.h>
+#include <xcore/crc/crc7.h>
+#include <xcore/crc/crc8_dallas.h>
+#include <xcore/crc/crc16_ccitt.h>
+#include <xcore/crc/crc32.h>
 /*----------------------------------------------------------------------------*/
 #ifdef CONFIG_DEBUG
 #define DEBUG_PRINT(...) printf(__VA_ARGS__)
@@ -19,98 +22,63 @@
 static const char *emptyString = "";
 static const char *dataString = "Informatization";
 /*----------------------------------------------------------------------------*/
-const struct CrcEngineClass * const Crc7;
-const struct CrcEngineClass * const Crc8Dallas;
-const struct CrcEngineClass * const Crc16CCITT;
-const struct CrcEngineClass * const Crc32;
-/*----------------------------------------------------------------------------*/
 static void performCrc7Test(void)
 {
   const char * const name = "CRC-7";
-  const uint32_t initial = 0;
-  struct CrcEngine *engine;
-  uint32_t result;
-
-#ifndef CONFIG_DEBUG
-  (void)name;
-#endif
+  const uint8_t initial = 0;
+  uint8_t result;
 
   DEBUG_PRINT("Test %s\n", name);
 
-  engine = init(Crc7, 0);
-  assert(engine != 0);
-
-  result = crcUpdate(engine, initial, (const uint8_t *)emptyString,
-      strlen(emptyString));
+  result = crc7Update(initial, emptyString, strlen(emptyString));
   DEBUG_PRINT("%s of empty string: 0x%02X\n", name, result);
   assert(result == 0x00);
 
-  result = crcUpdate(engine, initial, (const uint8_t *)dataString,
-      strlen(dataString));
+  result = crc7Update(initial, dataString, strlen(dataString));
   DEBUG_PRINT("%s of data string: 0x%02X\n", name, result);
   assert(result == 0x0F);
 
-  deinit(engine);
+  (void)name;
   (void)result;
 }
 /*----------------------------------------------------------------------------*/
 static void performCrc8DallasTest(void)
 {
   const char * const name = "CRC-8-Dallas";
-  const uint32_t initial = 0;
-  struct CrcEngine *engine;
-  uint32_t result;
-
-#ifndef CONFIG_DEBUG
-  (void)name;
-#endif
+  const uint8_t initial = 0;
+  uint8_t result;
 
   DEBUG_PRINT("Test %s\n", name);
 
-  engine = init(Crc8Dallas, 0);
-  assert(engine != 0);
-
-  result = crcUpdate(engine, initial, (const uint8_t *)emptyString,
-      strlen(emptyString));
+  result = crc8DallasUpdate(initial, emptyString, strlen(emptyString));
   DEBUG_PRINT("%s of empty string: 0x%02X\n", name, result);
   assert(result == 0x00);
 
-  result = crcUpdate(engine, initial, (const uint8_t *)dataString,
-      strlen(dataString));
+  result = crc8DallasUpdate(initial, dataString, strlen(dataString));
   DEBUG_PRINT("%s of data string: 0x%02X\n", name, result);
   assert(result == 0x3B);
 
-  deinit(engine);
+  (void)name;
   (void)result;
 }
 /*----------------------------------------------------------------------------*/
 static void performCrc16CCITTTest(void)
 {
   const char * const name = "CRC-16-CCITT";
-  const uint32_t initial = 0xFFFF;
-  struct CrcEngine *engine;
-  uint32_t result;
-
-#ifndef CONFIG_DEBUG
-  (void)name;
-#endif
+  const uint16_t initial = 0xFFFF;
+  uint16_t result;
 
   DEBUG_PRINT("Test %s\n", name);
 
-  engine = init(Crc16CCITT, 0);
-  assert(engine != 0);
-
-  result = crcUpdate(engine, initial, (const uint8_t *)emptyString,
-      strlen(emptyString));
+  result = crc16CCITTUpdate(initial, emptyString, strlen(emptyString));
   DEBUG_PRINT("%s of empty string: 0x%04X\n", name, result);
   assert(result == 0xFFFF);
 
-  result = crcUpdate(engine, initial, (const uint8_t *)dataString,
-      strlen(dataString));
+  result = crc16CCITTUpdate(initial, dataString, strlen(dataString));
   DEBUG_PRINT("%s of data string: 0x%04X\n", name, result);
   assert(result == 0x6472);
 
-  deinit(engine);
+  (void)name;
   (void)result;
 }
 /*----------------------------------------------------------------------------*/
@@ -118,47 +86,28 @@ static void performCrc32Test(void)
 {
   const char * const name = "CRC-32";
   const uint32_t initial = 0;
-  struct CrcEngine *engine;
   uint32_t result;
-
-#ifndef CONFIG_DEBUG
-  (void)name;
-#endif
 
   DEBUG_PRINT("Test %s\n", name);
 
-  engine = init(Crc32, 0);
-  assert(engine != 0);
-
-  result = crcUpdate(engine, initial, (const uint8_t *)emptyString,
-      strlen(emptyString));
+  result = crc32Update(initial, emptyString, strlen(emptyString));
   DEBUG_PRINT("%s of empty string: 0x%08X\n", name, result);
   assert(result == 0x00000000);
 
-  result = crcUpdate(engine, initial, (const uint8_t *)dataString,
-      strlen(dataString));
+  result = crc32Update(initial, dataString, strlen(dataString));
   DEBUG_PRINT("%s of data string: 0x%08X\n", name, result);
   assert(result == 0xC268A8E6);
 
-  deinit(engine);
+  (void)name;
   (void)result;
 }
 /*----------------------------------------------------------------------------*/
 int main(void)
 {
-  DEBUG_PRINT("CRC-7 table location: %8p\n", (const void *)Crc7);
-  DEBUG_PRINT("CRC-8-Dallas table location: %8p\n", (const void *)Crc8Dallas);
-  DEBUG_PRINT("CRC-16-CCITT table location: %8p\n", (const void *)Crc16CCITT);
-  DEBUG_PRINT("CRC-32 table location: %8p\n", (const void *)Crc32);
-
-  if (Crc7)
-    performCrc7Test();
-  if (Crc8Dallas)
-    performCrc8DallasTest();
-  if (Crc16CCITT)
-    performCrc16CCITTTest();
-  if (Crc32)
-    performCrc32Test();
+  performCrc7Test();
+  performCrc8DallasTest();
+  performCrc16CCITTTest();
+  performCrc32Test();
 
   printf("Passed\n");
 

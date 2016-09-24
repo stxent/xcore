@@ -7,13 +7,9 @@
 #ifndef XCORE_CRC_CRC7_H_
 #define XCORE_CRC_CRC7_H_
 /*----------------------------------------------------------------------------*/
-#include <xcore/crc.h>
+#include <stddef.h>
+#include <stdint.h>
 /*----------------------------------------------------------------------------*/
-extern const struct CrcEngineClass * const Crc7;
-/*----------------------------------------------------------------------------*/
-struct Crc7
-{
-  struct CrcEngine base;
-};
+uint8_t crc7Update(uint8_t, const void *, size_t);
 /*----------------------------------------------------------------------------*/
 #endif /* XCORE_CRC_CRC7_H_ */

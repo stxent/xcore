@@ -7,13 +7,9 @@
 #ifndef XCORE_CRC_CRC8_DALLAS_H_
 #define XCORE_CRC_CRC8_DALLAS_H_
 /*----------------------------------------------------------------------------*/
-#include <xcore/crc.h>
+#include <stddef.h>
+#include <stdint.h>
 /*----------------------------------------------------------------------------*/
-extern const struct CrcEngineClass * const Crc8Dallas;
-/*----------------------------------------------------------------------------*/
-struct Crc8Dallas
-{
-  struct CrcEngine base;
-};
+uint8_t crc8DallasUpdate(uint8_t, const void *, size_t);
 /*----------------------------------------------------------------------------*/
 #endif /* XCORE_CRC_CRC8_DALLAS_H_ */

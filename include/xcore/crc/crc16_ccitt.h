@@ -7,13 +7,9 @@
 #ifndef XCORE_CRC_CRC16_CCITT_H_
 #define XCORE_CRC_CRC16_CCITT_H_
 /*----------------------------------------------------------------------------*/
-#include <xcore/crc.h>
+#include <stddef.h>
+#include <stdint.h>
 /*----------------------------------------------------------------------------*/
-extern const struct CrcEngineClass * const Crc16CCITT;
-/*----------------------------------------------------------------------------*/
-struct Crc16CCITT
-{
-  struct CrcEngine base;
-};
+uint16_t crc16CCITTUpdate(uint16_t, const void *, size_t);
 /*----------------------------------------------------------------------------*/
 #endif /* XCORE_CRC_CRC16_CCITT_H_ */

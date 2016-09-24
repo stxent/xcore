@@ -6,20 +6,6 @@
 
 #include <xcore/crc/crc7.h>
 /*----------------------------------------------------------------------------*/
-static enum result engineInit(void *, const void *);
-static void engineDeinit(void *);
-static uint32_t engineUpdate(void *, uint32_t, const uint8_t *, uint32_t);
-/*----------------------------------------------------------------------------*/
-static const struct CrcEngineClass engineTable = {
-    .size = sizeof(struct Crc7),
-    .init = engineInit,
-    .deinit = engineDeinit,
-
-    .update = engineUpdate
-};
-/*----------------------------------------------------------------------------*/
-const struct CrcEngineClass * const Crc7 = &engineTable;
-/*----------------------------------------------------------------------------*/
 #ifndef CONFIG_CRC7_BITWISE
 static const uint8_t crcTable[256] = {
     0x00, 0x12, 0x24, 0x36, 0x48, 0x5A, 0x6C, 0x7E,
@@ -57,28 +43,16 @@ static const uint8_t crcTable[256] = {
 };
 #endif
 /*----------------------------------------------------------------------------*/
-static enum result engineInit(void *object __attribute__((unused)),
-    const void *configBase __attribute__((unused)))
+uint8_t crc7Update(uint8_t crc, const void *buffer, size_t length)
 {
-  return E_OK;
-}
-/*----------------------------------------------------------------------------*/
-static void engineDeinit(void *object __attribute__((unused)))
-{
-
-}
-/*----------------------------------------------------------------------------*/
-static uint32_t engineUpdate(void *object __attribute__((unused)),
-    uint32_t previous, const uint8_t *buffer, uint32_t length)
-{
-  uint8_t crc = (uint8_t)previous;
+  const uint8_t *pointer = buffer;
 
 #ifdef CONFIG_CRC7_BITWISE
   while (length--)
   {
-    uint8_t value = *buffer++;
+    uint8_t value = *pointer++;
 
-    for (uint8_t bit = 0; bit < 8; ++bit)
+    for (unsigned int bit = 0; bit < 8; ++bit)
     {
       crc <<= 1;
 
@@ -91,9 +65,9 @@ static uint32_t engineUpdate(void *object __attribute__((unused)),
   crc &= ~0x80;
 #else
   while (length--)
-    crc = crcTable[crc ^ *buffer++] ^ (crc << 7);
+    crc = crcTable[crc ^ *pointer++] ^ (crc << 7);
   crc >>= 1;
 #endif
 
-  return (uint32_t)crc;
+  return crc;
 }

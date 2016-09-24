@@ -7,13 +7,9 @@
 #ifndef XCORE_CRC_CRC32_H_
 #define XCORE_CRC_CRC32_H_
 /*----------------------------------------------------------------------------*/
-#include <xcore/crc.h>
+#include <stddef.h>
+#include <stdint.h>
 /*----------------------------------------------------------------------------*/
-extern const struct CrcEngineClass * const Crc32;
-/*----------------------------------------------------------------------------*/
-struct Crc32
-{
-  struct CrcEngine base;
-};
+uint32_t crc32Update(uint32_t, const void *, size_t);
 /*----------------------------------------------------------------------------*/
 #endif /* XCORE_CRC_CRC32_H_ */

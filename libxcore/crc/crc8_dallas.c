@@ -6,20 +6,6 @@
 
 #include <xcore/crc/crc8_dallas.h>
 /*----------------------------------------------------------------------------*/
-static enum result engineInit(void *, const void *);
-static void engineDeinit(void *);
-static uint32_t engineUpdate(void *, uint32_t, const uint8_t *, uint32_t);
-/*----------------------------------------------------------------------------*/
-static const struct CrcEngineClass engineTable = {
-    .size = sizeof(struct Crc8Dallas),
-    .init = engineInit,
-    .deinit = engineDeinit,
-
-    .update = engineUpdate
-};
-/*----------------------------------------------------------------------------*/
-const struct CrcEngineClass * const Crc8Dallas = &engineTable;
-/*----------------------------------------------------------------------------*/
 #ifndef CONFIG_CRC8_DALLAS_BITWISE
 static const uint8_t crcTable[256] = {
     0x00, 0x5E, 0xBC, 0xE2, 0x61, 0x3F, 0xDD, 0x83,
@@ -57,28 +43,16 @@ static const uint8_t crcTable[256] = {
 };
 #endif
 /*----------------------------------------------------------------------------*/
-static enum result engineInit(void *object __attribute__((unused)),
-    const void *configBase __attribute__((unused)))
+uint8_t crc8DallasUpdate(uint8_t crc, const void *buffer, size_t length)
 {
-  return E_OK;
-}
-/*----------------------------------------------------------------------------*/
-static void engineDeinit(void *object __attribute__((unused)))
-{
-
-}
-/*----------------------------------------------------------------------------*/
-static uint32_t engineUpdate(void *object __attribute__((unused)),
-    uint32_t previous, const uint8_t *buffer, uint32_t length)
-{
-  uint8_t crc = (uint8_t)previous;
+  const uint8_t *pointer = buffer;
 
 #ifdef CONFIG_CRC8_DALLAS_BITWISE
   while (length--)
   {
-    uint8_t value = *buffer++;
+    uint8_t value = *pointer++;
 
-    for (uint8_t bit = 0; bit < 8; ++bit)
+    for (unsigned int bit = 0; bit < 8; ++bit)
     {
       if ((crc ^ value) & 0x01)
         crc = ((crc ^ 0x18) >> 1) | 0x80;
@@ -90,8 +64,8 @@ static uint32_t engineUpdate(void *object __attribute__((unused)),
   }
 #else
   while (length--)
-    crc = crcTable[crc ^ *buffer++];
+    crc = crcTable[crc ^ *pointer++];
 #endif
 
-  return (uint32_t)crc;
+  return crc;
 }
