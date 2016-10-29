@@ -22,6 +22,7 @@ struct DummyStruct
 static bool compareElements(const struct DummyStruct *,
     const struct DummyStruct *);
 struct DummyStruct createElement(size_t);
+static int customCompare(const void *, const void *);
 static void performListTest(void);
 /*----------------------------------------------------------------------------*/
 static bool compareElements(const struct DummyStruct *a,
@@ -46,6 +47,14 @@ struct DummyStruct createElement(size_t index)
   };
 
   return element;
+}
+/*----------------------------------------------------------------------------*/
+static int customCompare(const void *a, const void *b)
+{
+  const struct DummyStruct * const aValue = a;
+  const struct DummyStruct * const bValue = b;
+
+  return aValue->a - bValue->a;
 }
 /*----------------------------------------------------------------------------*/
 static void performListTest(void)
@@ -102,6 +111,18 @@ static void performListTest(void)
 #ifdef NDEBUG
   (void)foundNode;
 #endif
+
+  /* Find elements using custom comparator */
+  const struct DummyStruct customElement = {
+      .a = centralElement.a,
+      .b = 0,
+      .c = {0}
+  };
+
+  foundNode = listFindCompared(&list, &unknownElement, customCompare);
+  assert(foundNode == 0);
+  foundNode = listFindCompared(&list, &customElement, customCompare);
+  assert(foundNode != 0);
 
   /* Iterating through elements */
   index = 0;

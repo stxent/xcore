@@ -4,6 +4,7 @@
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
+#include <assert.h>
 #include <stdlib.h>
 #include <xcore/containers/list.h>
 /*----------------------------------------------------------------------------*/
@@ -56,22 +57,15 @@ void listClear(struct List *list)
 /*----------------------------------------------------------------------------*/
 struct ListNode *listErase(struct List *list, struct ListNode *node)
 {
-  if (list->first != node)
-  {
-    struct ListNode *current = list->first;
-
-    while (current->next != node)
-      current = current->next;
-
-    current->next = node->next;
-  }
-  else
-  {
-    list->first = list->first->next;
-  }
-
   struct ListNode * const next = node->next;
+  struct ListNode **current = &list->first;
 
+  while (*current != node)
+    current = &(*current)->next;
+
+  assert(current);
+
+  *current = next;
   free(node);
 
   return next;
@@ -84,6 +78,21 @@ struct ListNode *listFind(struct List *list, const void *element)
   while (node)
   {
     if (!memcmp(node->data, element, list->width))
+      return node;
+    node = node->next;
+  }
+
+  return 0;
+}
+/*----------------------------------------------------------------------------*/
+struct ListNode *listFindCompared(struct List *list, const void *element,
+    int (*compare)(const void *, const void *))
+{
+  struct ListNode *node = list->first;
+
+  while (node)
+  {
+    if (!compare(node->data, element))
       return node;
     node = node->next;
   }
