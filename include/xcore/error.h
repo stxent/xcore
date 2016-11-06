@@ -37,9 +37,9 @@ enum result
   E_TIMEOUT,
   /** Argument contains wrong value. */
   E_VALUE,
-  /** No such file. */
+  /** No such entry. */
   E_ENTRY,
-  /** File exists. */
+  /** Entry already exists. */
   E_EXIST,
   /** No data available. */
   E_EMPTY,
