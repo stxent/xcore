@@ -1,11 +1,11 @@
 /*
- * xcore/containers/vector.h
+ * xcore/containers/array.h
  * Copyright (C) 2016 xent
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
-#ifndef XCORE_CONTAINERS_VECTOR_H_
-#define XCORE_CONTAINERS_VECTOR_H_
+#ifndef XCORE_CONTAINERS_ARRAY_H_
+#define XCORE_CONTAINERS_ARRAY_H_
 /*----------------------------------------------------------------------------*/
 #include <assert.h>
 #include <stdbool.h>
@@ -14,7 +14,7 @@
 #include <string.h>
 #include <xcore/error.h>
 /*----------------------------------------------------------------------------*/
-struct Vector
+struct Array
 {
   void *data;
 
@@ -26,41 +26,41 @@ struct Vector
   size_t width;
 };
 /*----------------------------------------------------------------------------*/
-enum result vectorInit(struct Vector *, size_t, size_t);
-void vectorDeinit(struct Vector *);
-void vectorErase(struct Vector *, size_t);
-void vectorInsert(struct Vector *, size_t, const void *);
-void vectorPopBack(struct Vector *, void *);
-void vectorPushBack(struct Vector *, const void *);
+enum result arrayInit(struct Array *, size_t, size_t);
+void arrayDeinit(struct Array *);
+void arrayErase(struct Array *, size_t);
+void arrayInsert(struct Array *, size_t, const void *);
+void arrayPopBack(struct Array *, void *);
+void arrayPushBack(struct Array *, const void *);
 /*----------------------------------------------------------------------------*/
-static inline void *vectorAt(const struct Vector *vector, size_t index)
+static inline void *arrayAt(const struct Array *array, size_t index)
 {
-  return (void *)((uintptr_t)vector->data + index * vector->width);
+  return (void *)((uintptr_t)array->data + index * array->width);
 }
 /*----------------------------------------------------------------------------*/
-static inline size_t vectorCapacity(const struct Vector *vector)
+static inline size_t arrayCapacity(const struct Array *array)
 {
-  return vector->capacity;
+  return array->capacity;
 }
 /*----------------------------------------------------------------------------*/
-static inline void vectorClear(struct Vector *vector)
+static inline void arrayClear(struct Array *array)
 {
-  vector->size = 0;
+  array->size = 0;
 }
 /*----------------------------------------------------------------------------*/
-static inline bool vectorEmpty(const struct Vector *vector)
+static inline bool arrayEmpty(const struct Array *array)
 {
-  return vector->size == 0;
+  return array->size == 0;
 }
 /*----------------------------------------------------------------------------*/
-static inline bool vectorFull(const struct Vector *vector)
+static inline bool arrayFull(const struct Array *array)
 {
-  return vector->size == vector->capacity;
+  return array->size == array->capacity;
 }
 /*----------------------------------------------------------------------------*/
-static inline size_t vectorSize(const struct Vector *vector)
+static inline size_t arraySize(const struct Array *array)
 {
-  return vector->size;
+  return array->size;
 }
 /*----------------------------------------------------------------------------*/
-#endif /* XCORE_CONTAINERS_VECTOR_H_ */
+#endif /* XCORE_CONTAINERS_ARRAY_H_ */

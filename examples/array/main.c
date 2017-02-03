@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <xcore/bits.h>
-#include <xcore/containers/vector.h>
+#include <xcore/containers/array.h>
 /*----------------------------------------------------------------------------*/
 #ifdef CONFIG_DEBUG
 #define DEBUG_PRINT(...) printf(__VA_ARGS__)
@@ -31,15 +31,15 @@ struct DummyStruct
 static bool compareElements(const struct DummyStruct *,
     const struct DummyStruct *);
 struct DummyStruct createElement(size_t);
-static void checkElements(struct Vector *, size_t, bool);
-static void intertwineVector(struct Vector *, size_t, size_t, size_t);
-static void fillVector(struct Vector *, size_t, size_t, size_t);
-static void reverseVector(struct Vector *);
-static void clearElements(struct Vector *);
-static void eraseElements(struct Vector *, size_t, size_t, size_t);
-static void popElements(struct Vector *, bool);
-static void printElements(struct Vector *);
-static void performVectorTest(void);
+static void checkElements(struct Array *, size_t, bool);
+static void intertwineArray(struct Array *, size_t, size_t, size_t);
+static void fillArray(struct Array *, size_t, size_t, size_t);
+static void reverseArray(struct Array *);
+static void clearElements(struct Array *);
+static void eraseElements(struct Array *, size_t, size_t, size_t);
+static void popElements(struct Array *, bool);
+static void printElements(struct Array *);
+static void performArrayTest(void);
 /*----------------------------------------------------------------------------*/
 static bool compareElements(const struct DummyStruct *a,
     const struct DummyStruct *b)
@@ -65,15 +65,15 @@ struct DummyStruct createElement(size_t index)
   return element;
 }
 /*----------------------------------------------------------------------------*/
-static void checkElements(struct Vector *vector, size_t offset, bool reverse)
+static void checkElements(struct Array *array, size_t offset, bool reverse)
 {
-  const size_t size = vectorSize(vector);
+  const size_t size = arraySize(array);
 
   for (size_t index = 0; index < size; ++index)
   {
     const size_t identifier = offset + (reverse ? size - index - 1 : index);
     const struct DummyStruct referenceElement = createElement(identifier);
-    const struct DummyStruct * const element = vectorAt(vector, index);
+    const struct DummyStruct * const element = arrayAt(array, index);
     const bool result = compareElements(element, &referenceElement);
 
     assert(result == true);
@@ -84,7 +84,7 @@ static void checkElements(struct Vector *vector, size_t offset, bool reverse)
   }
 }
 /*----------------------------------------------------------------------------*/
-static void intertwineVector(struct Vector *vector, size_t number,
+static void intertwineArray(struct Array *array, size_t number,
     size_t offset, size_t step)
 {
   for (size_t index = 0; index < number; ++index)
@@ -92,11 +92,11 @@ static void intertwineVector(struct Vector *vector, size_t number,
     const size_t position = offset + index * step;
     const struct DummyStruct element = createElement(position);
 
-    vectorInsert(vector, position, &element);
+    arrayInsert(array, position, &element);
   }
 }
 /*----------------------------------------------------------------------------*/
-static void fillVector(struct Vector *vector, size_t number, size_t offset,
+static void fillArray(struct Array *array, size_t number, size_t offset,
     size_t step)
 {
   for (size_t index = 0; index < number; ++index)
@@ -104,18 +104,18 @@ static void fillVector(struct Vector *vector, size_t number, size_t offset,
     const size_t identifier = offset + index * step;
     const struct DummyStruct element = createElement(identifier);
 
-    vectorPushBack(vector, &element);
+    arrayPushBack(array, &element);
   }
 }
 /*----------------------------------------------------------------------------*/
-static void reverseVector(struct Vector *vector)
+static void reverseArray(struct Array *array)
 {
-  const size_t size = vectorSize(vector);
+  const size_t size = arraySize(array);
 
   for (size_t index = 0; index < size / 2; ++index)
   {
-    struct DummyStruct * const front = vectorAt(vector, index);
-    struct DummyStruct * const back = vectorAt(vector, size - index - 1);
+    struct DummyStruct * const front = arrayAt(array, index);
+    struct DummyStruct * const back = arrayAt(array, size - index - 1);
 
     const struct DummyStruct buffer = *front;
     *front = *back;
@@ -123,40 +123,40 @@ static void reverseVector(struct Vector *vector)
   }
 }
 /*----------------------------------------------------------------------------*/
-static void clearElements(struct Vector *vector)
+static void clearElements(struct Array *array)
 {
-  vectorClear(vector);
-  assert(vectorSize(vector) == 0);
-  assert(vectorEmpty(vector) == true);
-  assert(vectorFull(vector) == false);
+  arrayClear(array);
+  assert(arraySize(array) == 0);
+  assert(arrayEmpty(array) == true);
+  assert(arrayFull(array) == false);
 }
 /*----------------------------------------------------------------------------*/
-static void eraseElements(struct Vector *vector, size_t number, size_t offset,
+static void eraseElements(struct Array *vector, size_t number, size_t offset,
     size_t step)
 {
-  const size_t initialSize = vectorSize(vector);
+  const size_t initialSize = arraySize(vector);
 
   for (size_t index = 0; index < number; ++index)
   {
-    vectorErase(vector, offset + index * step);
+    arrayErase(vector, offset + index * step);
   }
 
 #ifdef NDEBUG
   (void)initialSize;
 #endif
 
-  assert(vectorSize(vector) == initialSize - number);
+  assert(arraySize(vector) == initialSize - number);
 }
 /*----------------------------------------------------------------------------*/
-static void popElements(struct Vector *vector, bool zero)
+static void popElements(struct Array *array, bool zero)
 {
-  size_t identifier = vectorSize(vector) - 1;
+  size_t identifier = arraySize(array) - 1;
 
-  while (vectorSize(vector))
+  while (arraySize(array))
   {
     if (zero)
     {
-      vectorPopBack(vector, 0);
+      arrayPopBack(array, 0);
     }
     else
     {
@@ -164,7 +164,7 @@ static void popElements(struct Vector *vector, bool zero)
       struct DummyStruct element;
       bool result;
 
-      vectorPopBack(vector, &element);
+      arrayPopBack(array, &element);
       result = compareElements(&element, &referenceElement);
       assert(result == true);
 
@@ -176,16 +176,16 @@ static void popElements(struct Vector *vector, bool zero)
     --identifier;
   }
 
-  assert(vectorSize(vector) == 0);
-  assert(vectorEmpty(vector) == true);
-  assert(vectorFull(vector) == false);
+  assert(arraySize(array) == 0);
+  assert(arrayEmpty(array) == true);
+  assert(arrayFull(array) == false);
 }
 /*----------------------------------------------------------------------------*/
-static void printElements(struct Vector *vector)
+static void printElements(struct Array *array)
 {
-  for (size_t index = 0; index < vectorSize(vector); ++index)
+  for (size_t index = 0; index < arraySize(array); ++index)
   {
-    const struct DummyStruct * const element = vectorAt(vector, index);
+    const struct DummyStruct * const element = arrayAt(array, index);
 
     DEBUG_PRINT("Element %2zu: %3"PRIi64" %3"PRIi32" [",
         index, element->a, element->b);
@@ -195,9 +195,9 @@ static void printElements(struct Vector *vector)
   }
 }
 /*----------------------------------------------------------------------------*/
-static void performVectorTest(void)
+static void performArrayTest(void)
 {
-  struct Vector vector;
+  struct Array array;
   enum result res;
 
 #ifdef NDEBUG
@@ -205,79 +205,79 @@ static void performVectorTest(void)
 #endif
 
   /* Queue initialization */
-  res = vectorInit(&vector, sizeof(struct DummyStruct), MAX_CAPACITY);
+  res = arrayInit(&array, sizeof(struct DummyStruct), MAX_CAPACITY);
   assert(res == E_OK);
-  assert(vectorCapacity(&vector) == MAX_CAPACITY);
+  assert(arrayCapacity(&array) == MAX_CAPACITY);
 
   /* First pass: fill, reverse, check and clear */
-  fillVector(&vector, MAX_CAPACITY - MAX_CAPACITY / 2, 0, 2);
-  assert(vectorSize(&vector) == MAX_CAPACITY - MAX_CAPACITY / 2);
-  assert(vectorEmpty(&vector) == false);
-  assert(vectorFull(&vector) == false);
+  fillArray(&array, MAX_CAPACITY - MAX_CAPACITY / 2, 0, 2);
+  assert(arraySize(&array) == MAX_CAPACITY - MAX_CAPACITY / 2);
+  assert(arrayEmpty(&array) == false);
+  assert(arrayFull(&array) == false);
 
-  intertwineVector(&vector, MAX_CAPACITY / 2, 1, 2);
-  assert(vectorSize(&vector) == MAX_CAPACITY);
-  assert(vectorEmpty(&vector) == false);
-  assert(vectorFull(&vector) == true);
+  intertwineArray(&array, MAX_CAPACITY / 2, 1, 2);
+  assert(arraySize(&array) == MAX_CAPACITY);
+  assert(arrayEmpty(&array) == false);
+  assert(arrayFull(&array) == true);
 
-  DEBUG_PRINT("First pass vector:\n");
-  printElements(&vector);
-  checkElements(&vector, 0, false);
+  DEBUG_PRINT("First pass array:\n");
+  printElements(&array);
+  checkElements(&array, 0, false);
 
-  reverseVector(&vector);
+  reverseArray(&array);
 
-  DEBUG_PRINT("First pass reversed vector:\n");
-  printElements(&vector);
-  checkElements(&vector, 0, true);
+  DEBUG_PRINT("First pass reversed array:\n");
+  printElements(&array);
+  checkElements(&array, 0, true);
 
-  clearElements(&vector);
+  clearElements(&array);
 
   /* Second pass: fill, check and erase */
-  fillVector(&vector, MAX_CAPACITY / 2, 1, 2);
-  intertwineVector(&vector, MAX_CAPACITY - MAX_CAPACITY / 2, 0, 2);
+  fillArray(&array, MAX_CAPACITY / 2, 1, 2);
+  intertwineArray(&array, MAX_CAPACITY - MAX_CAPACITY / 2, 0, 2);
 
-  DEBUG_PRINT("Second pass vector:\n");
-  printElements(&vector);
-  checkElements(&vector, 0, false);
+  DEBUG_PRINT("Second pass array:\n");
+  printElements(&array);
+  checkElements(&array, 0, false);
 
-  eraseElements(&vector, MAX_CAPACITY / 2 - 1, 0, 1);
+  eraseElements(&array, MAX_CAPACITY / 2 - 1, 0, 1);
 
-  DEBUG_PRINT("Second pass half-empty vector:\n");
-  printElements(&vector);
+  DEBUG_PRINT("Second pass half-empty array:\n");
+  printElements(&array);
 
-  intertwineVector(&vector, MAX_CAPACITY / 2 - 1, 0, 2);
+  intertwineArray(&array, MAX_CAPACITY / 2 - 1, 0, 2);
 
-  DEBUG_PRINT("Second pass restored vector:\n");
-  printElements(&vector);
-  checkElements(&vector, 0, false);
+  DEBUG_PRINT("Second pass restored array:\n");
+  printElements(&array);
+  checkElements(&array, 0, false);
 
-  eraseElements(&vector, MAX_CAPACITY, 0, 0);
-  assert(vectorEmpty(&vector) == true);
+  eraseElements(&array, MAX_CAPACITY, 0, 0);
+  assert(arrayEmpty(&array) == true);
 
   /* Third pass: fill, check and pop */
-  fillVector(&vector, MAX_CAPACITY, 0, 1);
+  fillArray(&array, MAX_CAPACITY, 0, 1);
 
-  DEBUG_PRINT("Third pass vector:\n");
-  printElements(&vector);
-  checkElements(&vector, 0, false);
+  DEBUG_PRINT("Third pass array:\n");
+  printElements(&array);
+  checkElements(&array, 0, false);
 
-  popElements(&vector, false);
+  popElements(&array, false);
 
   /* Fourth pass: fill, check and pop with zero argument */
-  fillVector(&vector, MAX_CAPACITY, 0, 1);
+  fillArray(&array, MAX_CAPACITY, 0, 1);
 
-  DEBUG_PRINT("Fourth pass vector:\n");
-  printElements(&vector);
-  checkElements(&vector, 0, false);
+  DEBUG_PRINT("Fourth pass array:\n");
+  printElements(&array);
+  checkElements(&array, 0, false);
 
-  popElements(&vector, true);
+  popElements(&array, true);
 
-  vectorDeinit(&vector);
+  arrayDeinit(&array);
 }
 /*----------------------------------------------------------------------------*/
 int main(void)
 {
-  performVectorTest();
+  performArrayTest();
 
   printf("Passed\n");
 

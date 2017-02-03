@@ -119,7 +119,8 @@ static void performQueueTest(void)
   /* Fill queue */
   for (size_t iteration = 1; iteration < MAX_CAPACITY * 2; ++iteration)
   {
-    const size_t identifier = -abs(iteration - MAX_CAPACITY) + MAX_CAPACITY;
+    const size_t identifier = iteration >= MAX_CAPACITY ?
+        iteration - MAX_CAPACITY : MAX_CAPACITY - iteration;
 
     DEBUG_PRINT("Iteration %zu, number %zu\n", iteration, identifier);
     testIteration(&queue, identifier, true);
