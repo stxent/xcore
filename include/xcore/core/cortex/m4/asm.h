@@ -210,4 +210,9 @@ static inline void __wfi(void)
   __asm__ volatile ("WFI");
 }
 /*----------------------------------------------------------------------------*/
+uint32_t __getMainStackPointer(void) __attribute__((naked));
+uint32_t __getProcessStackPointer(void) __attribute__((naked));
+void __setMainStackPointer(uint32_t) __attribute__((naked));
+void __setProcessStackPointer(uint32_t) __attribute__((naked));
+/*----------------------------------------------------------------------------*/
 #endif /* XCORE_CORE_CORTEX_M4_ASM_H_ */
