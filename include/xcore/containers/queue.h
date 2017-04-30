@@ -27,7 +27,7 @@ struct Queue
   size_t width;
 };
 /*----------------------------------------------------------------------------*/
-enum result queueInit(struct Queue *, size_t, size_t);
+enum Result queueInit(struct Queue *, size_t, size_t);
 void queueDeinit(struct Queue *);
 void queuePeek(const struct Queue *, void *);
 void queuePop(struct Queue *, void *);

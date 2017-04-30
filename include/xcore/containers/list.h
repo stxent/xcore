@@ -28,15 +28,15 @@ struct List
   size_t width;
 };
 /*----------------------------------------------------------------------------*/
-enum result listInit(struct List *, size_t);
+enum Result listInit(struct List *, size_t);
 void listDeinit(struct List *);
 void listClear(struct List *);
 struct ListNode *listErase(struct List *, struct ListNode *);
 struct ListNode *listFind(struct List *, const void *);
 struct ListNode *listFindCompared(struct List *, const void *,
     int (*)(const void *, const void *));
-enum result listInsert(struct List *, struct ListNode *, const void *);
-enum result listPush(struct List *, const void *);
+enum Result listInsert(struct List *, struct ListNode *, const void *);
+enum Result listPush(struct List *, const void *);
 
 size_t listCapacity(const struct List *);
 size_t listSize(const struct List *);

@@ -9,7 +9,7 @@
 #include <string.h>
 #include <xcore/containers/byte_queue.h>
 /*----------------------------------------------------------------------------*/
-enum result byteQueueInit(struct ByteQueue *queue, size_t capacity)
+enum Result byteQueueInit(struct ByteQueue *queue, size_t capacity)
 {
   if (!capacity)
     return E_VALUE;

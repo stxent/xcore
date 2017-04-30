@@ -33,7 +33,7 @@ static void freeListChain(struct ListNode *current)
   }
 }
 /*----------------------------------------------------------------------------*/
-enum result listInit(struct List *list, size_t width)
+enum Result listInit(struct List *list, size_t width)
 {
   list->first = 0;
   list->width = width;
@@ -100,7 +100,7 @@ struct ListNode *listFindCompared(struct List *list, const void *element,
   return 0;
 }
 /*----------------------------------------------------------------------------*/
-enum result listInsert(struct List *list, struct ListNode *previous,
+enum Result listInsert(struct List *list, struct ListNode *previous,
     const void *element)
 {
   struct ListNode * const node =
@@ -125,7 +125,7 @@ enum result listInsert(struct List *list, struct ListNode *previous,
   return E_OK;
 }
 /*----------------------------------------------------------------------------*/
-enum result listPush(struct List *list, const void *element)
+enum Result listPush(struct List *list, const void *element)
 {
   struct ListNode * const node =
       malloc(offsetof(struct ListNode, data) + list->width);

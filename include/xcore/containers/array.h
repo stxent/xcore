@@ -26,7 +26,7 @@ struct Array
   size_t width;
 };
 /*----------------------------------------------------------------------------*/
-enum result arrayInit(struct Array *, size_t, size_t);
+enum Result arrayInit(struct Array *, size_t, size_t);
 void arrayDeinit(struct Array *);
 void arrayErase(struct Array *, size_t);
 void arrayInsert(struct Array *, size_t, const void *);

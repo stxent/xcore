@@ -64,9 +64,9 @@ static void performListTest(void)
   size_t index;
 
 #ifndef NDEBUG
-  enum result res;
+  enum Result res;
 #else
-  enum result res __attribute__((unused));
+  enum Result res __attribute__((unused));
 #endif
 
   /* List initialization */

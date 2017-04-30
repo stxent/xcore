@@ -30,7 +30,7 @@ enum
   FS_ACCESS_WRITE = 0x02
 };
 /*----------------------------------------------------------------------------*/
-enum fsFieldType
+enum FsFieldType
 {
   /** Access rights to the node. */
   FS_NODE_ACCESS,
@@ -53,7 +53,7 @@ struct FsFieldDescriptor
 {
   const void *data;
   length_t length;
-  enum fsFieldType type;
+  enum FsFieldType type;
 };
 /*----------------------------------------------------------------------------*/
 struct FsHandleClass
@@ -61,7 +61,7 @@ struct FsHandleClass
   CLASS_HEADER
 
   void *(*root)(void *);
-  enum result (*sync)(void *);
+  enum Result (*sync)(void *);
 };
 /*----------------------------------------------------------------------------*/
 struct FsHandle
@@ -73,15 +73,15 @@ struct FsNodeClass
 {
   CLASS_HEADER
 
-  enum result (*create)(void *, const struct FsFieldDescriptor *, size_t);
+  enum Result (*create)(void *, const struct FsFieldDescriptor *, size_t);
   void *(*head)(void *);
   void (*free)(void *);
-  enum result (*length)(void *, enum fsFieldType, length_t *);
-  enum result (*next)(void *);
-  enum result (*read)(void *, enum fsFieldType, length_t, void *,
+  enum Result (*length)(void *, enum FsFieldType, length_t *);
+  enum Result (*next)(void *);
+  enum Result (*read)(void *, enum FsFieldType, length_t, void *,
       length_t, length_t *);
-  enum result (*remove)(void *, void *);
-  enum result (*write)(void *, enum fsFieldType, length_t, const void *,
+  enum Result (*remove)(void *, void *);
+  enum Result (*write)(void *, enum FsFieldType, length_t, const void *,
       length_t, length_t *);
 };
 /*----------------------------------------------------------------------------*/
@@ -104,7 +104,7 @@ static inline void *fsHandleRoot(void *handle)
  * Write information about changed entries to the physical device.
  * @param handle Pointer to a file system handle.
  */
-static inline enum result fsHandleSync(void *handle)
+static inline enum Result fsHandleSync(void *handle)
 {
   return ((const struct FsHandleClass *)CLASS(handle))->sync(handle);
 }
@@ -117,7 +117,7 @@ static inline enum result fsHandleSync(void *handle)
  * @param number Number of descriptors in the array.
  * @return E_OK on success.
  */
-static inline enum result fsNodeCreate(void *root,
+static inline enum Result fsNodeCreate(void *root,
     const struct FsFieldDescriptor *descriptors, size_t number)
 {
   return ((const struct FsNodeClass *)CLASS(root))->create(root,
@@ -151,7 +151,7 @@ static inline void fsNodeFree(void *node)
  * will be placed.
  * @return @b E_OK on success, @b E_INVALID when the field is not supported.
  */
-static inline enum result fsNodeLength(void *node, enum fsFieldType type,
+static inline enum Result fsNodeLength(void *node, enum FsFieldType type,
     length_t *length)
 {
   return ((const struct FsNodeClass *)CLASS(node))->length(node, type, length);
@@ -163,7 +163,7 @@ static inline enum result fsNodeLength(void *node, enum fsFieldType type,
  * @return @b E_OK on success, @b E_ENTRY when @b node is the last node
  * in the chain.
  */
-static inline enum result fsNodeNext(void *node)
+static inline enum Result fsNodeNext(void *node)
 {
   return ((const struct FsNodeClass *)CLASS(node))->next(node);
 }
@@ -180,7 +180,7 @@ static inline enum result fsNodeNext(void *node)
  * @return @b E_OK on success, @b E_INVALID when this type of operation is not
  * supported.
  */
-static inline enum result fsNodeRead(void *node, enum fsFieldType type,
+static inline enum Result fsNodeRead(void *node, enum FsFieldType type,
     length_t position, void *buffer, length_t length, length_t *read)
 {
   return ((const struct FsNodeClass *)CLASS(node))->read(node, type, position,
@@ -193,7 +193,7 @@ static inline enum result fsNodeRead(void *node, enum fsFieldType type,
  * @param node Node to be removed.
  * @return @b E_OK on success.
  */
-static inline enum result fsNodeRemove(void *root, void *node)
+static inline enum Result fsNodeRemove(void *root, void *node)
 {
   return ((const struct FsNodeClass *)CLASS(root))->remove(root, node);
 }
@@ -210,7 +210,7 @@ static inline enum result fsNodeRemove(void *root, void *node)
  * @return @b E_OK on success, @b E_INVALID when this type of operation is not
  * supported.
  */
-static inline enum result fsNodeWrite(void *node, enum fsFieldType type,
+static inline enum Result fsNodeWrite(void *node, enum FsFieldType type,
     length_t position, const void *buffer, length_t length, length_t *written)
 {
   return ((const struct FsNodeClass *)CLASS(node))->write(node, type, position,

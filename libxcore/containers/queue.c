@@ -10,7 +10,7 @@
 #include <string.h>
 #include <xcore/containers/queue.h>
 /*----------------------------------------------------------------------------*/
-enum result queueInit(struct Queue *queue, size_t width, size_t capacity)
+enum Result queueInit(struct Queue *queue, size_t width, size_t capacity)
 {
   if (!capacity)
     return E_VALUE;

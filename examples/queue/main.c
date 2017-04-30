@@ -105,7 +105,7 @@ static void testIteration(struct Queue *queue, size_t number, bool clear)
 static void performQueueTest(void)
 {
   struct Queue queue;
-  enum result res;
+  enum Result res;
 
 #ifdef NDEBUG
   (void)res;

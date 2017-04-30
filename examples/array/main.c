@@ -198,7 +198,7 @@ static void printElements(struct Array *array)
 static void performArrayTest(void)
 {
   struct Array array;
-  enum result res;
+  enum Result res;
 
 #ifdef NDEBUG
   (void)res;

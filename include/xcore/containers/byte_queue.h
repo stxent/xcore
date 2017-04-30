@@ -26,7 +26,7 @@ struct ByteQueue
   size_t floor;
 };
 /*----------------------------------------------------------------------------*/
-enum result byteQueueInit(struct ByteQueue *, size_t);
+enum Result byteQueueInit(struct ByteQueue *, size_t);
 void byteQueueDeinit(struct ByteQueue *);
 size_t byteQueuePopArray(struct ByteQueue *, void *, size_t);
 size_t byteQueuePushArray(struct ByteQueue *, const void *, size_t);

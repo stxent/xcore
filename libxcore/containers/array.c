@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <xcore/containers/array.h>
 /*----------------------------------------------------------------------------*/
-enum result arrayInit(struct Array *array, size_t width, size_t capacity)
+enum Result arrayInit(struct Array *array, size_t width, size_t capacity)
 {
   if (!capacity)
     return E_VALUE;

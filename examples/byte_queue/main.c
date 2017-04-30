@@ -20,7 +20,7 @@ static void performQueueTest(void)
   uint8_t buffer[MAX_CAPACITY];
   struct ByteQueue queue;
   unsigned int count;
-  enum result res;
+  enum Result res;
   bool state;
 
 #ifdef NDEBUG

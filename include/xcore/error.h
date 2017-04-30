@@ -12,7 +12,7 @@
 #ifndef XCORE_ERROR_H_
 #define XCORE_ERROR_H_
 /*----------------------------------------------------------------------------*/
-enum result
+enum Result
 {
   E_OK,
   /** Generic error. */

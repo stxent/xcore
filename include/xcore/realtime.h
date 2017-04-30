@@ -26,9 +26,9 @@ struct RtClockClass
 {
   CLASS_HEADER
 
-  enum result (*callback)(void *, void (*)(void *), void *);
-  enum result (*setAlarm)(void *, time64_t);
-  enum result (*setTime)(void *, time64_t);
+  enum Result (*callback)(void *, void (*)(void *), void *);
+  enum Result (*setAlarm)(void *, time64_t);
+  enum Result (*setTime)(void *, time64_t);
   time64_t (*time)(void *);
 };
 /*----------------------------------------------------------------------------*/
@@ -44,7 +44,7 @@ struct RtClock
  * @param argument Callback function argument.
  * @return @b E_OK on success.
  */
-static inline enum result rtCallback(void *clock, void (*callback)(void *),
+static inline enum Result rtCallback(void *clock, void (*callback)(void *),
     void *argument)
 {
   return ((const struct RtClockClass *)CLASS(clock))->callback(clock, callback,
@@ -57,7 +57,7 @@ static inline enum result rtCallback(void *clock, void (*callback)(void *),
  * @param alarmTime Alarm time.
  * @return @b E_OK on success.
  */
-static inline enum result rtSetAlarm(void *clock, time64_t alarmTime)
+static inline enum Result rtSetAlarm(void *clock, time64_t alarmTime)
 {
   return ((const struct RtClockClass *)CLASS(clock))->setAlarm(clock,
       alarmTime);
@@ -69,7 +69,7 @@ static inline enum result rtSetAlarm(void *clock, time64_t alarmTime)
  * @param currentTime Current time.
  * @return @b E_OK on success.
  */
-static inline enum result rtSetTime(void *clock, time64_t currentTime)
+static inline enum Result rtSetTime(void *clock, time64_t currentTime)
 {
   return ((const struct RtClockClass *)CLASS(clock))->setTime(clock,
       currentTime);
@@ -87,7 +87,7 @@ static inline time64_t rtTime(void *clock)
   return ((const struct RtClockClass *)CLASS(clock))->time(clock);
 }
 /*----------------------------------------------------------------------------*/
-enum result rtMakeEpochTime(time64_t *, const struct RtDateTime *);
+enum Result rtMakeEpochTime(time64_t *, const struct RtDateTime *);
 void rtMakeTime(struct RtDateTime *, time64_t);
 /*----------------------------------------------------------------------------*/
 #endif /* XCORE_REALTIME_H_ */

@@ -19,7 +19,7 @@ void *init(const void *descriptor, const void *arguments)
 
   if (base->init)
   {
-    enum result res;
+    enum Result res;
 
     if ((res = base->init(entity, arguments)) != E_OK)
     {

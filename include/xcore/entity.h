@@ -12,7 +12,7 @@
 /*----------------------------------------------------------------------------*/
 #define CLASS_HEADER \
     size_t size;\
-    enum result (*init)(void *, const void *);\
+    enum Result (*init)(void *, const void *);\
     void (*deinit)(void *);
 
 #define CLASS(instance) (((const struct Entity *)(instance))->descriptor)
