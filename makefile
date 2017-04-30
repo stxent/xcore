@@ -5,7 +5,6 @@ PROJECT := xcore
 PROJECT_DIR := $(shell pwd)
 
 CONFIG_FILE ?= .config
-CROSS_COMPILE ?= arm-none-eabi-
 
 -include $(CONFIG_FILE)
 BUILD_FLAGS += PLATFORM
@@ -28,6 +27,7 @@ ifneq ($(findstring x86,$(PLATFORM)),)
     CPU_FLAGS += -m64
   endif
 else ifneq ($(findstring cortex-m,$(PLATFORM)),)
+  CROSS_COMPILE ?= arm-none-eabi-
   AR := $(CROSS_COMPILE)ar
   CC := $(CROSS_COMPILE)gcc
   CXX := $(CROSS_COMPILE)g++
@@ -104,12 +104,12 @@ CXXOBJECTS = $(CXXSOURCES:%.cpp=$(OUTPUT_DIR)/%.o)
 all: $(TARGETS)
 
 $(OUTPUT_DIR)/%.o: %.c $(OPTION_FILE)
-	@echo "$(CC): $@"
+	@echo "$(CC): $(@:$(OUTPUT_DIR)/%=%)"
 	@mkdir -p $(@D)
 	$(Q)$(CC) -c $(CFLAGS) $(INCLUDE_PATH) -MMD -MF $(@:%.o=%.d) -MT $@ $< -o $@
 
 $(OUTPUT_DIR)/%.o: %.cpp $(OPTION_FILE)
-	@echo "$(CXX): $@"
+	@echo "$(CXX): $(@:$(OUTPUT_DIR)/%=%)"
 	@mkdir -p $(@D)
 	$(Q)$(CXX) -c $(CXXFLAGS) $(INCLUDE_PATH) -MMD -MF $(@:%.o=%.d) -MT $@ $< -o $@
 

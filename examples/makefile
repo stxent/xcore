@@ -23,7 +23,7 @@ $(foreach entry,$(EXAMPLES),$(eval $(call make-example,$(entry))))
 
 .SECONDEXPANSION:
 $(EXAMPLE_FILES): $(LIBRARY_FILE) $$($$(notdir $$@)_OBJECTS)
-	@echo "$(CXX): $@"
+	@echo "$(CXX): $(@:$(OUTPUT_DIR)/%=%)"
 	@mkdir -p $(@D)
 	$(Q)$(CXX) $(CXXFLAGS) $^ $(LDFLAGS) $(LDLIBS) -o $@
 
