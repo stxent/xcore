@@ -15,7 +15,7 @@
 #include <xcore/entity.h>
 /*----------------------------------------------------------------------------*/
 /** Interface options. */
-enum ifOption
+enum IfParameter
 {
   /** Elements available in the receive queue. */
   IF_AVAILABLE,
@@ -70,16 +70,16 @@ enum ifOption
   IF_RELEASE,
 
   /** End of the list. */
-  IF_OPTION_END
+  IF_PARAMETER_END
 };
 /*----------------------------------------------------------------------------*/
 struct InterfaceClass
 {
   CLASS_HEADER
 
-  enum result (*callback)(void *, void (*)(void *), void *);
-  enum result (*get)(void *, enum ifOption, void *);
-  enum result (*set)(void *, enum ifOption, const void *);
+  enum result (*setCallback)(void *, void (*)(void *), void *);
+  enum result (*getParam)(void *, enum IfParameter, void *);
+  enum result (*setParam)(void *, enum IfParameter, const void *);
   size_t (*read)(void *, void *, size_t);
   size_t (*write)(void *, const void *, size_t);
 };
@@ -96,39 +96,39 @@ struct Interface
  * @param argument Callback function argument.
  * @return @b E_OK on success.
  */
-static inline enum result ifCallback(void *interface, void (*callback)(void *),
-    void *argument)
+static inline enum result ifSetCallback(void *interface,
+    void (*callback)(void *), void *argument)
 {
-  return ((const struct InterfaceClass *)CLASS(interface))->callback(interface,
-      callback, argument);
+  return ((const struct InterfaceClass *)CLASS(interface))->
+      setCallback(interface, callback, argument);
 }
 /*----------------------------------------------------------------------------*/
 /**
- * Retrieve the interface option.
+ * Read the interface parameter.
  * @param interface Pointer to an Interface object.
- * @param option Option to be read.
+ * @param parameter Parameter to be read.
  * @param data Pointer to a variable where a value of the option will be stored.
  * @return @b E_OK on success.
  */
-static inline enum result ifGet(void *interface, enum ifOption option,
-    void *data)
+static inline enum result ifGetParam(void *interface,
+    enum IfParameter parameter, void *data)
 {
-  return ((const struct InterfaceClass *)CLASS(interface))->get(interface,
-      option, data);
+  return ((const struct InterfaceClass *)CLASS(interface))->getParam(interface,
+      parameter, data);
 }
 /*----------------------------------------------------------------------------*/
 /**
- * Set the interface option.
+ * Set the interface parameter.
  * @param interface Pointer to an Interface object.
- * @param option Option to be set.
+ * @param parameter Parameter to be set.
  * @param data Pointer to a new value of the option.
  * @return @b E_OK on success.
  */
-static inline enum result ifSet(void *interface, enum ifOption option,
-    const void *data)
+static inline enum result ifSetParam(void *interface,
+    enum IfParameter parameter, const void *data)
 {
-  return ((const struct InterfaceClass *)CLASS(interface))->set(interface,
-      option, data);
+  return ((const struct InterfaceClass *)CLASS(interface))->setParam(interface,
+      parameter, data);
 }
 /*----------------------------------------------------------------------------*/
 /**
