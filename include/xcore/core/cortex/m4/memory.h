@@ -14,7 +14,7 @@ BEGIN_DECLS
 
 static inline uint32_t countLeadingZeros32(uint32_t value)
 {
-  return __clz(value);
+  return __builtin_clz(value);
 }
 /*----------------------------------------------------------------------------*/
 static inline uint32_t reverseBits32(uint32_t value)
@@ -24,17 +24,17 @@ static inline uint32_t reverseBits32(uint32_t value)
 /*----------------------------------------------------------------------------*/
 static inline uint64_t toBigEndian64(uint64_t value)
 {
-  return (uint64_t)__rev(value) << 32 | (uint64_t)__rev(value >> 32);
+  return __builtin_bswap64(value);
 }
 /*----------------------------------------------------------------------------*/
 static inline uint32_t toBigEndian32(uint32_t value)
 {
-  return __rev(value);
+  return __builtin_bswap32(value);
 }
 /*----------------------------------------------------------------------------*/
 static inline uint16_t toBigEndian16(uint16_t value)
 {
-  return __rev16(value);
+  return __builtin_bswap16(value);
 }
 /*----------------------------------------------------------------------------*/
 static inline uint64_t toLittleEndian64(uint64_t value)

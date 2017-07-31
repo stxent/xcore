@@ -53,31 +53,7 @@ static inline void __interruptsSetState(uint32_t state)
       : [state] "r" (state)
   );
 }
-/*----------------------------------------------------------------------------*/
-static inline uint32_t __rev(uint32_t value)
-{
-  uint32_t result;
 
-  __asm__ volatile (
-      "REV %[result], %[value]"
-      : [result] "=r" (result)
-      : [value] "r" (value)
-  );
-  return result;
-}
-/*----------------------------------------------------------------------------*/
-static inline uint16_t __rev16(uint16_t value)
-{
-  uint16_t result;
-
-  __asm__ volatile (
-      "REV16 %[result], %[value]"
-      : [result] "=r" (result)
-      : [value] "r" (value)
-  );
-  return result;
-}
-/*----------------------------------------------------------------------------*/
 static inline void __wfi(void)
 {
   __asm__ volatile ("WFI");

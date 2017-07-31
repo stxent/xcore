@@ -14,18 +14,6 @@
 /*----------------------------------------------------------------------------*/
 BEGIN_DECLS
 
-static inline uint32_t __clz(uint32_t value)
-{
-  uint32_t result;
-
-  __asm__ volatile (
-      "CLZ %[result], %[value]"
-      : [result] "=r" (result)
-      : [value] "r" (value)
-  );
-  return result;
-}
-/*----------------------------------------------------------------------------*/
 static inline void __dmb(void)
 {
   __asm__ volatile ("DMB");
@@ -147,31 +135,7 @@ static inline uint32_t __rbit(uint32_t value)
   );
   return result;
 }
-/*----------------------------------------------------------------------------*/
-static inline uint32_t __rev(uint32_t value)
-{
-  uint32_t result;
 
-  __asm__ volatile (
-      "REV %[result], %[value]"
-      : [result] "=r" (result)
-      : [value] "r" (value)
-  );
-  return result;
-}
-/*----------------------------------------------------------------------------*/
-static inline uint16_t __rev16(uint16_t value)
-{
-  uint16_t result;
-
-  __asm__ volatile (
-      "REV16 %[result], %[value]"
-      : [result] "=r" (result)
-      : [value] "r" (value)
-  );
-  return result;
-}
-/*----------------------------------------------------------------------------*/
 static inline uint32_t __strex(uint32_t value, volatile uint32_t *address)
 {
   uint32_t result;
