@@ -44,27 +44,27 @@ static inline void *arrayAt(const struct Array *array, size_t index)
 {
   return (void *)((uintptr_t)array->data + index * array->width);
 }
-/*----------------------------------------------------------------------------*/
+
 static inline size_t arrayCapacity(const struct Array *array)
 {
   return array->capacity;
 }
-/*----------------------------------------------------------------------------*/
+
 static inline void arrayClear(struct Array *array)
 {
   array->size = 0;
 }
-/*----------------------------------------------------------------------------*/
+
 static inline bool arrayEmpty(const struct Array *array)
 {
   return array->size == 0;
 }
-/*----------------------------------------------------------------------------*/
+
 static inline bool arrayFull(const struct Array *array)
 {
   return array->size == array->capacity;
 }
-/*----------------------------------------------------------------------------*/
+
 static inline size_t arraySize(const struct Array *array)
 {
   return array->size;

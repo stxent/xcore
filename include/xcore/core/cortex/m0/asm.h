@@ -18,22 +18,22 @@ static inline void __dmb(void)
 {
   __asm__ volatile ("DMB");
 }
-/*----------------------------------------------------------------------------*/
+
 static inline void __dsb(void)
 {
   __asm__ volatile ("DSB");
 }
-/*----------------------------------------------------------------------------*/
+
 static inline void __interruptsDisable(void)
 {
   __asm__ volatile ("CPSID i");
 }
-/*----------------------------------------------------------------------------*/
+
 static inline void __interruptsEnable(void)
 {
   __asm__ volatile ("CPSIE i");
 }
-/*----------------------------------------------------------------------------*/
+
 static inline uint32_t __interruptsGetState(void)
 {
   uint32_t state;
@@ -44,7 +44,7 @@ static inline uint32_t __interruptsGetState(void)
   );
   return state;
 }
-/*----------------------------------------------------------------------------*/
+
 static inline void __interruptsSetState(uint32_t state)
 {
   __asm__ volatile (

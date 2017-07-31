@@ -83,7 +83,7 @@ struct InterfaceClass
   size_t (*read)(void *, void *, size_t);
   size_t (*write)(void *, const void *, size_t);
 };
-/*----------------------------------------------------------------------------*/
+
 struct Interface
 {
   struct Entity base;
@@ -104,7 +104,7 @@ static inline enum Result ifSetCallback(void *interface,
   return ((const struct InterfaceClass *)CLASS(interface))->
       setCallback(interface, callback, argument);
 }
-/*----------------------------------------------------------------------------*/
+
 /**
  * Read the interface parameter.
  * @param interface Pointer to an Interface object.
@@ -118,7 +118,7 @@ static inline enum Result ifGetParam(void *interface,
   return ((const struct InterfaceClass *)CLASS(interface))->getParam(interface,
       parameter, data);
 }
-/*----------------------------------------------------------------------------*/
+
 /**
  * Set the interface parameter.
  * @param interface Pointer to an Interface object.
@@ -132,7 +132,7 @@ static inline enum Result ifSetParam(void *interface,
   return ((const struct InterfaceClass *)CLASS(interface))->setParam(interface,
       parameter, data);
 }
-/*----------------------------------------------------------------------------*/
+
 /**
  * Receive data from the interface.
  * @param interface Pointer to an Interface object.
@@ -145,7 +145,7 @@ static inline size_t ifRead(void *interface, void *buffer, size_t length)
   return ((const struct InterfaceClass *)CLASS(interface))->read(interface,
       buffer, length);
 }
-/*----------------------------------------------------------------------------*/
+
 /**
  * Send data over the interface.
  * @param interface Pointer to an Interface object.

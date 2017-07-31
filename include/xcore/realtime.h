@@ -11,7 +11,7 @@
 #include <xcore/entity.h>
 /*----------------------------------------------------------------------------*/
 typedef int64_t time64_t;
-/*----------------------------------------------------------------------------*/
+
 struct RtDateTime
 {
   uint16_t year;
@@ -31,7 +31,7 @@ struct RtClockClass
   enum Result (*setTime)(void *, time64_t);
   time64_t (*time)(void *);
 };
-/*----------------------------------------------------------------------------*/
+
 struct RtClock
 {
   struct Entity base;
@@ -52,7 +52,7 @@ static inline enum Result rtCallback(void *clock, void (*callback)(void *),
   return ((const struct RtClockClass *)CLASS(clock))->callback(clock, callback,
       argument);
 }
-/*----------------------------------------------------------------------------*/
+
 /**
  * Set alarm time.
  * @param clock Pointer to an Rtc object.
@@ -64,7 +64,7 @@ static inline enum Result rtSetAlarm(void *clock, time64_t alarmTime)
   return ((const struct RtClockClass *)CLASS(clock))->setAlarm(clock,
       alarmTime);
 }
-/*----------------------------------------------------------------------------*/
+
 /**
  * Set current time.
  * @param clock Pointer to an RtClock object.
@@ -76,7 +76,7 @@ static inline enum Result rtSetTime(void *clock, time64_t currentTime)
   return ((const struct RtClockClass *)CLASS(clock))->setTime(clock,
       currentTime);
 }
-/*----------------------------------------------------------------------------*/
+
 /**
  * Get current calendar time.
  * The value returned generally represents the number of seconds

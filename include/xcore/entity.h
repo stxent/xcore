@@ -22,7 +22,7 @@ struct EntityClass
 {
   CLASS_HEADER
 };
-/*----------------------------------------------------------------------------*/
+
 struct Entity
 {
   const void *descriptor;

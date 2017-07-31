@@ -42,31 +42,31 @@ static inline size_t byteQueueCapacity(const struct ByteQueue *queue)
 {
   return queue->capacity;
 }
-/*----------------------------------------------------------------------------*/
+
 static inline void byteQueueClear(struct ByteQueue *queue)
 {
   queue->size = 0;
   queue->ceil = 0;
   queue->floor = 0;
 }
-/*----------------------------------------------------------------------------*/
+
 static inline bool byteQueueEmpty(const struct ByteQueue *queue)
 {
   return queue->size == 0;
 }
-/*----------------------------------------------------------------------------*/
+
 static inline bool byteQueueFull(const struct ByteQueue *queue)
 {
   return queue->size == queue->capacity;
 }
-/*----------------------------------------------------------------------------*/
+
 static inline uint8_t byteQueuePeek(const struct ByteQueue *queue)
 {
   assert(queue->size);
 
   return queue->data[queue->floor];
 }
-/*----------------------------------------------------------------------------*/
+
 static inline uint8_t byteQueuePop(struct ByteQueue *queue)
 {
   assert(queue->size);
@@ -80,7 +80,7 @@ static inline uint8_t byteQueuePop(struct ByteQueue *queue)
 
   return tmp;
 }
-/*----------------------------------------------------------------------------*/
+
 static inline void byteQueuePush(struct ByteQueue *queue, uint8_t value)
 {
   assert(queue->size < queue->capacity);
@@ -92,7 +92,7 @@ static inline void byteQueuePush(struct ByteQueue *queue, uint8_t value)
 
   ++queue->size;
 }
-/*----------------------------------------------------------------------------*/
+
 static inline size_t byteQueueSize(const struct ByteQueue *queue)
 {
   return queue->size;

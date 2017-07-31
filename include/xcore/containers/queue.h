@@ -44,22 +44,22 @@ static inline size_t queueCapacity(const struct Queue *queue)
 {
   return queue->capacity;
 }
-/*----------------------------------------------------------------------------*/
+
 static inline void queueClear(struct Queue *queue)
 {
   queue->floor = queue->ceil = queue->size = 0;
 }
-/*----------------------------------------------------------------------------*/
+
 static inline bool queueEmpty(const struct Queue *queue)
 {
   return queue->size == 0;
 }
-/*----------------------------------------------------------------------------*/
+
 static inline bool queueFull(const struct Queue *queue)
 {
   return queue->size == queue->capacity;
 }
-/*----------------------------------------------------------------------------*/
+
 static inline size_t queueSize(const struct Queue *queue)
 {
   return queue->size;

@@ -21,7 +21,7 @@
 /*----------------------------------------------------------------------------*/
 typedef uint8_t access_t;
 typedef uint32_t length_t;
-/*----------------------------------------------------------------------------*/
+
 enum
 {
   /** Read access to a node. */
@@ -29,7 +29,7 @@ enum
   /** Write access allows to modify and delete nodes. */
   FS_ACCESS_WRITE = 0x02
 };
-/*----------------------------------------------------------------------------*/
+
 enum FsFieldType
 {
   /** Access rights to the node. */
@@ -48,7 +48,7 @@ enum FsFieldType
   /** End of the list. */
   FS_TYPE_END
 };
-/*----------------------------------------------------------------------------*/
+
 struct FsFieldDescriptor
 {
   const void *data;
@@ -63,12 +63,12 @@ struct FsHandleClass
   void *(*root)(void *);
   enum Result (*sync)(void *);
 };
-/*----------------------------------------------------------------------------*/
+
 struct FsHandle
 {
   struct Entity base;
 };
-/*----------------------------------------------------------------------------*/
+
 struct FsNodeClass
 {
   CLASS_HEADER
@@ -84,7 +84,7 @@ struct FsNodeClass
   enum Result (*write)(void *, enum FsFieldType, length_t, const void *,
       length_t, length_t *);
 };
-/*----------------------------------------------------------------------------*/
+
 struct FsNode
 {
   struct Entity base;
@@ -101,7 +101,7 @@ static inline void *fsHandleRoot(void *handle)
 {
   return ((const struct FsHandleClass *)CLASS(handle))->root(handle);
 }
-/*----------------------------------------------------------------------------*/
+
 /**
  * Write information about changed entries to the physical device.
  * @param handle Pointer to a file system handle.
@@ -110,7 +110,7 @@ static inline enum Result fsHandleSync(void *handle)
 {
   return ((const struct FsHandleClass *)CLASS(handle))->sync(handle);
 }
-/*----------------------------------------------------------------------------*/
+
 /**
  * Create a new node.
  * @param root Root node where the new node should be placed.
@@ -125,7 +125,7 @@ static inline enum Result fsNodeCreate(void *root,
   return ((const struct FsNodeClass *)CLASS(root))->create(root,
       descriptors, number);
 }
-/*----------------------------------------------------------------------------*/
+
 /**
  * Get a first node from the chain of descendant nodes.
  * @param node Pointer to an FsNode object.
@@ -135,7 +135,7 @@ static inline void *fsNodeHead(void *node)
 {
   return ((const struct FsNodeClass *)CLASS(node))->head(node);
 }
-/*----------------------------------------------------------------------------*/
+
 /**
  * Free memory allocated for the node.
  * @param node Pointer to a previously allocated FsNode object.
@@ -144,7 +144,7 @@ static inline void fsNodeFree(void *node)
 {
   ((const struct FsNodeClass *)CLASS(node))->free(node);
 }
-/*----------------------------------------------------------------------------*/
+
 /**
  * Read length of the specified field.
  * @param node Pointer to an FsNode object.
@@ -158,7 +158,7 @@ static inline enum Result fsNodeLength(void *node, enum FsFieldType type,
 {
   return ((const struct FsNodeClass *)CLASS(node))->length(node, type, length);
 }
-/*----------------------------------------------------------------------------*/
+
 /**
  * Read basic information about the next node in the chain.
  * @param node Pointer to an FsNode object.
@@ -169,7 +169,7 @@ static inline enum Result fsNodeNext(void *node)
 {
   return ((const struct FsNodeClass *)CLASS(node))->next(node);
 }
-/*----------------------------------------------------------------------------*/
+
 /**
  * Read supplementary information about the node.
  * @param node Pointer to an FsNode object.
@@ -188,7 +188,7 @@ static inline enum Result fsNodeRead(void *node, enum FsFieldType type,
   return ((const struct FsNodeClass *)CLASS(node))->read(node, type, position,
       buffer, length, read);
 }
-/*----------------------------------------------------------------------------*/
+
 /**
  * Remove entry and make the space it was using available for reuse.
  * @param root Root node where the @b node to be removed is located.
@@ -199,7 +199,7 @@ static inline enum Result fsNodeRemove(void *root, void *node)
 {
   return ((const struct FsNodeClass *)CLASS(root))->remove(root, node);
 }
-/*----------------------------------------------------------------------------*/
+
 /**
  * Write supplementary information about the node.
  * @param node Pointer to an FsNode object.

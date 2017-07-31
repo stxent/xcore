@@ -53,17 +53,17 @@ static inline void listData(const struct List *list,
 {
   memcpy(element, node->data, list->width);
 }
-/*----------------------------------------------------------------------------*/
+
 static inline struct ListNode *listFirst(const struct List *list)
 {
   return list->first;
 }
-/*----------------------------------------------------------------------------*/
+
 static inline struct ListNode *listNext(const struct ListNode *node)
 {
   return node->next;
 }
-/*----------------------------------------------------------------------------*/
+
 static inline bool listEmpty(const struct List *list)
 {
   return list->first == 0;

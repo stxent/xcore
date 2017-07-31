@@ -18,27 +18,27 @@ static inline void __dmb(void)
 {
   __asm__ volatile ("DMB");
 }
-/*----------------------------------------------------------------------------*/
+
 static inline void __dsb(void)
 {
   __asm__ volatile ("DSB");
 }
-/*----------------------------------------------------------------------------*/
+
 static inline void __clrex(void)
 {
   __asm__ volatile ("CLREX");
 }
-/*----------------------------------------------------------------------------*/
+
 static inline void __interruptsDisable(void)
 {
   __asm__ volatile ("CPSID i");
 }
-/*----------------------------------------------------------------------------*/
+
 static inline void __interruptsEnable(void)
 {
   __asm__ volatile ("CPSIE i");
 }
-/*----------------------------------------------------------------------------*/
+
 static inline uint32_t __interruptsGetBasePriority(void)
 {
   uint32_t priority;
@@ -49,7 +49,7 @@ static inline uint32_t __interruptsGetBasePriority(void)
   );
   return priority;
 }
-/*----------------------------------------------------------------------------*/
+
 static inline uint32_t __interruptsGetState(void)
 {
   uint32_t state;
@@ -60,7 +60,7 @@ static inline uint32_t __interruptsGetState(void)
   );
   return state;
 }
-/*----------------------------------------------------------------------------*/
+
 static inline void __interruptsSetBasePriority(uint32_t priority)
 {
   __asm__ volatile (
@@ -69,7 +69,7 @@ static inline void __interruptsSetBasePriority(uint32_t priority)
       : [priority] "r" (priority)
   );
 }
-/*----------------------------------------------------------------------------*/
+
 static inline void __interruptsSetState(uint32_t state)
 {
   __asm__ volatile (
@@ -78,7 +78,7 @@ static inline void __interruptsSetState(uint32_t state)
       : [state] "r" (state)
   );
 }
-/*----------------------------------------------------------------------------*/
+
 static inline void __interruptsResetBasePriority(uint32_t priority)
 {
   __asm__ volatile (
@@ -87,7 +87,7 @@ static inline void __interruptsResetBasePriority(uint32_t priority)
       : [priority] "r" (priority)
   );
 }
-/*----------------------------------------------------------------------------*/
+
 static inline uint32_t __ldrex(volatile uint32_t *address)
 {
   uint32_t result;
@@ -99,7 +99,7 @@ static inline uint32_t __ldrex(volatile uint32_t *address)
   );
   return result;
 }
-/*----------------------------------------------------------------------------*/
+
 static inline uint8_t __ldrexb(volatile uint8_t *address)
 {
   uint8_t result;
@@ -111,7 +111,7 @@ static inline uint8_t __ldrexb(volatile uint8_t *address)
   );
   return result;
 }
-/*----------------------------------------------------------------------------*/
+
 static inline uint16_t __ldrexh(volatile uint16_t *address)
 {
   uint16_t result;
@@ -123,7 +123,7 @@ static inline uint16_t __ldrexh(volatile uint16_t *address)
   );
   return result;
 }
-/*----------------------------------------------------------------------------*/
+
 static inline uint32_t __rbit(uint32_t value)
 {
   uint32_t result;
@@ -147,7 +147,7 @@ static inline uint32_t __strex(uint32_t value, volatile uint32_t *address)
   );
   return result;
 }
-/*----------------------------------------------------------------------------*/
+
 static inline uint32_t __strexb(uint8_t value, volatile uint8_t *address)
 {
   uint32_t result;
@@ -159,7 +159,7 @@ static inline uint32_t __strexb(uint8_t value, volatile uint8_t *address)
   );
   return result;
 }
-/*----------------------------------------------------------------------------*/
+
 static inline uint32_t __strexh(uint16_t value, volatile uint16_t *address)
 {
   uint32_t result;
@@ -171,7 +171,7 @@ static inline uint32_t __strexh(uint16_t value, volatile uint16_t *address)
   );
   return result;
 }
-/*----------------------------------------------------------------------------*/
+
 static inline void __wfi(void)
 {
   __asm__ volatile ("WFI");
