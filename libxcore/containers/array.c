@@ -4,7 +4,9 @@
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
+#include <assert.h>
 #include <stdlib.h>
+#include <string.h>
 #include <xcore/containers/array.h>
 /*----------------------------------------------------------------------------*/
 enum Result arrayInit(struct Array *array, size_t width, size_t capacity)

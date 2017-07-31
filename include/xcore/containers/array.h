@@ -7,11 +7,9 @@
 #ifndef XCORE_CONTAINERS_ARRAY_H_
 #define XCORE_CONTAINERS_ARRAY_H_
 /*----------------------------------------------------------------------------*/
-#include <assert.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <string.h>
 #include <xcore/helpers.h>
 #include <xcore/error.h>
 /*----------------------------------------------------------------------------*/

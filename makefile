@@ -21,11 +21,12 @@ ifneq ($(findstring x86,$(PLATFORM)),)
   AR := ar
   CC := gcc
   CXX := g++
-  ifeq ($(CONFIG_TARGET),"x86")
+  ifeq ($(PLATFORM),x86)
     CPU_FLAGS += -m32
   else
     CPU_FLAGS += -m64
   endif
+  CPU_FLAGS += -D_POSIX_C_SOURCE=200809L
 else ifneq ($(findstring cortex-m,$(PLATFORM)),)
   CROSS_COMPILE ?= arm-none-eabi-
   AR := $(CROSS_COMPILE)ar
