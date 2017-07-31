@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
+#include <xcore/helpers.h>
 #include <xcore/error.h>
 /*----------------------------------------------------------------------------*/
 struct Array
@@ -26,13 +27,19 @@ struct Array
   size_t width;
 };
 /*----------------------------------------------------------------------------*/
+BEGIN_DECLS
+
 enum Result arrayInit(struct Array *, size_t, size_t);
 void arrayDeinit(struct Array *);
 void arrayErase(struct Array *, size_t);
 void arrayInsert(struct Array *, size_t, const void *);
 void arrayPopBack(struct Array *, void *);
 void arrayPushBack(struct Array *, const void *);
+
+END_DECLS
 /*----------------------------------------------------------------------------*/
+BEGIN_DECLS
+
 static inline void *arrayAt(const struct Array *array, size_t index)
 {
   return (void *)((uintptr_t)array->data + index * array->width);
@@ -62,5 +69,7 @@ static inline size_t arraySize(const struct Array *array)
 {
   return array->size;
 }
+
+END_DECLS
 /*----------------------------------------------------------------------------*/
 #endif /* XCORE_CONTAINERS_ARRAY_H_ */

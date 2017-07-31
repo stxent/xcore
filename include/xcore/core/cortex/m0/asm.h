@@ -8,9 +8,12 @@
 #define XCORE_CORE_CORTEX_M0_ASM_H_
 /*----------------------------------------------------------------------------*/
 #include <stdint.h>
+#include <xcore/helpers.h>
 /*----------------------------------------------------------------------------*/
 #define barrier() __asm__ volatile ("" : : : "memory")
 /*----------------------------------------------------------------------------*/
+BEGIN_DECLS
+
 static inline void __dmb(void)
 {
   __asm__ volatile ("DMB");
@@ -79,10 +82,16 @@ static inline void __wfi(void)
 {
   __asm__ volatile ("WFI");
 }
+
+END_DECLS
 /*----------------------------------------------------------------------------*/
+BEGIN_DECLS
+
 uint32_t __getMainStackPointer(void) __attribute__((naked));
 uint32_t __getProcessStackPointer(void) __attribute__((naked));
 void __setMainStackPointer(uint32_t) __attribute__((naked));
 void __setProcessStackPointer(uint32_t) __attribute__((naked));
+
+END_DECLS
 /*----------------------------------------------------------------------------*/
 #endif /* XCORE_CORE_CORTEX_M0_ASM_H_ */

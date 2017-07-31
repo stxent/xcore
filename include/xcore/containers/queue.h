@@ -9,6 +9,7 @@
 /*----------------------------------------------------------------------------*/
 #include <stdbool.h>
 #include <stddef.h>
+#include <xcore/helpers.h>
 #include <xcore/error.h>
 /*----------------------------------------------------------------------------*/
 struct Queue
@@ -27,12 +28,18 @@ struct Queue
   size_t width;
 };
 /*----------------------------------------------------------------------------*/
+BEGIN_DECLS
+
 enum Result queueInit(struct Queue *, size_t, size_t);
 void queueDeinit(struct Queue *);
 void queuePeek(const struct Queue *, void *);
 void queuePop(struct Queue *, void *);
 void queuePush(struct Queue *, const void *);
+
+END_DECLS
 /*----------------------------------------------------------------------------*/
+BEGIN_DECLS
+
 static inline size_t queueCapacity(const struct Queue *queue)
 {
   return queue->capacity;
@@ -57,5 +64,7 @@ static inline size_t queueSize(const struct Queue *queue)
 {
   return queue->size;
 }
+
+END_DECLS
 /*----------------------------------------------------------------------------*/
 #endif /* XCORE_CONTAINERS_QUEUE_H_ */

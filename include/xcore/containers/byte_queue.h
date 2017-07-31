@@ -11,6 +11,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <xcore/helpers.h>
 #include <xcore/error.h>
 /*----------------------------------------------------------------------------*/
 struct ByteQueue
@@ -26,11 +27,17 @@ struct ByteQueue
   size_t floor;
 };
 /*----------------------------------------------------------------------------*/
+BEGIN_DECLS
+
 enum Result byteQueueInit(struct ByteQueue *, size_t);
 void byteQueueDeinit(struct ByteQueue *);
 size_t byteQueuePopArray(struct ByteQueue *, void *, size_t);
 size_t byteQueuePushArray(struct ByteQueue *, const void *, size_t);
+
+END_DECLS
 /*----------------------------------------------------------------------------*/
+BEGIN_DECLS
+
 static inline size_t byteQueueCapacity(const struct ByteQueue *queue)
 {
   return queue->capacity;
@@ -90,5 +97,7 @@ static inline size_t byteQueueSize(const struct ByteQueue *queue)
 {
   return queue->size;
 }
+
+END_DECLS
 /*----------------------------------------------------------------------------*/
 #endif /* XCORE_CONTAINERS_BYTE_QUEUE_H_ */

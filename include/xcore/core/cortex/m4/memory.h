@@ -10,6 +10,8 @@
 #include <stdbool.h>
 #include <xcore/core/cortex/m4/asm.h>
 /*----------------------------------------------------------------------------*/
+BEGIN_DECLS
+
 static inline uint32_t countLeadingZeros32(uint32_t value)
 {
   return __clz(value);
@@ -79,7 +81,13 @@ static inline uint16_t fromLittleEndian16(uint16_t value)
 {
   return value;
 }
+
+END_DECLS
 /*----------------------------------------------------------------------------*/
+BEGIN_DECLS
+
 bool compareExchangePointer(void **, const void *, void *);
+
+END_DECLS
 /*----------------------------------------------------------------------------*/
 #endif /* XCORE_CORE_CORTEX_M4_MEMORY_H_ */

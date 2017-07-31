@@ -9,6 +9,7 @@
 /*----------------------------------------------------------------------------*/
 #include <stddef.h>
 #include <xcore/error.h>
+#include <xcore/helpers.h>
 /*----------------------------------------------------------------------------*/
 #define CLASS_HEADER \
     size_t size;\
@@ -27,7 +28,11 @@ struct Entity
   const void *descriptor;
 };
 /*----------------------------------------------------------------------------*/
+BEGIN_DECLS
+
 void *init(const void *, const void *);
 void deinit(void *);
+
+END_DECLS
 /*----------------------------------------------------------------------------*/
 #endif /* XCORE_ENTITY_H_ */

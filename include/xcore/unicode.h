@@ -9,13 +9,18 @@
 /*----------------------------------------------------------------------------*/
 #include <stddef.h>
 #include <stdint.h>
+#include <xcore/helpers.h>
 /*----------------------------------------------------------------------------*/
 /* Type for Unicode UTF-16 characters */
 typedef uint16_t char16_t;
 /*----------------------------------------------------------------------------*/
+BEGIN_DECLS
+
 size_t uLengthFromUtf16(const char16_t *);
 size_t uLengthToUtf16(const char *);
 size_t uFromUtf16(char *, const char16_t *, size_t);
 size_t uToUtf16(char16_t *, const char *, size_t);
+
+END_DECLS
 /*----------------------------------------------------------------------------*/
 #endif /* XCORE_UNICODE_H_ */

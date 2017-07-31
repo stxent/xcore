@@ -37,6 +37,8 @@ struct RtClock
   struct Entity base;
 };
 /*----------------------------------------------------------------------------*/
+BEGIN_DECLS
+
 /**
  * Set callback function and its argument.
  * @param clock Pointer to an RtClock object.
@@ -86,8 +88,14 @@ static inline time64_t rtTime(void *clock)
 {
   return ((const struct RtClockClass *)CLASS(clock))->time(clock);
 }
+
+END_DECLS
 /*----------------------------------------------------------------------------*/
+BEGIN_DECLS
+
 enum Result rtMakeEpochTime(time64_t *, const struct RtDateTime *);
 void rtMakeTime(struct RtDateTime *, time64_t);
+
+END_DECLS
 /*----------------------------------------------------------------------------*/
 #endif /* XCORE_REALTIME_H_ */

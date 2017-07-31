@@ -10,6 +10,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <xcore/core/intel/asm.h>
+#include <xcore/helpers.h>
 /*----------------------------------------------------------------------------*/
 #define TO_BIG_ENDIAN_16(value) \
     ((((value) << 8) & 0xFF00) | (((value) >> 8) & 0x00FF))
@@ -24,6 +25,8 @@
 #define FROM_BIG_ENDIAN_32(value)       TO_BIG_ENDIAN_32(value)
 #define FROM_LITTLE_ENDIAN_32(value)    TO_LITTLE_ENDIAN_32(value)
 /*----------------------------------------------------------------------------*/
+BEGIN_DECLS
+
 static inline uint32_t countLeadingZeros32(uint32_t value)
 {
   /* If input value is 0, the result is undefined */
@@ -95,5 +98,7 @@ static inline bool compareExchangePointer(void **pointer, void *expected,
 {
   return __sync_bool_compare_and_swap(pointer, expected, desired);
 }
+
+END_DECLS
 /*----------------------------------------------------------------------------*/
 #endif /* XCORE_CORE_INTEL_MEMORY_H_ */

@@ -90,6 +90,8 @@ struct FsNode
   struct Entity base;
 };
 /*----------------------------------------------------------------------------*/
+BEGIN_DECLS
+
 /**
  * Get a root node of the file system tree.
  * @param handle Pointer to a file system handle.
@@ -216,5 +218,7 @@ static inline enum Result fsNodeWrite(void *node, enum FsFieldType type,
   return ((const struct FsNodeClass *)CLASS(node))->write(node, type, position,
       buffer, length, written);
 }
+
+END_DECLS
 /*----------------------------------------------------------------------------*/
 #endif /* XCORE_FS_H_ */

@@ -10,6 +10,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <string.h>
+#include <xcore/helpers.h>
 #include <xcore/error.h>
 /*----------------------------------------------------------------------------*/
 struct ListNode
@@ -28,6 +29,8 @@ struct List
   size_t width;
 };
 /*----------------------------------------------------------------------------*/
+BEGIN_DECLS
+
 enum Result listInit(struct List *, size_t);
 void listDeinit(struct List *);
 void listClear(struct List *);
@@ -40,7 +43,11 @@ enum Result listPush(struct List *, const void *);
 
 size_t listCapacity(const struct List *);
 size_t listSize(const struct List *);
+
+END_DECLS
 /*----------------------------------------------------------------------------*/
+BEGIN_DECLS
+
 static inline void listData(const struct List *list,
     const struct ListNode *node, void *element)
 {
@@ -61,5 +68,7 @@ static inline bool listEmpty(const struct List *list)
 {
   return list->first == 0;
 }
+
+END_DECLS
 /*----------------------------------------------------------------------------*/
 #endif /* XCORE_CONTAINERS_LIST_H_ */

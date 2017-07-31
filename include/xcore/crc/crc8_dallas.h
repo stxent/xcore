@@ -9,7 +9,12 @@
 /*----------------------------------------------------------------------------*/
 #include <stddef.h>
 #include <stdint.h>
+#include <xcore/helpers.h>
 /*----------------------------------------------------------------------------*/
+BEGIN_DECLS
+
 uint8_t crc8DallasUpdate(uint8_t, const void *, size_t);
+
+END_DECLS
 /*----------------------------------------------------------------------------*/
 #endif /* XCORE_CRC_CRC8_DALLAS_H_ */

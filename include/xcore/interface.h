@@ -89,6 +89,8 @@ struct Interface
   struct Entity base;
 };
 /*----------------------------------------------------------------------------*/
+BEGIN_DECLS
+
 /**
  * Set callback function and its argument called on completion event.
  * @param interface Pointer to an Interface object.
@@ -156,5 +158,7 @@ static inline size_t ifWrite(void *interface, const void *buffer, size_t length)
   return ((const struct InterfaceClass *)CLASS(interface))->write(interface,
       buffer, length);
 }
+
+END_DECLS
 /*----------------------------------------------------------------------------*/
 #endif /* XCORE_INTERFACE_H_ */
