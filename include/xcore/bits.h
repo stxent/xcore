@@ -12,9 +12,4 @@
 #define FIELD_VALUE(reg, mask, shift)   (((reg) & (mask)) >> (shift))
 #define MASK(width)                     ((1UL << (width)) - 1)
 /*----------------------------------------------------------------------------*/
-#define ARRAY_SIZE(array)               (sizeof(array) / sizeof(*(array)))
-/*----------------------------------------------------------------------------*/
-#define TO_STRING(text)                 #text
-#define EXPAND_TO_STRING(text)          TO_STRING(text)
-/*----------------------------------------------------------------------------*/
 #endif /* XCORE_BITS_H_ */

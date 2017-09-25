@@ -22,4 +22,16 @@
 
 #endif
 /*----------------------------------------------------------------------------*/
+#define ARRAY_SIZE(array)       (sizeof(array) / sizeof(*(array)))
+/*----------------------------------------------------------------------------*/
+/*
+ * The classic MIN and MAX macros.
+ * Note that statements will be evaluated twice.
+ */
+#define MAX(a, b)               ((a) > (b) ? (a) : (b))
+#define MIN(a, b)               ((a) > (b) ? (b) : (a))
+/*----------------------------------------------------------------------------*/
+#define TO_STRING(text)         #text
+#define EXPAND_TO_STRING(text)  TO_STRING(text)
+/*----------------------------------------------------------------------------*/
 #endif /* XCORE_HELPERS_H_ */
