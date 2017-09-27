@@ -9,10 +9,10 @@
 /*----------------------------------------------------------------------------*/
 #if defined(__i386__)
 #define CORE            x86
-#define CORE_TYPE       intel
+#define CORE_TYPE       x86
 #elif defined(__x86_64__)
 #define CORE            x86_64
-#define CORE_TYPE       intel
+#define CORE_TYPE       x86
 #elif defined(__ARM_ARCH_6M__)
 #define CORE            m0
 #define CORE_TYPE       cortex

@@ -68,7 +68,7 @@ struct FsHandle
 {
   struct Entity base;
 };
-
+/*----------------------------------------------------------------------------*/
 struct FsNodeClass
 {
   CLASS_HEADER

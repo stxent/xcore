@@ -1,5 +1,5 @@
 /*
- * xcore/core/intel/memory.h
+ * xcore/core/x86/memory.h
  * Copyright (C) 2015 xent
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
@@ -9,7 +9,7 @@
 /*----------------------------------------------------------------------------*/
 #include <stdbool.h>
 #include <stdint.h>
-#include <xcore/core/intel/asm.h>
+#include <xcore/core/x86/asm.h>
 #include <xcore/helpers.h>
 /*----------------------------------------------------------------------------*/
 #define TO_BIG_ENDIAN_16(value) \

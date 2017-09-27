@@ -19,15 +19,9 @@ static void performQueueTest(void)
       "sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
   uint8_t buffer[MAX_CAPACITY];
   struct ByteQueue queue;
-  unsigned int count;
+  size_t count;
   enum Result res;
   bool state;
-
-#ifdef NDEBUG
-  (void)count;
-  (void)res;
-  (void)state;
-#endif
 
   /* Check validity of the prerequisites */
   assert(strlen((const char *)example) > MAX_CAPACITY);
@@ -95,6 +89,10 @@ static void performQueueTest(void)
   assert(state == true);
   state = byteQueueFull(&queue);
   assert(state == false);
+
+  (void)count;
+  (void)res;
+  (void)state;
 
   byteQueueDeinit(&queue);
 }
