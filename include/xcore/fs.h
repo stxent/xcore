@@ -15,18 +15,14 @@
 #include <stdint.h>
 #include <xcore/entity.h>
 /*----------------------------------------------------------------------------*/
-#ifndef CONFIG_FILENAME_LENGTH
-#define CONFIG_FILENAME_LENGTH 32
-#endif
-/*----------------------------------------------------------------------------*/
-typedef uint8_t access_t;
-typedef uint32_t length_t;
+typedef uint8_t FsAccess;
+typedef uint32_t FsLength;
 
 enum
 {
-  /** Read access to a node. */
+  /** Read access allows to read data and list directory content. */
   FS_ACCESS_READ = 0x01,
-  /** Write access allows to modify and delete nodes. */
+  /** Write access allows to modify data, append or delete nodes. */
   FS_ACCESS_WRITE = 0x02
 };
 
@@ -42,7 +38,7 @@ enum FsFieldType
   FS_NODE_NAME,
   /** Owner of the node. */
   FS_NODE_OWNER,
-  /** Node change time. */
+  /** Access time in microseconds. */
   FS_NODE_TIME,
 
   /** End of the list. */
@@ -52,7 +48,7 @@ enum FsFieldType
 struct FsFieldDescriptor
 {
   const void *data;
-  length_t length;
+  FsLength length;
   enum FsFieldType type;
 };
 /*----------------------------------------------------------------------------*/
@@ -76,13 +72,13 @@ struct FsNodeClass
   enum Result (*create)(void *, const struct FsFieldDescriptor *, size_t);
   void *(*head)(void *);
   void (*free)(void *);
-  enum Result (*length)(void *, enum FsFieldType, length_t *);
+  enum Result (*length)(void *, enum FsFieldType, FsLength *);
   enum Result (*next)(void *);
-  enum Result (*read)(void *, enum FsFieldType, length_t, void *,
-      length_t, length_t *);
+  enum Result (*read)(void *, enum FsFieldType, FsLength, void *,
+      FsLength, FsLength *);
   enum Result (*remove)(void *, void *);
-  enum Result (*write)(void *, enum FsFieldType, length_t, const void *,
-      length_t, length_t *);
+  enum Result (*write)(void *, enum FsFieldType, FsLength, const void *,
+      FsLength, FsLength *);
 };
 
 struct FsNode
@@ -154,7 +150,7 @@ static inline void fsNodeFree(void *node)
  * @return @b E_OK on success, @b E_INVALID when the field is not supported.
  */
 static inline enum Result fsNodeLength(void *node, enum FsFieldType type,
-    length_t *length)
+    FsLength *length)
 {
   return ((const struct FsNodeClass *)CLASS(node))->length(node, type, length);
 }
@@ -183,7 +179,7 @@ static inline enum Result fsNodeNext(void *node)
  * supported.
  */
 static inline enum Result fsNodeRead(void *node, enum FsFieldType type,
-    length_t position, void *buffer, length_t length, length_t *read)
+    FsLength position, void *buffer, FsLength length, FsLength *read)
 {
   return ((const struct FsNodeClass *)CLASS(node))->read(node, type, position,
       buffer, length, read);
@@ -213,7 +209,7 @@ static inline enum Result fsNodeRemove(void *root, void *node)
  * supported.
  */
 static inline enum Result fsNodeWrite(void *node, enum FsFieldType type,
-    length_t position, const void *buffer, length_t length, length_t *written)
+    FsLength position, const void *buffer, FsLength length, FsLength *written)
 {
   return ((const struct FsNodeClass *)CLASS(node))->write(node, type, position,
       buffer, length, written);

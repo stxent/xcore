@@ -1,7 +1,7 @@
 #Copyright (C) 2017 xent
 #Project is distributed under the terms of the GNU General Public License v3.0
 
-project(xcore)
+project(xcore C)
 cmake_minimum_required(VERSION 3.6)
 
 if(NOT CMAKE_BUILD_TYPE)
@@ -14,6 +14,7 @@ option(USE_LTO "Enable Link Time Optimization." OFF)
 #Default compiler flags
 set(FLAGS_DEFAULT "-fdata-sections -ffunction-sections -fmessage-length=0 -Wall -Wextra -Wshadow -pedantic")
 set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_EXTENSIONS OFF)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${FLAGS_DEFAULT} ${FLAGS_CPU}")
 set(CMAKE_C_FLAGS_DEBUG "-O0 -g3")
 set(CMAKE_C_FLAGS_RELEASE "-O3 -DNDEBUG")
