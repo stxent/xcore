@@ -48,7 +48,7 @@ enum FsFieldType
 struct FsFieldDescriptor
 {
   const void *data;
-  FsLength length;
+  size_t length;
   enum FsFieldType type;
 };
 /*----------------------------------------------------------------------------*/
@@ -75,10 +75,10 @@ struct FsNodeClass
   enum Result (*length)(void *, enum FsFieldType, FsLength *);
   enum Result (*next)(void *);
   enum Result (*read)(void *, enum FsFieldType, FsLength, void *,
-      FsLength, FsLength *);
+      size_t, size_t *);
   enum Result (*remove)(void *, void *);
   enum Result (*write)(void *, enum FsFieldType, FsLength, const void *,
-      FsLength, FsLength *);
+      size_t, size_t *);
 };
 
 struct FsNode
@@ -179,7 +179,7 @@ static inline enum Result fsNodeNext(void *node)
  * supported.
  */
 static inline enum Result fsNodeRead(void *node, enum FsFieldType type,
-    FsLength position, void *buffer, FsLength length, FsLength *read)
+    FsLength position, void *buffer, size_t length, size_t *read)
 {
   return ((const struct FsNodeClass *)CLASS(node))->read(node, type, position,
       buffer, length, read);
@@ -209,7 +209,7 @@ static inline enum Result fsNodeRemove(void *root, void *node)
  * supported.
  */
 static inline enum Result fsNodeWrite(void *node, enum FsFieldType type,
-    FsLength position, const void *buffer, FsLength length, FsLength *written)
+    FsLength position, const void *buffer, size_t length, size_t *written)
 {
   return ((const struct FsNodeClass *)CLASS(node))->write(node, type, position,
       buffer, length, written);
