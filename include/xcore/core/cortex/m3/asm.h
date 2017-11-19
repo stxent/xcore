@@ -124,6 +124,11 @@ static inline uint16_t __ldrexh(volatile uint16_t *address)
   return result;
 }
 
+static inline void __nop(void)
+{
+  __asm__ volatile ("NOP");
+}
+
 static inline uint32_t __rbit(uint32_t value)
 {
   uint32_t result;
@@ -170,6 +175,11 @@ static inline uint32_t __strexh(uint16_t value, volatile uint16_t *address)
       : [address] "r" (address), [value] "r" (value)
   );
   return result;
+}
+
+static inline void __wfe(void)
+{
+  __asm__ volatile ("WFE");
 }
 
 static inline void __wfi(void)

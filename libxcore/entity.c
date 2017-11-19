@@ -17,15 +17,10 @@ void *init(const void *descriptor, const void *arguments)
 
   entity->descriptor = base;
 
-  if (base->init)
+  if (base->init && base->init(entity, arguments) != E_OK)
   {
-    enum Result res;
-
-    if ((res = base->init(entity, arguments)) != E_OK)
-    {
-      free(entity);
-      return 0;
-    }
+    free(entity);
+    return 0;
   }
 
   return entity;

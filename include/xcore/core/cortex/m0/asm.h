@@ -54,6 +54,16 @@ static inline void __interruptsSetState(uint32_t state)
   );
 }
 
+static inline void __nop(void)
+{
+  __asm__ volatile ("NOP");
+}
+
+static inline void __wfe(void)
+{
+  __asm__ volatile ("WFE");
+}
+
 static inline void __wfi(void)
 {
   __asm__ volatile ("WFI");
