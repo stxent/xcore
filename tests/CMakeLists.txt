@@ -1,18 +1,18 @@
-#Copyright (C) 2017 xent
-#Project is distributed under the terms of the GNU General Public License v3.0
+# Copyright (C) 2017 xent
+# Project is distributed under the terms of the GNU General Public License v3.0
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_POSIX_C_SOURCE=200809L")
 
-macro(list_directories SEARCH_RESULT DIRECTORY_PATH)
-    file(GLOB ENTRY_LIST RELATIVE ${DIRECTORY_PATH} ${DIRECTORY_PATH}/*)
-    set(DIRECTORY_LIST "")
-    foreach(ENTRY ${ENTRY_LIST})
-        if(IS_DIRECTORY ${DIRECTORY_PATH}/${ENTRY})
-            list(APPEND DIRECTORY_LIST ${ENTRY})
+function(list_directories _search_results _directory_path)
+    file(GLOB _entry_list RELATIVE ${_directory_path} ${_directory_path}/*)
+    set(_directory_list "")
+    foreach(_entry ${_entry_list})
+        if(IS_DIRECTORY ${_directory_path}/${_entry})
+            list(APPEND _directory_list ${_entry})
         endif()
     endforeach()
-    set(${SEARCH_RESULT} ${DIRECTORY_LIST})
-endmacro()
+    set(${_search_results} ${_directory_list} PARENT_SCOPE)
+endfunction()
 
 list_directories(EXAMPLES_LIST "${CMAKE_CURRENT_SOURCE_DIR}")
 

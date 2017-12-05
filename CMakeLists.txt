@@ -1,5 +1,5 @@
-#Copyright (C) 2017 xent
-#Project is distributed under the terms of the GNU General Public License v3.0
+# Copyright (C) 2017 xent
+# Project is distributed under the terms of the GNU General Public License v3.0
 
 project(xcore C)
 cmake_minimum_required(VERSION 3.6)
@@ -11,13 +11,11 @@ endif()
 option(BUILD_TESTS "Enable building of example executables." OFF)
 option(USE_LTO "Enable Link Time Optimization." OFF)
 
-#Default compiler flags
+# Default compiler flags
 set(FLAGS_DEFAULT "-fdata-sections -ffunction-sections -fmessage-length=0 -Wall -Wextra -Wshadow -pedantic")
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_EXTENSIONS OFF)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${FLAGS_DEFAULT} ${FLAGS_CPU}")
-set(CMAKE_C_FLAGS_DEBUG "-O0 -g3")
-set(CMAKE_C_FLAGS_RELEASE "-O3 -DNDEBUG")
 set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
 
 if(${USE_LTO})
@@ -26,10 +24,18 @@ endif()
 
 include_directories("${PROJECT_SOURCE_DIR}/include")
 
-#Gather files for the library
-include("${PROJECT_SOURCE_DIR}/libxcore/CMakeLists.txt")
+# Gather files for the library
+add_subdirectory(containers)
+add_subdirectory(core)
+add_subdirectory(crc)
+add_subdirectory(generic)
 
-add_library(${PROJECT_NAME} ${LIBRARY_SOURCES} ${LIBRARY_SOURCES_CORE})
+set(LIBRARY_OBJECTS $<TARGET_OBJECTS:containers> $<TARGET_OBJECTS:crc> $<TARGET_OBJECTS:generic>)
+if(TARGET core)
+    set(LIBRARY_OBJECTS ${LIBRARY_OBJECTS} $<TARGET_OBJECTS:core>)
+endif()
+
+add_library(${PROJECT_NAME} ${LIBRARY_OBJECTS})
 install(TARGETS ${PROJECT_NAME} ARCHIVE DESTINATION lib)
 
 if(${BUILD_TESTS})
