@@ -32,6 +32,7 @@ BEGIN_DECLS
 
 void *init(const void *, const void *);
 void deinit(void *);
+void deletedDestructorTrap(void *);
 
 END_DECLS
 /*----------------------------------------------------------------------------*/

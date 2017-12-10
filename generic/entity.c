@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <xcore/entity.h>
 /*----------------------------------------------------------------------------*/
+void deletedDestructorTrap(void *) __attribute__((weak));
+/*----------------------------------------------------------------------------*/
 void *init(const void *descriptor, const void *arguments)
 {
   const struct EntityClass * const base = descriptor;
@@ -34,4 +36,9 @@ void deinit(void *entity)
     base->deinit(entity);
 
   free(entity);
+}
+/*----------------------------------------------------------------------------*/
+void deletedDestructorTrap(void *entity __attribute__((unused)))
+{
+  while (1);
 }
