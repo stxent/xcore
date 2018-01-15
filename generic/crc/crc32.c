@@ -6,7 +6,9 @@
 
 #include <xcore/crc/crc32.h>
 /*----------------------------------------------------------------------------*/
-#ifndef CONFIG_CRC32_BITWISE
+uint32_t crc32Update(uint32_t, const void *, size_t) __attribute__((weak));
+/*----------------------------------------------------------------------------*/
+#ifndef CONFIG_FLAG_BITWISE_CRC
 static const uint32_t crcTable[256] = {
     0x00000000, 0x77073096, 0xEE0E612C, 0x990951BA,
     0x076DC419, 0x706AF48F, 0xE963A535, 0x9E6495A3,
@@ -81,7 +83,7 @@ uint32_t crc32Update(uint32_t crc, const void *buffer, size_t length)
 
   crc = ~crc;
 
-#ifdef CONFIG_CRC32_BITWISE
+#ifdef CONFIG_FLAG_BITWISE_CRC
   while (length--)
   {
     uint8_t value = *pointer++;

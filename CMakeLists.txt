@@ -9,6 +9,7 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build: Debug Release." FORCE)
 endif()
 
+option(BITWISE_CRC "Enable bitwise implementations of CRC." OFF)
 option(BUILD_TESTS "Enable building of example executables." OFF)
 option(USE_LTO "Enable Link Time Optimization." OFF)
 
@@ -19,6 +20,9 @@ set(CMAKE_C_EXTENSIONS OFF)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${FLAGS_DEFAULT} ${FLAGS_CPU}")
 set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
 
+if(${BITWISE_CRC})
+    add_definitions("-DCONFIG_FLAG_BITWISE_CRC")
+endif()
 if(${USE_LTO})
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -flto -ffat-lto-objects")
 endif()
@@ -26,12 +30,10 @@ endif()
 include_directories("${PROJECT_SOURCE_DIR}/include")
 
 # Gather files for the library
-add_subdirectory(containers)
 add_subdirectory(core)
-add_subdirectory(crc)
 add_subdirectory(generic)
 
-set(LIBRARY_OBJECTS $<TARGET_OBJECTS:containers> $<TARGET_OBJECTS:crc> $<TARGET_OBJECTS:generic>)
+set(LIBRARY_OBJECTS $<TARGET_OBJECTS:generic>)
 if(TARGET core)
     set(LIBRARY_OBJECTS ${LIBRARY_OBJECTS} $<TARGET_OBJECTS:core>)
 endif()

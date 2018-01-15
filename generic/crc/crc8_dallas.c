@@ -6,7 +6,9 @@
 
 #include <xcore/crc/crc8_dallas.h>
 /*----------------------------------------------------------------------------*/
-#ifndef CONFIG_CRC8_DALLAS_BITWISE
+uint8_t crc8DallasUpdate(uint8_t, const void *, size_t) __attribute__((weak));
+/*----------------------------------------------------------------------------*/
+#ifndef CONFIG_FLAG_BITWISE_CRC
 static const uint8_t crcTable[256] = {
     0x00, 0x5E, 0xBC, 0xE2, 0x61, 0x3F, 0xDD, 0x83,
     0xC2, 0x9C, 0x7E, 0x20, 0xA3, 0xFD, 0x1F, 0x41,
@@ -47,7 +49,7 @@ uint8_t crc8DallasUpdate(uint8_t crc, const void *buffer, size_t length)
 {
   const uint8_t *pointer = buffer;
 
-#ifdef CONFIG_CRC8_DALLAS_BITWISE
+#ifdef CONFIG_FLAG_BITWISE_CRC
   while (length--)
   {
     uint8_t value = *pointer++;

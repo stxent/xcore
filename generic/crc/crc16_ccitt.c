@@ -6,7 +6,9 @@
 
 #include <xcore/crc/crc16_ccitt.h>
 /*----------------------------------------------------------------------------*/
-#ifndef CONFIG_CRC16_CCITT_BITWISE
+uint16_t crc16CCITTUpdate(uint16_t, const void *, size_t) __attribute__((weak));
+/*----------------------------------------------------------------------------*/
+#ifndef CONFIG_FLAG_BITWISE_CRC
 /* CRC-16-CCITT table, polynomial 0x1021 */
 static const uint16_t crcTable[256] = {
     0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50A5, 0x60C6, 0x70E7,
@@ -48,7 +50,7 @@ uint16_t crc16CCITTUpdate(uint16_t crc, const void *buffer, size_t length)
 {
   const uint8_t *pointer = buffer;
 
-#ifdef CONFIG_CRC16_CCITT_BITWISE
+#ifdef CONFIG_FLAG_BITWISE_CRC
   while (length--)
   {
     crc ^= *pointer++ << 8;
