@@ -1,6 +1,16 @@
 # Copyright (C) 2017 xent
 # Project is distributed under the terms of the GNU General Public License v3.0
 
-string(REPLACE "cortex-" "" CPU_CORE "${CMAKE_SYSTEM_PROCESSOR}")
-file(GLOB SOURCE_FILES "${CPU_CORE}/*.c")
+set(SOURCE_PATHS "")
+string(REPLACE "cortex-" "" CORE_VERSION "${CMAKE_SYSTEM_PROCESSOR}")
+
+if("${CORE_VERSION}" STREQUAL "m0")
+    set(SOURCE_PATHS ${SOURCE_PATHS} "armv6m/*.c")
+elseif("${CORE_VERSION}" STREQUAL "m3")
+    set(SOURCE_PATHS ${SOURCE_PATHS} "armv7m/*.c")
+elseif("${CORE_VERSION}" STREQUAL "m4" OR "${CORE_VERSION}" STREQUAL "m7")
+    set(SOURCE_PATHS ${SOURCE_PATHS} "armv7m/*.c" "armv7em/*.c")
+endif()
+
+file(GLOB SOURCE_FILES ${SOURCE_PATHS})
 add_library(core OBJECT ${SOURCE_FILES})

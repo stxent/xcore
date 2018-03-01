@@ -14,16 +14,16 @@
 #define CORE            x86_64
 #define CORE_TYPE       x86
 #elif defined(__ARM_ARCH_6M__)
-#define CORE            m0
+#define CORE            armv6m
 #define CORE_TYPE       cortex
 #elif defined(__ARM_ARCH_7M__)
-#define CORE            m3
+#define CORE            armv7m
 #define CORE_TYPE       cortex
 #elif defined(__ARM_ARCH_7EM__)
-#define CORE            m4
+#define CORE            armv7em
 #define CORE_TYPE       cortex
 #else
-#error "Target architecture is undefined"
+#error "Target architecture is not supported"
 #endif
 /*----------------------------------------------------------------------------*/
 #endif /* XCORE_TARGET_H_ */

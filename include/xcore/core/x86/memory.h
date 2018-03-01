@@ -9,7 +9,6 @@
 /*----------------------------------------------------------------------------*/
 #include <stdbool.h>
 #include <stdint.h>
-#include <xcore/core/x86/asm.h>
 #include <xcore/helpers.h>
 /*----------------------------------------------------------------------------*/
 #define TO_BIG_ENDIAN_16(value) \
@@ -26,12 +25,6 @@
 #define FROM_LITTLE_ENDIAN_32(value)    TO_LITTLE_ENDIAN_32(value)
 /*----------------------------------------------------------------------------*/
 BEGIN_DECLS
-
-static inline uint32_t countLeadingZeros32(uint32_t value)
-{
-  /* If input value is 0, the result is undefined */
-  return __builtin_clz(value);
-}
 
 static inline uint64_t toBigEndian64(uint64_t value)
 {
@@ -93,10 +86,11 @@ static inline uint16_t fromLittleEndian16(uint16_t value)
   return value;
 }
 
-static inline bool compareExchangePointer(void **pointer, void *expected,
-    void *desired)
+static inline bool compareExchangePointer(volatile void *pointer,
+    void *expected, void *desired)
 {
-  return __sync_bool_compare_and_swap(pointer, expected, desired);
+  return __atomic_compare_exchange((void * volatile *)pointer,
+      (void **)expected, &desired, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
 }
 
 END_DECLS
