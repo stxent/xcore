@@ -43,7 +43,7 @@ size_t uLengthFromUtf16(const char16_t *source)
       width = 2;
     else if (value < 0x10000)
       width = 3;
-    else if (value < 0x110000)
+    else
       width = 4;
 
     length += width;
@@ -112,7 +112,7 @@ size_t uFromUtf16(char *destination, const char16_t *source, size_t maxLength)
       width = 2;
     else if (value < 0x10000)
       width = 3;
-    else if (value < 0x110000)
+    else
       width = 4;
 
     if (count < width)
