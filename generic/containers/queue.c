@@ -16,14 +16,16 @@ enum Result queueInit(struct Queue *queue, size_t width, size_t capacity)
     return E_VALUE;
 
   queue->data = malloc(width * capacity);
-  if (!queue->data)
+
+  if (queue->data)
+  {
+    queue->capacity = capacity;
+    queue->width = width;
+    queueClear(queue);
+    return E_OK;
+  }
+  else
     return E_MEMORY;
-
-  queue->capacity = capacity;
-  queue->width = width;
-  queueClear(queue);
-
-  return E_OK;
 }
 /*----------------------------------------------------------------------------*/
 void queueDeinit(struct Queue *queue)
@@ -31,14 +33,25 @@ void queueDeinit(struct Queue *queue)
   free(queue->data);
 }
 /*----------------------------------------------------------------------------*/
+void *queueAt(const struct Queue *queue, size_t index)
+{
+  assert(queue->size > index);
+
+  index += queue->floor;
+  if (index >= queue->capacity)
+    index -= queue->capacity;
+
+  return (void *)((uintptr_t)queue->data + index * queue->width);
+}
+/*----------------------------------------------------------------------------*/
 void queuePeek(const struct Queue *queue, void *element)
 {
+  assert(element);
   assert(queue->size > 0);
 
-  const uintptr_t position =
-      (uintptr_t)queue->data + queue->width * queue->floor;
-
-  memcpy(element, (const void *)position, queue->width);
+  const uintptr_t address = (uintptr_t)queue->data
+      + queue->floor * queue->width;
+  memcpy(element, (const void *)address, queue->width);
 }
 /*----------------------------------------------------------------------------*/
 void queuePop(struct Queue *queue, void *element)
@@ -47,10 +60,9 @@ void queuePop(struct Queue *queue, void *element)
 
   if (element)
   {
-    const uintptr_t position =
-        (uintptr_t)queue->data + queue->width * queue->floor;
-
-    memcpy(element, (const void *)position, queue->width);
+    const uintptr_t address = (uintptr_t)queue->data
+        + queue->floor * queue->width;
+    memcpy(element, (const void *)address, queue->width);
   }
 
   if (++queue->floor == queue->capacity)
@@ -60,12 +72,12 @@ void queuePop(struct Queue *queue, void *element)
 /*----------------------------------------------------------------------------*/
 void queuePush(struct Queue *queue, const void *element)
 {
+  assert(element);
   assert(queue->size < queue->capacity);
 
-  const uintptr_t position =
-      (uintptr_t)queue->data + queue->width * queue->ceil;
-
-  memcpy((void *)position, element, queue->width);
+  const uintptr_t address = (uintptr_t)queue->data
+      + queue->ceil * queue->width;
+  memcpy((void *)address, element, queue->width);
 
   if (++queue->ceil == queue->capacity)
     queue->ceil = 0;

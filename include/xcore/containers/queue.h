@@ -32,6 +32,7 @@ BEGIN_DECLS
 
 enum Result queueInit(struct Queue *, size_t, size_t);
 void queueDeinit(struct Queue *);
+void *queueAt(const struct Queue *, size_t);
 void queuePeek(const struct Queue *, void *);
 void queuePop(struct Queue *, void *);
 void queuePush(struct Queue *, const void *);

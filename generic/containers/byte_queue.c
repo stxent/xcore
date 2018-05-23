@@ -14,13 +14,15 @@ enum Result byteQueueInit(struct ByteQueue *queue, size_t capacity)
     return E_VALUE;
 
   queue->data = malloc(capacity);
-  if (!queue->data)
+
+  if (queue->data)
+  {
+    queue->capacity = capacity;
+    byteQueueClear(queue);
+    return E_OK;
+  }
+  else
     return E_MEMORY;
-
-  queue->capacity = capacity;
-  byteQueueClear(queue);
-
-  return E_OK;
 }
 /*----------------------------------------------------------------------------*/
 void byteQueueDeinit(struct ByteQueue *queue)
@@ -30,6 +32,8 @@ void byteQueueDeinit(struct ByteQueue *queue)
 /*----------------------------------------------------------------------------*/
 size_t byteQueuePopArray(struct ByteQueue *queue, void *buffer, size_t length)
 {
+  assert(buffer);
+
   if (!queue->size)
     return 0;
 
@@ -71,7 +75,6 @@ size_t byteQueuePopArray(struct ByteQueue *queue, void *buffer, size_t length)
   }
 
   const size_t bytesRead = length - bytesToRead;
-
   queue->size -= bytesRead;
   return bytesRead;
 }
@@ -79,6 +82,8 @@ size_t byteQueuePopArray(struct ByteQueue *queue, void *buffer, size_t length)
 size_t byteQueuePushArray(struct ByteQueue *queue, const void *buffer,
     size_t length)
 {
+  assert(buffer);
+
   if (queue->capacity == queue->size)
     return 0;
 
@@ -120,7 +125,6 @@ size_t byteQueuePushArray(struct ByteQueue *queue, const void *buffer,
   }
 
   const size_t bytesWritten = length - bytesToWrite;
-
   queue->size += bytesWritten;
   return bytesWritten;
 }

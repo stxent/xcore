@@ -15,14 +15,16 @@ enum Result arrayInit(struct Array *array, size_t width, size_t capacity)
     return E_VALUE;
 
   array->data = malloc(width * capacity);
-  if (!array->data)
+
+  if (array->data)
+  {
+    array->capacity = capacity;
+    array->size = 0;
+    array->width = width;
+    return E_OK;
+  }
+  else
     return E_MEMORY;
-
-  array->capacity = capacity;
-  array->size = 0;
-  array->width = width;
-
-  return E_OK;
 }
 /*----------------------------------------------------------------------------*/
 void arrayDeinit(struct Array *array)
@@ -45,6 +47,7 @@ void arrayErase(struct Array *array, size_t index)
 /*----------------------------------------------------------------------------*/
 void arrayInsert(struct Array *array, size_t before, const void *element)
 {
+  assert(element);
   assert(before <= array->size);
   assert(array->size < array->capacity);
 
@@ -62,19 +65,24 @@ void arrayPopBack(struct Array *array, void *element)
 {
   assert(array->size > 0);
 
+  --array->size;
+
   if (element)
   {
-    memcpy(element, (const void *)((uintptr_t)array->data
-        + (array->size - 1) * array->width), array->width);
+    const uintptr_t address = (uintptr_t)array->data
+        + array->size * array->width;
+    memcpy(element, (const void *)address, array->width);
   }
-  --array->size;
 }
 /*----------------------------------------------------------------------------*/
 void arrayPushBack(struct Array *array, const void *element)
 {
+  assert(element);
   assert(array->size < array->capacity);
 
-  memcpy((void *)((uintptr_t)array->data + array->size * array->width),
-      element, array->width);
+  const uintptr_t address = (uintptr_t)array->data
+      + array->size * array->width;
+  memcpy((void *)address, element, array->width);
+
   ++array->size;
 }
