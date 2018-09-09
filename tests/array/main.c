@@ -4,282 +4,237 @@
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
-#include <assert.h>
-#include <inttypes.h>
-#include <stdbool.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
-#include <xcore/bits.h>
+#include <check.h>
+#include <stdlib.h>
 #include <xcore/containers/array.h>
-/*----------------------------------------------------------------------------*/
-#ifdef CONFIG_DEBUG
-#define DEBUG_PRINT(...) printf(__VA_ARGS__)
-#else
-#define DEBUG_PRINT(...) do {} while (0)
-#endif
 /*----------------------------------------------------------------------------*/
 #define MAX_CAPACITY 17
 /*----------------------------------------------------------------------------*/
-struct DummyStruct
+typedef struct
 {
   int64_t a;
   int32_t b;
-  int16_t c[6];
-};
+  int8_t c;
+} TestStruct;
 /*----------------------------------------------------------------------------*/
-static bool compareElements(const struct DummyStruct *,
-    const struct DummyStruct *);
-struct DummyStruct createElement(size_t);
-static void checkElements(struct Array *, size_t, bool);
-static void intertwineArray(struct Array *, size_t, size_t, size_t);
-static void fillArray(struct Array *, size_t, size_t, size_t);
-static void reverseArray(struct Array *);
-static void clearElements(struct Array *);
-static void eraseElements(struct Array *, size_t, size_t, size_t);
-static void popElements(struct Array *, bool);
-static void printElements(struct Array *);
-static void performArrayTest(void);
-/*----------------------------------------------------------------------------*/
-static bool compareElements(const struct DummyStruct *a,
-    const struct DummyStruct *b)
-{
-  if (a->a != b->a)
-    return false;
-  else if (a->b != b->b)
-    return false;
-  else if (memcmp(a->c, b->c, sizeof(a->c)))
-    return false;
-  else
-    return true;
-}
-/*----------------------------------------------------------------------------*/
-struct DummyStruct createElement(size_t index)
-{
-  const struct DummyStruct element = {
-      .a = index * 2,
-      .b = -index * 3,
-      .c = {-index, index + 1, -index + 2, index + 3, -index + 4, index + 5}
-  };
+extern void *__libc_malloc(size_t);
 
-  return element;
+static bool mallocHookActive = false;
+
+void *malloc(size_t size)
+{
+  if (!mallocHookActive)
+    return __libc_malloc(size);
+  else
+    return 0;
 }
 /*----------------------------------------------------------------------------*/
-static void checkElements(struct Array *array, size_t offset, bool reverse)
+static bool compareElements(const TestStruct *a, const TestStruct *b)
+{
+  return (a->a == b->a) && (a->b == b->b) && (a->c == b->c);
+}
+/*----------------------------------------------------------------------------*/
+static TestStruct createElement(size_t index)
+{
+  return (TestStruct){
+      (int64_t)((index & 1) ? index : -index),
+      (int32_t)((index & 1) ? -index : index),
+      (int8_t)index
+  };
+}
+/*----------------------------------------------------------------------------*/
+static void checkElements(struct Array *array, size_t base, bool reverse)
 {
   const size_t size = arraySize(array);
 
-  for (size_t index = 0; index < size; ++index)
+  for (size_t i = 0; i < size; ++i)
   {
-    const size_t identifier = offset + (reverse ? size - index - 1 : index);
-    const struct DummyStruct referenceElement = createElement(identifier);
-    const struct DummyStruct * const element = arrayAt(array, index);
-    const bool result = compareElements(element, &referenceElement);
+    const size_t id = base + (reverse ? size - i - 1 : i);
+    const TestStruct referenceElement = createElement(id);
+    const TestStruct * const element = arrayAt(array, i);
 
-    assert(result == true);
-
-#ifdef NDEBUG
-    (void)result;
-#endif
+    ck_assert(compareElements(element, &referenceElement) == true);
   }
 }
 /*----------------------------------------------------------------------------*/
-static void intertwineArray(struct Array *array, size_t number,
-    size_t offset, size_t step)
+static void fillArray(struct Array *array, size_t base, size_t count)
 {
-  for (size_t index = 0; index < number; ++index)
+  for (size_t i = 0; i < count; ++i)
   {
-    const size_t position = offset + index * step;
-    const struct DummyStruct element = createElement(position);
-
-    arrayInsert(array, position, &element);
-  }
-}
-/*----------------------------------------------------------------------------*/
-static void fillArray(struct Array *array, size_t number, size_t offset,
-    size_t step)
-{
-  for (size_t index = 0; index < number; ++index)
-  {
-    const size_t identifier = offset + index * step;
-    const struct DummyStruct element = createElement(identifier);
-
+    const TestStruct element = createElement(base + i);
     arrayPushBack(array, &element);
   }
 }
 /*----------------------------------------------------------------------------*/
-static void reverseArray(struct Array *array)
+static void eraseElements(struct Array *array, size_t start, size_t count)
 {
-  const size_t size = arraySize(array);
+  const size_t total = arraySize(array);
 
-  for (size_t index = 0; index < size / 2; ++index)
-  {
-    struct DummyStruct * const front = arrayAt(array, index);
-    struct DummyStruct * const back = arrayAt(array, size - index - 1);
+  for (size_t i = 0; i < count; ++i)
+    arrayErase(array, start);
 
-    const struct DummyStruct buffer = *front;
-    *front = *back;
-    *back = buffer;
-  }
+  ck_assert(arraySize(array) == total - count);
 }
 /*----------------------------------------------------------------------------*/
-static void clearElements(struct Array *array)
+static void popElements(struct Array *array)
 {
-  arrayClear(array);
-  assert(arraySize(array) == 0);
-  assert(arrayEmpty(array) == true);
-  assert(arrayFull(array) == false);
-}
-/*----------------------------------------------------------------------------*/
-static void eraseElements(struct Array *vector, size_t number, size_t offset,
-    size_t step)
-{
-  const size_t initialSize = arraySize(vector);
-
-  for (size_t index = 0; index < number; ++index)
-  {
-    arrayErase(vector, offset + index * step);
-  }
-
-#ifdef NDEBUG
-  (void)initialSize;
-#endif
-
-  assert(arraySize(vector) == initialSize - number);
-}
-/*----------------------------------------------------------------------------*/
-static void popElements(struct Array *array, bool zero)
-{
-  size_t identifier = arraySize(array) - 1;
+  size_t id = arraySize(array) - 1;
 
   while (arraySize(array))
   {
-    if (zero)
-    {
-      arrayPopBack(array, 0);
-    }
-    else
-    {
-      const struct DummyStruct referenceElement = createElement(identifier);
-      struct DummyStruct element;
-      bool result;
+    const TestStruct referenceElement = createElement(id);
+    TestStruct element;
 
-      arrayPopBack(array, &element);
-      result = compareElements(&element, &referenceElement);
-      assert(result == true);
+    arrayBack(array, &element);
+    arrayPopBack(array);
 
-#ifdef NDEBUG
-      (void)result;
-#endif
-    }
-
-    --identifier;
-  }
-
-  assert(arraySize(array) == 0);
-  assert(arrayEmpty(array) == true);
-  assert(arrayFull(array) == false);
-}
-/*----------------------------------------------------------------------------*/
-static void printElements(struct Array *array)
-{
-  for (size_t index = 0; index < arraySize(array); ++index)
-  {
-    const struct DummyStruct * const element = arrayAt(array, index);
-
-    DEBUG_PRINT("Element %2zu: %3"PRIi64" %3"PRIi32" [",
-        index, element->a, element->b);
-    for (size_t entry = 0; entry < ARRAY_SIZE(element->c); ++entry)
-      DEBUG_PRINT("%s%3i", entry ? " " : "", element->c[entry]);
-    DEBUG_PRINT("]\n");
+    ck_assert(compareElements(&element, &referenceElement) == true);
+    --id;
   }
 }
 /*----------------------------------------------------------------------------*/
-static void performArrayTest(void)
+START_TEST(testElementErasure)
 {
   struct Array array;
-  enum Result res;
 
-#ifdef NDEBUG
-  (void)res;
-#endif
+  /* Array initialization */
+  const bool result = arrayInit(&array, sizeof(TestStruct), MAX_CAPACITY);
+  ck_assert(result == true);
 
-  /* Queue initialization */
-  res = arrayInit(&array, sizeof(struct DummyStruct), MAX_CAPACITY);
-  assert(res == E_OK);
-  assert(arrayCapacity(&array) == MAX_CAPACITY);
+  /* Fill array */
+  fillArray(&array, 0, MAX_CAPACITY);
 
-  /* First pass: fill, reverse, check and clear */
-  fillArray(&array, MAX_CAPACITY - MAX_CAPACITY / 2, 0, 2);
-  assert(arraySize(&array) == MAX_CAPACITY - MAX_CAPACITY / 2);
-  assert(arrayEmpty(&array) == false);
-  assert(arrayFull(&array) == false);
-
-  intertwineArray(&array, MAX_CAPACITY / 2, 1, 2);
-  assert(arraySize(&array) == MAX_CAPACITY);
-  assert(arrayEmpty(&array) == false);
-  assert(arrayFull(&array) == true);
-
-  DEBUG_PRINT("First pass array:\n");
-  printElements(&array);
-  checkElements(&array, 0, false);
-
-  reverseArray(&array);
-
-  DEBUG_PRINT("First pass reversed array:\n");
-  printElements(&array);
-  checkElements(&array, 0, true);
-
-  clearElements(&array);
-
-  /* Second pass: fill, check and erase */
-  fillArray(&array, MAX_CAPACITY / 2, 1, 2);
-  intertwineArray(&array, MAX_CAPACITY - MAX_CAPACITY / 2, 0, 2);
-
-  DEBUG_PRINT("Second pass array:\n");
-  printElements(&array);
-  checkElements(&array, 0, false);
-
-  eraseElements(&array, MAX_CAPACITY / 2 - 1, 0, 1);
-
-  DEBUG_PRINT("Second pass half-empty array:\n");
-  printElements(&array);
-
-  intertwineArray(&array, MAX_CAPACITY / 2 - 1, 0, 2);
-
-  DEBUG_PRINT("Second pass restored array:\n");
-  printElements(&array);
-  checkElements(&array, 0, false);
-
-  eraseElements(&array, MAX_CAPACITY, 0, 0);
-  assert(arrayEmpty(&array) == true);
-
-  /* Third pass: fill, check and pop */
-  fillArray(&array, MAX_CAPACITY, 0, 1);
-
-  DEBUG_PRINT("Third pass array:\n");
-  printElements(&array);
-  checkElements(&array, 0, false);
-
-  popElements(&array, false);
-
-  /* Fourth pass: fill, check and pop with zero argument */
-  fillArray(&array, MAX_CAPACITY, 0, 1);
-
-  DEBUG_PRINT("Fourth pass array:\n");
-  printElements(&array);
-  checkElements(&array, 0, false);
-
-  popElements(&array, true);
+  /* Erase first half */
+  eraseElements(&array, 0, MAX_CAPACITY / 2);
+  ck_assert_uint_eq(arraySize(&array), MAX_CAPACITY - MAX_CAPACITY / 2);
+  checkElements(&array, MAX_CAPACITY / 2, false);
+  /* Erase second half */
+  eraseElements(&array, 0, MAX_CAPACITY - MAX_CAPACITY / 2);
+  ck_assert_uint_eq(arraySize(&array), 0);
 
   arrayDeinit(&array);
 }
+END_TEST
+/*----------------------------------------------------------------------------*/
+START_TEST(testElementInsertion)
+{
+  struct Array array;
+
+  /* Array initialization */
+  const bool result = arrayInit(&array, sizeof(TestStruct), MAX_CAPACITY);
+  ck_assert(result == true);
+
+  /* Insert even elements */
+  for (size_t i = 0; i < MAX_CAPACITY; i += 2)
+  {
+    const TestStruct element = createElement(i);
+    arrayInsert(&array, arraySize(&array), &element);
+  }
+
+  /* Insert odd elements */
+  for (size_t i = 1; i < MAX_CAPACITY; i += 2)
+  {
+    const TestStruct element = createElement(i);
+    arrayInsert(&array, i, &element);
+  }
+
+  ck_assert_uint_eq(arraySize(&array), MAX_CAPACITY);
+  checkElements(&array, 0, false);
+
+  arrayDeinit(&array);
+}
+END_TEST
+/*----------------------------------------------------------------------------*/
+START_TEST(testPushPopSequence)
+{
+  struct Array array;
+
+  /* Array initialization */
+  const bool result = arrayInit(&array, sizeof(TestStruct), MAX_CAPACITY);
+  ck_assert(result == true);
+
+  /* Push elements */
+  fillArray(&array, 0, MAX_CAPACITY);
+  ck_assert_uint_eq(arraySize(&array), MAX_CAPACITY);
+
+  checkElements(&array, 0, false);
+
+  /* Pop elements */
+  popElements(&array);
+  ck_assert_uint_eq(arraySize(&array), 0);
+
+  arrayDeinit(&array);
+}
+END_TEST
+/*----------------------------------------------------------------------------*/
+START_TEST(testRandomAccess)
+{
+  struct Array array;
+
+  /* Array initialization */
+  const bool result = arrayInit(&array, sizeof(TestStruct), MAX_CAPACITY);
+  ck_assert(result == true);
+  ck_assert_uint_eq(arrayCapacity(&array), MAX_CAPACITY);
+
+  /* Fill array */
+  fillArray(&array, 0, MAX_CAPACITY);
+  ck_assert_uint_eq(arraySize(&array), MAX_CAPACITY);
+  ck_assert(arrayEmpty(&array) == false);
+  ck_assert(arrayFull(&array) == true);
+  checkElements(&array, 0, false);
+
+  /* Reverse and check elements */
+  for (size_t forward = 0; forward < MAX_CAPACITY / 2; ++forward)
+  {
+    TestStruct * const src = arrayAt(&array, forward);
+    TestStruct * const dst = arrayAt(&array, MAX_CAPACITY - forward - 1);
+
+    const TestStruct buffer = *src;
+    *src = *dst;
+    *dst = buffer;
+  }
+
+  checkElements(&array, 0, true);
+
+  /* Clear array */
+  arrayClear(&array);
+  ck_assert_uint_eq(arraySize(&array), 0);
+  ck_assert(arrayEmpty(&array) == true);
+  ck_assert(arrayFull(&array) == false);
+
+  arrayDeinit(&array);
+}
+END_TEST
+/*----------------------------------------------------------------------------*/
+START_TEST(testMemoryFailure)
+{
+  struct Array array;
+
+  mallocHookActive = true;
+  const bool result = arrayInit(&array, sizeof(TestStruct), MAX_CAPACITY);
+  mallocHookActive = false;
+
+  ck_assert(result == false);
+}
+END_TEST
 /*----------------------------------------------------------------------------*/
 int main(void)
 {
-  performArrayTest();
+  Suite * const suite = suite_create("Array");
+  TCase * const testcase = tcase_create("Core");
 
-  printf("Passed\n");
+  tcase_add_test(testcase, testRandomAccess);
+  tcase_add_test(testcase, testElementErasure);
+  tcase_add_test(testcase, testElementInsertion);
+  tcase_add_test(testcase, testPushPopSequence);
+  tcase_add_test(testcase, testMemoryFailure);
+  suite_add_tcase(suite, testcase);
 
-  return 0;
+  SRunner * const runner = srunner_create(suite);
+
+  srunner_run_all(runner, CK_NORMAL);
+  const int numberFailed = srunner_ntests_failed(runner);
+  srunner_free(runner);
+
+  return numberFailed == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

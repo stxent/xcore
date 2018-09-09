@@ -12,7 +12,6 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <xcore/helpers.h>
-#include <xcore/error.h>
 /*----------------------------------------------------------------------------*/
 struct ByteQueue
 {
@@ -21,15 +20,15 @@ struct ByteQueue
   size_t capacity;
   /** Current number of elements in the queue. */
   size_t size;
-  /** Index of the last element. */
-  size_t ceil;
   /** Index of the first element. */
-  size_t floor;
+  size_t head;
+  /** Index of the last element. */
+  size_t tail;
 };
 /*----------------------------------------------------------------------------*/
 BEGIN_DECLS
 
-enum Result byteQueueInit(struct ByteQueue *, size_t);
+bool byteQueueInit(struct ByteQueue *, size_t);
 void byteQueueDeinit(struct ByteQueue *);
 size_t byteQueuePopArray(struct ByteQueue *, void *, size_t);
 size_t byteQueuePushArray(struct ByteQueue *, const void *, size_t);
@@ -46,8 +45,8 @@ static inline size_t byteQueueCapacity(const struct ByteQueue *queue)
 static inline void byteQueueClear(struct ByteQueue *queue)
 {
   queue->size = 0;
-  queue->ceil = 0;
-  queue->floor = 0;
+  queue->head = 0;
+  queue->tail = 0;
 }
 
 static inline bool byteQueueEmpty(const struct ByteQueue *queue)
@@ -60,35 +59,35 @@ static inline bool byteQueueFull(const struct ByteQueue *queue)
   return queue->size == queue->capacity;
 }
 
-static inline uint8_t byteQueuePeek(const struct ByteQueue *queue)
+static inline uint8_t byteQueueFront(const struct ByteQueue *queue)
 {
   assert(queue->size);
 
-  return queue->data[queue->floor];
+  return queue->data[queue->head];
 }
 
-static inline uint8_t byteQueuePop(struct ByteQueue *queue)
+static inline uint8_t byteQueuePopFront(struct ByteQueue *queue)
 {
   assert(queue->size);
 
-  const uint8_t tmp = queue->data[queue->floor++];
+  const uint8_t tmp = queue->data[queue->head++];
 
-  if (queue->floor == queue->capacity)
-    queue->floor = 0;
+  if (queue->head == queue->capacity)
+    queue->head = 0;
 
   --queue->size;
 
   return tmp;
 }
 
-static inline void byteQueuePush(struct ByteQueue *queue, uint8_t value)
+static inline void byteQueuePushBack(struct ByteQueue *queue, uint8_t value)
 {
   assert(queue->size < queue->capacity);
 
-  queue->data[queue->ceil++] = value;
+  queue->data[queue->tail++] = value;
 
-  if (queue->ceil == queue->capacity)
-    queue->ceil = 0;
+  if (queue->tail == queue->capacity)
+    queue->tail = 0;
 
   ++queue->size;
 }

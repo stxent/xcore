@@ -33,32 +33,30 @@ static void freeListChain(struct ListNode *current)
   }
 }
 /*----------------------------------------------------------------------------*/
-enum Result listInit(struct List *list, size_t width)
+void listInit(struct List *list, size_t width)
 {
-  list->first = 0;
+  list->head = 0;
   list->width = width;
-
-  return E_OK;
 }
 /*----------------------------------------------------------------------------*/
 void listDeinit(struct List *list)
 {
-  freeListChain(list->first);
+  freeListChain(list->head);
 }
 /*----------------------------------------------------------------------------*/
 void listClear(struct List *list)
 {
-  if (list->first)
+  if (list->head)
   {
-    freeListChain(list->first);
-    list->first = 0;
+    freeListChain(list->head);
+    list->head = 0;
   }
 }
 /*----------------------------------------------------------------------------*/
 struct ListNode *listErase(struct List *list, struct ListNode *node)
 {
   struct ListNode * const next = node->next;
-  struct ListNode **current = &list->first;
+  struct ListNode **current = &list->head;
 
   while (*current != node)
     current = &(*current)->next;
@@ -73,7 +71,7 @@ struct ListNode *listErase(struct List *list, struct ListNode *node)
 /*----------------------------------------------------------------------------*/
 struct ListNode *listFind(struct List *list, const void *element)
 {
-  struct ListNode *node = list->first;
+  struct ListNode *node = list->head;
 
   while (node)
   {
@@ -85,14 +83,14 @@ struct ListNode *listFind(struct List *list, const void *element)
   return 0;
 }
 /*----------------------------------------------------------------------------*/
-struct ListNode *listFindCompared(struct List *list, const void *element,
-    int (*compare)(const void *, const void *))
+struct ListNode *listFindIf(struct List *list, const void *element,
+    int (*comparator)(const void *, const void *))
 {
-  struct ListNode *node = list->first;
+  struct ListNode *node = list->head;
 
   while (node)
   {
-    if (!compare(node->data, element))
+    if (!comparator(node->data, element))
       return node;
     node = node->next;
   }
@@ -100,65 +98,52 @@ struct ListNode *listFindCompared(struct List *list, const void *element,
   return 0;
 }
 /*----------------------------------------------------------------------------*/
-enum Result listInsert(struct List *list, struct ListNode *previous,
+bool listInsert(struct List *list, struct ListNode *previous,
     const void *element)
 {
   struct ListNode * const node =
       malloc(offsetof(struct ListNode, data) + list->width);
 
-  if (!node)
-    return E_MEMORY;
-
-  memcpy(node->data, element, list->width);
-
-  if (!previous)
+  if (node)
   {
-    node->next = list->first;
-    list->first = node;
+    memcpy(node->data, element, list->width);
+
+    if (!previous)
+    {
+      node->next = list->head;
+      list->head = node;
+    }
+    else
+    {
+      node->next = previous->next;
+      previous->next = node;
+    }
+
+    return true;
   }
   else
-  {
-    node->next = previous->next;
-    previous->next = node;
-  }
-
-  return E_OK;
+    return false;
 }
 /*----------------------------------------------------------------------------*/
-enum Result listPush(struct List *list, const void *element)
+bool listPushFront(struct List *list, const void *element)
 {
   struct ListNode * const node =
       malloc(offsetof(struct ListNode, data) + list->width);
 
-  if (!node)
-    return E_MEMORY;
-
-  memcpy(node->data, element, list->width);
-  node->next = 0;
-
-  if (list->first)
+  if (node)
   {
-    struct ListNode *current = list->first;
+    memcpy(node->data, element, list->width);
 
-    while (current->next)
-      current = current->next;
+    node->next = list->head;
+    list->head = node;
 
-    current->next = node;
+    return true;
   }
   else
-  {
-    list->first = node;
-  }
-
-  return E_OK;
-}
-/*----------------------------------------------------------------------------*/
-size_t listCapacity(const struct List *list)
-{
-  return countListNodes(list->first);
+    return false;
 }
 /*----------------------------------------------------------------------------*/
 size_t listSize(const struct List *list)
 {
-  return countListNodes(list->first);
+  return countListNodes(list->head);
 }

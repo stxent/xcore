@@ -26,6 +26,9 @@ endif()
 if(${USE_LTO})
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -flto -ffat-lto-objects")
 endif()
+if(${BUILD_TESTS})
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --coverage")
+endif()
 
 include_directories("${PROJECT_SOURCE_DIR}/include")
 

@@ -10,11 +10,8 @@
 #include <string.h>
 #include <xcore/containers/queue.h>
 /*----------------------------------------------------------------------------*/
-enum Result queueInit(struct Queue *queue, size_t width, size_t capacity)
+bool queueInit(struct Queue *queue, size_t width, size_t capacity)
 {
-  if (!capacity)
-    return E_VALUE;
-
   queue->data = malloc(width * capacity);
 
   if (queue->data)
@@ -22,10 +19,10 @@ enum Result queueInit(struct Queue *queue, size_t width, size_t capacity)
     queue->capacity = capacity;
     queue->width = width;
     queueClear(queue);
-    return E_OK;
+    return true;
   }
   else
-    return E_MEMORY;
+    return false;
 }
 /*----------------------------------------------------------------------------*/
 void queueDeinit(struct Queue *queue)
@@ -33,53 +30,46 @@ void queueDeinit(struct Queue *queue)
   free(queue->data);
 }
 /*----------------------------------------------------------------------------*/
-void *queueAt(const struct Queue *queue, size_t index)
+void *queueAt(struct Queue *queue, size_t index)
 {
   assert(queue->size > index);
 
-  index += queue->floor;
+  index += queue->head;
   if (index >= queue->capacity)
     index -= queue->capacity;
 
   return (void *)((uintptr_t)queue->data + index * queue->width);
 }
 /*----------------------------------------------------------------------------*/
-void queuePeek(const struct Queue *queue, void *element)
+void queueFront(const struct Queue *queue, void *element)
 {
   assert(element);
   assert(queue->size > 0);
 
   const uintptr_t address = (uintptr_t)queue->data
-      + queue->floor * queue->width;
+      + queue->head * queue->width;
   memcpy(element, (const void *)address, queue->width);
 }
 /*----------------------------------------------------------------------------*/
-void queuePop(struct Queue *queue, void *element)
+void queuePopFront(struct Queue *queue)
 {
   assert(queue->size > 0);
 
-  if (element)
-  {
-    const uintptr_t address = (uintptr_t)queue->data
-        + queue->floor * queue->width;
-    memcpy(element, (const void *)address, queue->width);
-  }
-
-  if (++queue->floor == queue->capacity)
-    queue->floor = 0;
+  if (++queue->head == queue->capacity)
+    queue->head = 0;
   --queue->size;
 }
 /*----------------------------------------------------------------------------*/
-void queuePush(struct Queue *queue, const void *element)
+void queuePushBack(struct Queue *queue, const void *element)
 {
   assert(element);
   assert(queue->size < queue->capacity);
 
   const uintptr_t address = (uintptr_t)queue->data
-      + queue->ceil * queue->width;
+      + queue->tail * queue->width;
   memcpy((void *)address, element, queue->width);
 
-  if (++queue->ceil == queue->capacity)
-    queue->ceil = 0;
+  if (++queue->tail == queue->capacity)
+    queue->tail = 0;
   ++queue->size;
 }

@@ -4,16 +4,11 @@
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
-#include <assert.h>
 #include <stdlib.h>
-#include <string.h>
 #include <xcore/containers/array.h>
 /*----------------------------------------------------------------------------*/
-enum Result arrayInit(struct Array *array, size_t width, size_t capacity)
+bool arrayInit(struct Array *array, size_t width, size_t capacity)
 {
-  if (!capacity)
-    return E_VALUE;
-
   array->data = malloc(width * capacity);
 
   if (array->data)
@@ -21,10 +16,10 @@ enum Result arrayInit(struct Array *array, size_t width, size_t capacity)
     array->capacity = capacity;
     array->size = 0;
     array->width = width;
-    return E_OK;
+    return true;
   }
   else
-    return E_MEMORY;
+    return false;
 }
 /*----------------------------------------------------------------------------*/
 void arrayDeinit(struct Array *array)
@@ -61,18 +56,10 @@ void arrayInsert(struct Array *array, size_t before, const void *element)
   ++array->size;
 }
 /*----------------------------------------------------------------------------*/
-void arrayPopBack(struct Array *array, void *element)
+void arrayPopBack(struct Array *array)
 {
   assert(array->size > 0);
-
   --array->size;
-
-  if (element)
-  {
-    const uintptr_t address = (uintptr_t)array->data
-        + array->size * array->width;
-    memcpy(element, (const void *)address, array->width);
-  }
 }
 /*----------------------------------------------------------------------------*/
 void arrayPushBack(struct Array *array, const void *element)
@@ -80,8 +67,7 @@ void arrayPushBack(struct Array *array, const void *element)
   assert(element);
   assert(array->size < array->capacity);
 
-  const uintptr_t address = (uintptr_t)array->data
-      + array->size * array->width;
+  const uintptr_t address = (uintptr_t)array->data + array->size * array->width;
   memcpy((void *)address, element, array->width);
 
   ++array->size;

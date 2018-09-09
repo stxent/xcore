@@ -4,146 +4,199 @@
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
-#include <assert.h>
-#include <stdint.h>
-#include <stdio.h>
+#include <check.h>
 #include <stdlib.h>
-#include <string.h>
 #include <xcore/containers/queue.h>
-/*----------------------------------------------------------------------------*/
-#ifdef CONFIG_DEBUG
-#define DEBUG_PRINT(...) printf(__VA_ARGS__)
-#else
-#define DEBUG_PRINT(...) do {} while (0)
-#endif
 /*----------------------------------------------------------------------------*/
 #define MAX_CAPACITY 17
 /*----------------------------------------------------------------------------*/
-struct DummyStruct
+typedef struct
 {
   int64_t a;
   int32_t b;
-  int16_t c[6];
-};
+  int8_t c;
+} TestStruct;
 /*----------------------------------------------------------------------------*/
-static bool compareElements(const struct DummyStruct *,
-    const struct DummyStruct *);
-struct DummyStruct createElement(size_t);
-static void testIteration(struct Queue *, size_t, bool);
-static void performQueueTest(void);
-/*----------------------------------------------------------------------------*/
-static bool compareElements(const struct DummyStruct *a,
-    const struct DummyStruct *b)
+extern void *__libc_malloc(size_t);
+
+static bool mallocHookActive = false;
+
+void *malloc(size_t size)
 {
-  if (a->a != b->a)
-    return false;
-  else if (a->b != b->b)
-    return false;
-  else if (memcmp(a->c, b->c, sizeof(a->c)))
-    return false;
+  if (!mallocHookActive)
+    return __libc_malloc(size);
   else
-    return true;
+    return 0;
 }
 /*----------------------------------------------------------------------------*/
-struct DummyStruct createElement(size_t index)
+static bool compareElements(const TestStruct *a, const TestStruct *b)
 {
-  const struct DummyStruct element = {
-      .a = index * 2,
-      .b = -index * 3,
-      .c = {index * 4, -index * 4, index * 5, -index * 5, index * 6, -index * 6}
+  return (a->a == b->a) && (a->b == b->b) && (a->c == b->c);
+}
+/*----------------------------------------------------------------------------*/
+static TestStruct createElement(size_t index)
+{
+  return (TestStruct){
+      (int64_t)((index & 1) ? index : -index),
+      (int32_t)((index & 1) ? -index : index),
+      (int8_t)index
   };
-
-  return element;
 }
 /*----------------------------------------------------------------------------*/
-static void testIteration(struct Queue *queue, size_t number, bool clear)
+static void runPushPop(struct Queue *queue, size_t count)
 {
-  assert(queueSize(queue) == 0);
-  assert(queueEmpty(queue) == true);
-  assert(queueFull(queue) == false);
-
-  for (size_t index = 0; index < number; ++index)
+  /* Fill the queue with push back function */
+  for (size_t i = 0; i < count; ++i)
   {
-    const struct DummyStruct element = createElement(index);
-
-    queuePush(queue, &element);
+    const TestStruct element = createElement(i);
+    queuePushBack(queue, &element);
   }
 
-  assert(queueSize(queue) == number);
-  if (number)
-    assert(queueEmpty(queue) == false);
-  if (number == queueCapacity(queue))
-    assert(queueFull(queue) == true);
+  ck_assert_uint_eq(queueSize(queue), count);
+  ck_assert(queueEmpty(queue) == (count == 0));
+  ck_assert(queueFull(queue) == (count == MAX_CAPACITY));
 
-  if (clear)
+  /* Pop elements from the queue while checking their values */
+  for (size_t i = 0; i < count; ++i)
   {
-    for (size_t index = 0; index < number; ++index)
-    {
-      const struct DummyStruct referenceElement = createElement(index);
-      struct DummyStruct element;
-      bool result;
+    const TestStruct refElement = createElement(i);
+    TestStruct element;
 
-      queuePeek(queue, &element);
-      result = compareElements(&element, &referenceElement);
-      assert(result == true);
+    queueFront(queue, &element);
+    queuePopFront(queue);
 
-      queuePop(queue, &element);
-      result = compareElements(&element, &referenceElement);
-      assert(result == true);
-
-#ifdef NDEBUG
-      (void)result;
-#endif
-    }
-
-    assert(queueSize(queue) == 0);
-    assert(queueEmpty(queue) == true);
-    assert(queueFull(queue) == false);
+    ck_assert(compareElements(&element, &refElement) == true);
   }
+
+  ck_assert_uint_eq(queueSize(queue), 0);
+  ck_assert(queueEmpty(queue) == true);
+  ck_assert(queueFull(queue) == false);
 }
 /*----------------------------------------------------------------------------*/
-static void performQueueTest(void)
+START_TEST(testPointerReset)
 {
+  const TestStruct buffer = createElement(0);
   struct Queue queue;
-  enum Result res;
-
-#ifdef NDEBUG
-  (void)res;
-#endif
 
   /* Queue initialization */
-  res = queueInit(&queue, sizeof(struct DummyStruct), MAX_CAPACITY);
-  assert(res == E_OK);
-  assert(queueCapacity(&queue) == MAX_CAPACITY);
+  const bool result = queueInit(&queue, sizeof(TestStruct), MAX_CAPACITY);
+  ck_assert(result == true);
+  ck_assert_uint_eq(queueCapacity(&queue), MAX_CAPACITY);
 
-  /* Fill queue */
-  for (size_t iteration = 1; iteration < MAX_CAPACITY * 2; ++iteration)
-  {
-    const size_t identifier = iteration >= MAX_CAPACITY ?
-        iteration - MAX_CAPACITY : MAX_CAPACITY - iteration;
+  /* Phase 0 - pointer to a first element */
+  queuePushBack(&queue, &buffer);
+  const TestStruct * const phase0 = queueAt(&queue, 0);
+  queuePopFront(&queue);
 
-    DEBUG_PRINT("Iteration %zu, number %zu\n", iteration, identifier);
-    testIteration(&queue, identifier, true);
-  }
+  /* Phase 1 - pointer to a second element */
+  queuePushBack(&queue, &buffer);
+  const TestStruct * const phase1 = queueAt(&queue, 0);
+  ck_assert_ptr_ne(phase1, phase0);
 
-  /* Clear */
-  testIteration(&queue, MAX_CAPACITY, false);
+  /* Reset pointers */
   queueClear(&queue);
-  assert(queueSize(&queue) == 0);
+  ck_assert_uint_eq(queueSize(&queue), 0);
+  ck_assert(queueEmpty(&queue) == true);
+  ck_assert(queueFull(&queue) == false);
 
-  /* Pop with zero pointer as an argument */
-  testIteration(&queue, 1, false);
-  queuePop(&queue, 0);
-  assert(queueSize(&queue) == 0);
+  /* Phase 2 - pointer to the same element as in phase 0 */
+  queuePushBack(&queue, &buffer);
+  const TestStruct * const phase2 = queueAt(&queue, 0);
+  ck_assert_ptr_eq(phase2, phase0);
 
   queueDeinit(&queue);
 }
+END_TEST
+/*----------------------------------------------------------------------------*/
+START_TEST(testPushPopSequence)
+{
+  struct Queue queue;
+
+  /* Queue initialization */
+  const bool result = queueInit(&queue, sizeof(TestStruct), MAX_CAPACITY);
+  ck_assert(result == true);
+
+  /* Fill queue */
+  for (int iter = 1; iter < MAX_CAPACITY * 2; ++iter)
+  {
+    const size_t count = (size_t)(-abs(iter - MAX_CAPACITY) + MAX_CAPACITY);
+    runPushPop(&queue, count);
+  }
+
+  queueDeinit(&queue);
+}
+END_TEST
+/*----------------------------------------------------------------------------*/
+START_TEST(testRandomAccess)
+{
+  struct Queue queue;
+
+  /* Queue initialization */
+  const bool result = queueInit(&queue, sizeof(TestStruct), MAX_CAPACITY);
+  ck_assert(result == true);
+
+  /* Shift internal pointers */
+  for (size_t i = 0; i < MAX_CAPACITY / 2; ++i)
+  {
+    const TestStruct element = createElement(0);
+    queuePushBack(&queue, &element);
+    queuePopFront(&queue);
+  }
+
+  /* Fill queue */
+  for (size_t i = 0; i < MAX_CAPACITY; ++i)
+  {
+    const TestStruct element = createElement(i);
+    queuePushBack(&queue, &element);
+  }
+
+  /* Check values and overwrite them */
+  for (size_t i = 0; i < MAX_CAPACITY; ++i)
+  {
+    const TestStruct refElement = createElement(i);
+    ck_assert(compareElements(queueAt(&queue, i), &refElement) == true);
+    *(TestStruct *)queueAt(&queue, i) = createElement(MAX_CAPACITY - i);
+  }
+
+  /* Check overwritten values */
+  for (size_t i = 0; i < MAX_CAPACITY; ++i)
+  {
+    const TestStruct refElement = createElement(MAX_CAPACITY - i);
+    ck_assert(compareElements(queueAt(&queue, i), &refElement) == true);
+  }
+
+  queueDeinit(&queue);
+}
+END_TEST
+/*----------------------------------------------------------------------------*/
+START_TEST(testMemoryFailure)
+{
+  struct Queue queue;
+
+  mallocHookActive = true;
+  const bool result = queueInit(&queue, sizeof(TestStruct), MAX_CAPACITY);
+  mallocHookActive = false;
+
+  ck_assert(result == false);
+}
+END_TEST
 /*----------------------------------------------------------------------------*/
 int main(void)
 {
-  performQueueTest();
+  Suite * const suite = suite_create("Queue");
+  TCase * const testcase = tcase_create("Core");
 
-  printf("Passed\n");
+  tcase_add_test(testcase, testPointerReset);
+  tcase_add_test(testcase, testPushPopSequence);
+  tcase_add_test(testcase, testRandomAccess);
+  tcase_add_test(testcase, testMemoryFailure);
+  suite_add_tcase(suite, testcase);
 
-  return 0;
+  SRunner * const runner = srunner_create(suite);
+
+  srunner_run_all(runner, CK_NORMAL);
+  const int numberFailed = srunner_ntests_failed(runner);
+  srunner_free(runner);
+
+  return numberFailed == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

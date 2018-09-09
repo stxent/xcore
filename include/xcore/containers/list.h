@@ -24,24 +24,22 @@ struct ListNode
 struct List
 {
   /** First element of the list containing data nodes. */
-  struct ListNode *first;
+  struct ListNode *head;
   /** Size in bytes of each element. */
   size_t width;
 };
 /*----------------------------------------------------------------------------*/
 BEGIN_DECLS
 
-enum Result listInit(struct List *, size_t);
+void listInit(struct List *, size_t);
 void listDeinit(struct List *);
 void listClear(struct List *);
 struct ListNode *listErase(struct List *, struct ListNode *);
 struct ListNode *listFind(struct List *, const void *);
-struct ListNode *listFindCompared(struct List *, const void *,
+struct ListNode *listFindIf(struct List *, const void *,
     int (*)(const void *, const void *));
-enum Result listInsert(struct List *, struct ListNode *, const void *);
-enum Result listPush(struct List *, const void *);
-
-size_t listCapacity(const struct List *);
+bool listInsert(struct List *, struct ListNode *, const void *);
+bool listPushFront(struct List *, const void *);
 size_t listSize(const struct List *);
 
 END_DECLS
@@ -54,9 +52,9 @@ static inline void listData(const struct List *list,
   memcpy(element, node->data, list->width);
 }
 
-static inline struct ListNode *listFirst(const struct List *list)
+static inline struct ListNode *listFront(const struct List *list)
 {
-  return list->first;
+  return list->head;
 }
 
 static inline struct ListNode *listNext(const struct ListNode *node)
@@ -66,7 +64,7 @@ static inline struct ListNode *listNext(const struct ListNode *node)
 
 static inline bool listEmpty(const struct List *list)
 {
-  return list->first == 0;
+  return list->head == 0;
 }
 
 END_DECLS

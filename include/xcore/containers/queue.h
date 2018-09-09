@@ -10,7 +10,6 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <xcore/helpers.h>
-#include <xcore/error.h>
 /*----------------------------------------------------------------------------*/
 struct Queue
 {
@@ -20,22 +19,22 @@ struct Queue
   size_t capacity;
   /** Current number of elements in the queue. */
   size_t size;
-  /** Index of the last element. */
-  size_t ceil;
   /** Index of the first element. */
-  size_t floor;
+  size_t head;
+  /** Index of the last element. */
+  size_t tail;
   /** Size in bytes of each element. */
   size_t width;
 };
 /*----------------------------------------------------------------------------*/
 BEGIN_DECLS
 
-enum Result queueInit(struct Queue *, size_t, size_t);
+bool queueInit(struct Queue *, size_t, size_t);
 void queueDeinit(struct Queue *);
-void *queueAt(const struct Queue *, size_t);
-void queuePeek(const struct Queue *, void *);
-void queuePop(struct Queue *, void *);
-void queuePush(struct Queue *, const void *);
+void *queueAt(struct Queue *, size_t);
+void queueFront(const struct Queue *, void *);
+void queuePopFront(struct Queue *);
+void queuePushBack(struct Queue *, const void *);
 
 END_DECLS
 /*----------------------------------------------------------------------------*/
@@ -48,7 +47,7 @@ static inline size_t queueCapacity(const struct Queue *queue)
 
 static inline void queueClear(struct Queue *queue)
 {
-  queue->floor = queue->ceil = queue->size = 0;
+  queue->head = queue->tail = queue->size = 0;
 }
 
 static inline bool queueEmpty(const struct Queue *queue)

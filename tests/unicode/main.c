@@ -4,20 +4,17 @@
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
-#include <assert.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
-#include <xcore/bits.h>
+#include <check.h>
+#include <stdlib.h>
 #include <xcore/unicode.h>
 /*----------------------------------------------------------------------------*/
+#define MAX_BUFFER_LENGTH 64
+
 #ifdef CONFIG_DEBUG
 #define DEBUG_PRINT(...) printf(__VA_ARGS__)
 #else
 #define DEBUG_PRINT(...) do {} while (0)
 #endif
-/*----------------------------------------------------------------------------*/
-#define MAX_BUFFER_LENGTH 64
 /*----------------------------------------------------------------------------*/
 static void dumpChar16String(const char16_t *array, unsigned int length)
 {
@@ -45,48 +42,41 @@ static void dumpChar8String(const char *array, unsigned int length)
   DEBUG_PRINT("\n");
 }
 /*----------------------------------------------------------------------------*/
-static void performStringComparison(const char *input, unsigned int inputLength,
+static void compareStrings(const char *input, unsigned int inputLength,
     const char16_t *sample, unsigned int sampleLength)
 {
   char16_t frontBuffer[MAX_BUFFER_LENGTH];
   char backBuffer[MAX_BUFFER_LENGTH];
   uint16_t count;
 
-#ifdef NDEBUG
-  /* Suppress warnings */
-  (void)inputLength;
-  (void)sample;
-  (void)sampleLength;
-#endif
-
   /* Check conversion from UTF-8 to UTF-16 */
   count = uToUtf16(frontBuffer, input, sizeof(frontBuffer));
-  assert(count == sampleLength);
+  ck_assert_uint_eq(count, sampleLength);
   for (unsigned int index = 0; index <= count; ++index)
   {
-    assert(frontBuffer[index] == sample[index]);
+    ck_assert(frontBuffer[index] == sample[index]);
   }
   dumpChar16String(frontBuffer, count);
 
   /* Check length estimation of the resulting UTF-16 string */
   count = uLengthToUtf16(input);
-  assert(count == sampleLength);
+  ck_assert_uint_eq(count, sampleLength);
 
   /* Check conversion from UTF-16 to UTF-8 */
   count = uFromUtf16(backBuffer, frontBuffer, sizeof(backBuffer));
-  assert(count == inputLength);
+  ck_assert_uint_eq(count, inputLength);
   for (unsigned int index = 0; index <= count; ++index)
   {
-    assert(backBuffer[index] == input[index]);
+    ck_assert(backBuffer[index] == input[index]);
   }
   dumpChar8String(backBuffer, count);
 
   /* Check length estimation of the resulting UTF-8 string */
   count = uLengthFromUtf16(frontBuffer);
-  assert(count == inputLength);
+  ck_assert_uint_eq(count, inputLength);
 }
 /*----------------------------------------------------------------------------*/
-static void performUtf8ToUtf16(void)
+START_TEST(testUtf8ToUtf16Conversion)
 {
   const char basePlaneTest[] = "String";
   const char16_t basePlaneSample[] = {
@@ -94,7 +84,7 @@ static void performUtf8ToUtf16(void)
   };
 
   DEBUG_PRINT("Characters from U+0000 to U+007F\n");
-  performStringComparison(basePlaneTest, strlen(basePlaneTest),
+  compareStrings(basePlaneTest, strlen(basePlaneTest),
       basePlaneSample, ARRAY_SIZE(basePlaneSample) - 1);
 
   const char twoByteTest[] = "\xD0\xA1\xD1\x82\xD1\x80\xD0\xBE\xD0\xBA\xD0\xB0";
@@ -103,7 +93,7 @@ static void performUtf8ToUtf16(void)
   };
 
   DEBUG_PRINT("Characters from U+0080 to U+07FF\n");
-  performStringComparison(twoByteTest, strlen(twoByteTest),
+  compareStrings(twoByteTest, strlen(twoByteTest),
       twoByteSample, ARRAY_SIZE(twoByteSample) - 1);
 
   const char threeByteTest[] =
@@ -114,7 +104,7 @@ static void performUtf8ToUtf16(void)
   };
 
   DEBUG_PRINT("Characters from U+0800 to U+FFFF\n");
-  performStringComparison(threeByteTest, strlen(threeByteTest),
+  compareStrings(threeByteTest, strlen(threeByteTest),
       threeByteSample, ARRAY_SIZE(threeByteSample) - 1);
 
   const char fourByteTest[] =
@@ -127,16 +117,26 @@ static void performUtf8ToUtf16(void)
   };
 
   DEBUG_PRINT("Characters from U+10000 to U+1FFFF\n");
-  performStringComparison(fourByteTest, strlen(fourByteTest),
+  compareStrings(fourByteTest, strlen(fourByteTest),
       fourByteSample, ARRAY_SIZE(fourByteSample) - 1);
 }
+END_TEST
 /*----------------------------------------------------------------------------*/
 int main(void)
 {
   /* TODO Test overflows */
-  performUtf8ToUtf16();
 
-  printf("Passed\n");
+  Suite * const suite = suite_create("Unicode");
+  TCase * const testcase = tcase_create("Core");
 
-  return 0;
+  tcase_add_test(testcase, testUtf8ToUtf16Conversion);
+  suite_add_tcase(suite, testcase);
+
+  SRunner * const runner = srunner_create(suite);
+
+  srunner_run_all(runner, CK_NORMAL);
+  const int numberFailed = srunner_ntests_failed(runner);
+  srunner_free(runner);
+
+  return numberFailed == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

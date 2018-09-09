@@ -8,21 +8,18 @@
 #include <string.h>
 #include <xcore/containers/byte_queue.h>
 /*----------------------------------------------------------------------------*/
-enum Result byteQueueInit(struct ByteQueue *queue, size_t capacity)
+bool byteQueueInit(struct ByteQueue *queue, size_t capacity)
 {
-  if (!capacity)
-    return E_VALUE;
-
   queue->data = malloc(capacity);
 
   if (queue->data)
   {
     queue->capacity = capacity;
     byteQueueClear(queue);
-    return E_OK;
+    return true;
   }
   else
-    return E_MEMORY;
+    return false;
 }
 /*----------------------------------------------------------------------------*/
 void byteQueueDeinit(struct ByteQueue *queue)
@@ -40,36 +37,36 @@ size_t byteQueuePopArray(struct ByteQueue *queue, void *buffer, size_t length)
   uintptr_t bufferPosition = (uintptr_t)buffer;
   size_t bytesToRead = length;
 
-  if (queue->ceil <= queue->floor)
+  if (queue->tail <= queue->head)
   {
-    size_t count = queue->capacity - queue->floor;
+    size_t count = queue->capacity - queue->head;
 
     if (bytesToRead < count)
       count = bytesToRead;
 
     if (count)
     {
-      memcpy((void *)bufferPosition, queue->data + queue->floor, count);
-      queue->floor += count;
-      if (queue->floor == queue->capacity)
-        queue->floor = 0;
+      memcpy((void *)bufferPosition, queue->data + queue->head, count);
+      queue->head += count;
+      if (queue->head == queue->capacity)
+        queue->head = 0;
 
       bufferPosition += count;
       bytesToRead -= count;
     }
   }
 
-  if (queue->ceil > queue->floor)
+  if (queue->tail > queue->head)
   {
-    size_t count = queue->ceil - queue->floor;
+    size_t count = queue->tail - queue->head;
 
     if (bytesToRead < count)
       count = bytesToRead;
 
     if (count)
     {
-      memcpy((void *)bufferPosition, queue->data + queue->floor, count);
-      queue->floor += count;
+      memcpy((void *)bufferPosition, queue->data + queue->head, count);
+      queue->head += count;
       bytesToRead -= count;
     }
   }
@@ -90,36 +87,36 @@ size_t byteQueuePushArray(struct ByteQueue *queue, const void *buffer,
   uintptr_t bufferPosition = (uintptr_t)buffer;
   size_t bytesToWrite = length;
 
-  if (queue->ceil >= queue->floor)
+  if (queue->tail >= queue->head)
   {
-    size_t count = queue->capacity - queue->ceil;
+    size_t count = queue->capacity - queue->tail;
 
     if (bytesToWrite < count)
       count = bytesToWrite;
 
     if (count)
     {
-      memcpy(queue->data + queue->ceil, (const void *)bufferPosition, count);
-      queue->ceil = queue->ceil + count;
-      if (queue->ceil == queue->capacity)
-        queue->ceil = 0;
+      memcpy(queue->data + queue->tail, (const void *)bufferPosition, count);
+      queue->tail = queue->tail + count;
+      if (queue->tail == queue->capacity)
+        queue->tail = 0;
 
       bufferPosition += count;
       bytesToWrite -= count;
     }
   }
 
-  if (queue->ceil < queue->floor)
+  if (queue->tail < queue->head)
   {
-    size_t count = queue->floor - queue->ceil;
+    size_t count = queue->head - queue->tail;
 
     if (bytesToWrite < count)
       count = bytesToWrite;
 
     if (count)
     {
-      memcpy(queue->data + queue->ceil, (const void *)bufferPosition, count);
-      queue->ceil += count;
+      memcpy(queue->data + queue->tail, (const void *)bufferPosition, count);
+      queue->tail += count;
       bytesToWrite -= count;
     }
   }
