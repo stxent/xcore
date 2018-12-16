@@ -13,4 +13,4 @@ elseif("${CORE_VERSION}" STREQUAL "m4" OR "${CORE_VERSION}" STREQUAL "m7")
 endif()
 
 file(GLOB SOURCE_FILES ${SOURCE_PATHS})
-add_library(core OBJECT ${SOURCE_FILES})
+add_library(xcore_core OBJECT ${SOURCE_FILES})

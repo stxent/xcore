@@ -30,18 +30,21 @@ if(${BUILD_TESTS})
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --coverage")
 endif()
 
-include_directories("${PROJECT_SOURCE_DIR}/include")
-
 # Gather files for the library
-add_subdirectory(core)
-add_subdirectory(generic)
+set(TARGET_LIST core generic)
+set(LIBRARY_OBJECTS "")
 
-set(LIBRARY_OBJECTS $<TARGET_OBJECTS:generic>)
-if(TARGET core)
-    set(LIBRARY_OBJECTS ${LIBRARY_OBJECTS} $<TARGET_OBJECTS:core>)
-endif()
+foreach(ENTRY ${TARGET_LIST})
+    add_subdirectory(${ENTRY})
+    if(TARGET xcore_${ENTRY})
+        set(LIBRARY_OBJECTS ${LIBRARY_OBJECTS} $<TARGET_OBJECTS:xcore_${ENTRY}>)
+        target_include_directories(xcore_${ENTRY} PRIVATE "${PROJECT_SOURCE_DIR}/include")
+    endif()
+endforeach()
 
 add_library(${PROJECT_NAME} ${LIBRARY_OBJECTS})
+target_include_directories(${PROJECT_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/include")
+
 install(TARGETS ${PROJECT_NAME} ARCHIVE DESTINATION lib)
 
 if(${BUILD_TESTS})
