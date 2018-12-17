@@ -15,7 +15,7 @@ typedef struct
   int64_t a;
   int32_t b;
   int8_t c;
-} TestStruct;
+} __attribute__((packed)) TestStruct;
 
 DEFINE_ARRAY(TestStruct, Test, test)
 /*----------------------------------------------------------------------------*/
@@ -33,7 +33,7 @@ void *malloc(size_t size)
 /*----------------------------------------------------------------------------*/
 static bool compareElements(const TestStruct *a, const TestStruct *b)
 {
-  return (a->a == b->a) && (a->b == b->b) && (a->c == b->c);
+  return memcmp(a, b, sizeof(TestStruct)) == 0;
 }
 /*----------------------------------------------------------------------------*/
 static TestStruct createElement(size_t index)
