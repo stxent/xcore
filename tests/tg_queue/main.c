@@ -174,7 +174,7 @@ END_TEST
 /*----------------------------------------------------------------------------*/
 int main(void)
 {
-  Suite * const suite = suite_create("Queue");
+  Suite * const suite = suite_create("TypeGenericQueue");
   TCase * const testcase = tcase_create("Core");
 
   tcase_add_test(testcase, testPointerReset);

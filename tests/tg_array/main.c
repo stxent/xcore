@@ -209,7 +209,7 @@ END_TEST
 /*----------------------------------------------------------------------------*/
 int main(void)
 {
-  Suite * const suite = suite_create("Array");
+  Suite * const suite = suite_create("TypeGenericArray");
   TCase * const testcase = tcase_create("Core");
 
   tcase_add_test(testcase, testRandomAccess);

@@ -36,7 +36,7 @@ static bool compareElements(const TestStruct *a, const TestStruct *b)
   return memcmp(a, b, sizeof(TestStruct)) == 0;
 }
 /*----------------------------------------------------------------------------*/
-static TestStruct createElement(size_t index)
+static TestStruct createElement(int index)
 {
   return (TestStruct){
       (int64_t)((index & 1) ? index : -index),
@@ -45,10 +45,10 @@ static TestStruct createElement(size_t index)
   };
 }
 /*----------------------------------------------------------------------------*/
-static void checkElements(TestList *list, size_t base, size_t step)
+static void checkElements(TestList *list, int base, int step)
 {
   TestListNode *node = testListFront(list);
-  size_t i = 0;
+  int i = 0;
 
   while (node)
   {
@@ -79,10 +79,10 @@ START_TEST(testFind)
   ck_assert(testListEmpty(&list) == true);
 
   /* Push elements */
-  for (size_t i = 0; i < MAX_SIZE; ++i)
+  for (int i = 0; i < MAX_SIZE; ++i)
   {
-    const TestStruct element = createElement(MAX_SIZE - 1 - i);
-    ck_assert(testListPushFront(&list, element) == true);
+    const TestStruct element = createElement(i);
+    ck_assert(testListPushBack(&list, element) == true);
   }
 
   ck_assert_uint_eq(testListSize(&list), MAX_SIZE);
@@ -90,7 +90,7 @@ START_TEST(testFind)
   checkElements(&list, 0, 1);
 
   /* Find elements using default comparator */
-  for (size_t i = 0; i < MAX_SIZE; ++i)
+  for (int i = 0; i < MAX_SIZE; ++i)
   {
     const TestStruct element = createElement(i);
     const TestListNode * const node = testListFind(&list, element);
@@ -99,7 +99,7 @@ START_TEST(testFind)
   }
 
   /* Find elements using custom comparator in descending order */
-  for (size_t i = MAX_SIZE; i > 0; --i)
+  for (int i = MAX_SIZE; i > 0; --i)
   {
     const TestStruct element = createElement(i - 1);
     const TestListNode * const node = testListFindIf(&list, element,
@@ -132,10 +132,10 @@ START_TEST(testInsert)
   ck_assert(testListEmpty(&list) == true);
 
   /* Push odd elements */
-  for (size_t i = 1; i < MAX_SIZE; i += 2)
+  for (int i = 1; i < MAX_SIZE; i += 2)
   {
-    const TestStruct element = createElement(MAX_SIZE - 1 - i);
-    ck_assert(testListPushFront(&list, element) == true);
+    const TestStruct element = createElement(i);
+    ck_assert(testListPushBack(&list, element) == true);
   }
 
   ck_assert_uint_eq(testListSize(&list), MAX_SIZE / 2);
@@ -148,7 +148,7 @@ START_TEST(testInsert)
 
   /* Insert even elements */
   TestListNode *node = testListFront(&list);
-  size_t id = 2;
+  int id = 2;
 
   ck_assert_ptr_ne(node, 0);
   node = testListNext(node);
@@ -177,6 +177,25 @@ START_TEST(testInsert)
 }
 END_TEST
 /*----------------------------------------------------------------------------*/
+START_TEST(testPushBack)
+{
+  TestList list;
+  testListInit(&list);
+
+  /* Push elements */
+  for (int i = 0; i < MAX_SIZE; ++i)
+  {
+    const TestStruct element = createElement(i);
+    ck_assert(testListPushBack(&list, element) == true);
+  }
+
+  ck_assert_uint_eq(testListSize(&list), MAX_SIZE);
+  checkElements(&list, 0, 1);
+
+  testListDeinit(&list);
+}
+END_TEST
+/*----------------------------------------------------------------------------*/
 START_TEST(testPushErase)
 {
   TestList list;
@@ -186,10 +205,10 @@ START_TEST(testPushErase)
   ck_assert(testListEmpty(&list) == true);
 
   /* Push elements */
-  for (size_t i = 0; i < MAX_SIZE; ++i)
+  for (int i = 0; i < MAX_SIZE; ++i)
   {
-    const TestStruct element = createElement(MAX_SIZE - 1 - i);
-    ck_assert(testListPushFront(&list, element) == true);
+    const TestStruct element = createElement(i);
+    ck_assert(testListPushBack(&list, element) == true);
   }
 
   ck_assert_uint_eq(testListSize(&list), MAX_SIZE);
@@ -212,6 +231,25 @@ START_TEST(testPushErase)
   /* Clear list */
   testListClear(&list);
   ck_assert_uint_eq(testListSize(&list), 0);
+
+  testListDeinit(&list);
+}
+END_TEST
+/*----------------------------------------------------------------------------*/
+START_TEST(testPushFront)
+{
+  TestList list;
+  testListInit(&list);
+
+  /* Push elements */
+  for (int i = 0; i < MAX_SIZE; ++i)
+  {
+    const TestStruct element = createElement(i);
+    ck_assert(testListPushFront(&list, element) == true);
+  }
+
+  ck_assert_uint_eq(testListSize(&list), MAX_SIZE);
+  checkElements(&list, MAX_SIZE - 1, -1);
 
   testListDeinit(&list);
 }
@@ -241,12 +279,14 @@ END_TEST
 /*----------------------------------------------------------------------------*/
 int main(void)
 {
-  Suite * const suite = suite_create("List");
+  Suite * const suite = suite_create("TypeGenericList");
   TCase * const testcase = tcase_create("Core");
 
   tcase_add_test(testcase, testFind);
   tcase_add_test(testcase, testInsert);
+  tcase_add_test(testcase, testPushBack);
   tcase_add_test(testcase, testPushErase);
+  tcase_add_test(testcase, testPushFront);
   tcase_add_test(testcase, testMemoryFailure);
   suite_add_tcase(suite, testcase);
 

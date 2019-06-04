@@ -13,6 +13,21 @@ struct TgListNode
   unsigned char data[];
 };
 /*----------------------------------------------------------------------------*/
+void tgListAppend(struct TgListNode **first, struct TgListNode *node)
+{
+  if (*first)
+  {
+    struct TgListNode *current = *first;
+
+    while (current->next)
+      current = current->next;
+
+    current->next = node;
+  }
+  else
+    *first = node;
+}
+/*----------------------------------------------------------------------------*/
 size_t tgListCountNodes(const struct TgListNode *current)
 {
   size_t count = 0;

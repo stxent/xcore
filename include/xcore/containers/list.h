@@ -39,6 +39,7 @@ struct ListNode *listFind(struct List *, const void *);
 struct ListNode *listFindIf(struct List *, const void *,
     int (*)(const void *, const void *));
 bool listInsert(struct List *, struct ListNode *, const void *);
+bool listPushBack(struct List *, const void *);
 bool listPushFront(struct List *, const void *);
 size_t listSize(const struct List *);
 

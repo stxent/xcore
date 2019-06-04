@@ -125,6 +125,34 @@ bool listInsert(struct List *list, struct ListNode *previous,
     return false;
 }
 /*----------------------------------------------------------------------------*/
+bool listPushBack(struct List *list, const void *element)
+{
+  struct ListNode * const node =
+      malloc(offsetof(struct ListNode, data) + list->width);
+
+  if (node)
+  {
+    memcpy(node->data, element, list->width);
+    node->next = 0;
+
+    if (list->head)
+    {
+      struct ListNode *current = list->head;
+
+      while (current->next)
+        current = current->next;
+
+      current->next = node;
+    }
+    else
+      list->head = node;
+
+    return true;
+  }
+  else
+    return false;
+}
+/*----------------------------------------------------------------------------*/
 bool listPushFront(struct List *list, const void *element)
 {
   struct ListNode * const node =

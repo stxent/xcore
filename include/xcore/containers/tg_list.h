@@ -17,11 +17,13 @@ struct TgListNode;
 /*----------------------------------------------------------------------------*/
 BEGIN_DECLS
 
+void tgListAppend(struct TgListNode **, struct TgListNode *);
 size_t tgListCountNodes(const struct TgListNode *);
 struct TgListNode *tgListErase(struct TgListNode **, struct TgListNode *);
 struct TgListNode *tgListFindIf(struct TgListNode *, const void *,
     int (*)(const void *, const void *));
 void tgListFreeChain(struct TgListNode *);
+struct TgListNode *tgListGetTail(struct TgListNode *);
 
 END_DECLS
 /*----------------------------------------------------------------------------*/
@@ -116,6 +118,22 @@ END_DECLS
     static inline name##ListNode *prefix##ListNext(name##ListNode *node) \
     { \
       return (name##ListNode *)node->next; \
+    } \
+    \
+    static inline bool prefix##ListPushBack(name##List *list, type element) \
+    { \
+      name##ListNode * const node = malloc(sizeof(name##ListNode)); \
+      \
+      if (node) \
+      { \
+        node->data = element; \
+        node->next = 0; \
+        \
+        tgListAppend(&list->head, (struct TgListNode *)node); \
+        return true; \
+      } \
+      else \
+        return false; \
     } \
     \
     static inline bool prefix##ListPushFront(name##List *list, type element) \
