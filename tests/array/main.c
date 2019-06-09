@@ -12,9 +12,9 @@
 /*----------------------------------------------------------------------------*/
 typedef struct
 {
-  int64_t a;
-  int32_t b;
-  int8_t c;
+  int64_t x;
+  int32_t y;
+  int8_t z;
 } __attribute__((packed)) TestStruct;
 /*----------------------------------------------------------------------------*/
 extern void *__libc_malloc(size_t);
@@ -34,62 +34,62 @@ static bool compareElements(const TestStruct *a, const TestStruct *b)
   return memcmp(a, b, sizeof(TestStruct)) == 0;
 }
 /*----------------------------------------------------------------------------*/
-static TestStruct createElement(size_t index)
+static TestStruct createElement(int number)
 {
   return (TestStruct){
-      (int64_t)((index & 1) ? index : -index),
-      (int32_t)((index & 1) ? -index : index),
-      (int8_t)index
+      (int64_t)((number & 1) ? number : -number),
+      (int32_t)((number & 1) ? -number : number),
+      (int8_t)number
   };
 }
 /*----------------------------------------------------------------------------*/
-static void checkElements(struct Array *array, size_t base, bool reverse)
+static void checkElements(struct Array *array, int base, bool reverse)
 {
-  const size_t size = arraySize(array);
+  const size_t total = arraySize(array);
 
-  for (size_t i = 0; i < size; ++i)
+  for (int i = 0; i < (int)total; ++i)
   {
-    const size_t id = base + (reverse ? size - i - 1 : i);
-    const TestStruct referenceElement = createElement(id);
+    const int number = base + (reverse ? ((int)total - i - 1) : i);
+    const TestStruct referenceElement = createElement(number);
     const TestStruct * const element = arrayAt(array, i);
 
     ck_assert(compareElements(element, &referenceElement) == true);
   }
 }
 /*----------------------------------------------------------------------------*/
-static void fillArray(struct Array *array, size_t base, size_t count)
+static void fillArray(struct Array *array, int base, int count)
 {
-  for (size_t i = 0; i < count; ++i)
+  for (int i = 0; i < count; ++i)
   {
     const TestStruct element = createElement(base + i);
     arrayPushBack(array, &element);
   }
 }
 /*----------------------------------------------------------------------------*/
-static void eraseElements(struct Array *array, size_t start, size_t count)
+static void eraseElements(struct Array *array, int start, int count)
 {
   const size_t total = arraySize(array);
 
-  for (size_t i = 0; i < count; ++i)
+  for (int i = 0; i < (int)count; ++i)
     arrayErase(array, start);
 
-  ck_assert(arraySize(array) == total - count);
+  ck_assert(arraySize(array) == (size_t)(total - count));
 }
 /*----------------------------------------------------------------------------*/
 static void popElements(struct Array *array)
 {
-  size_t id = arraySize(array) - 1;
+  int number = (int)arraySize(array) - 1;
 
   while (arraySize(array))
   {
-    const TestStruct referenceElement = createElement(id);
+    const TestStruct referenceElement = createElement(number);
     TestStruct element;
 
     arrayBack(array, &element);
     arrayPopBack(array);
 
     ck_assert(compareElements(&element, &referenceElement) == true);
-    --id;
+    --number;
   }
 }
 /*----------------------------------------------------------------------------*/
@@ -125,14 +125,14 @@ START_TEST(testElementInsertion)
   ck_assert(result == true);
 
   /* Insert even elements */
-  for (size_t i = 0; i < MAX_CAPACITY; i += 2)
+  for (int i = 0; i < MAX_CAPACITY; i += 2)
   {
     const TestStruct element = createElement(i);
     arrayInsert(&array, arraySize(&array), &element);
   }
 
   /* Insert odd elements */
-  for (size_t i = 1; i < MAX_CAPACITY; i += 2)
+  for (int i = 1; i < MAX_CAPACITY; i += 2)
   {
     const TestStruct element = createElement(i);
     arrayInsert(&array, i, &element);
@@ -184,7 +184,7 @@ START_TEST(testRandomAccess)
   checkElements(&array, 0, false);
 
   /* Reverse and check elements */
-  for (size_t forward = 0; forward < MAX_CAPACITY / 2; ++forward)
+  for (int forward = 0; forward < MAX_CAPACITY / 2; ++forward)
   {
     TestStruct * const src = arrayAt(&array, forward);
     TestStruct * const dst = arrayAt(&array, MAX_CAPACITY - forward - 1);

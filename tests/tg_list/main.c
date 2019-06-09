@@ -12,9 +12,9 @@
 /*----------------------------------------------------------------------------*/
 typedef struct
 {
-  int64_t a;
-  int32_t b;
-  int8_t c;
+  int64_t x;
+  int32_t y;
+  int8_t z;
 } __attribute__((packed)) TestStruct;
 
 DEFINE_LIST(TestStruct, Test, test)
@@ -36,12 +36,12 @@ static bool compareElements(const TestStruct *a, const TestStruct *b)
   return memcmp(a, b, sizeof(TestStruct)) == 0;
 }
 /*----------------------------------------------------------------------------*/
-static TestStruct createElement(int index)
+static TestStruct createElement(int number)
 {
   return (TestStruct){
-      (int64_t)((index & 1) ? index : -index),
-      (int32_t)((index & 1) ? -index : index),
-      (int8_t)index
+      (int64_t)((number & 1) ? number : -number),
+      (int32_t)((number & 1) ? -number : number),
+      (int8_t)number
   };
 }
 /*----------------------------------------------------------------------------*/
@@ -62,15 +62,29 @@ static void checkElements(TestList *list, int base, int step)
   }
 }
 /*----------------------------------------------------------------------------*/
-static int customComparator(const void *a, const void *b)
+static bool evenElementFinder(const void *aObject,
+    void *bObject __attribute__((unused)))
 {
-  const TestStruct * const aValue = a;
-  const TestStruct * const bValue = b;
-
-  return aValue->a - bValue->a;
+  const TestStruct * const a = aObject;
+  return (a->z % 2) == 0;
 }
 /*----------------------------------------------------------------------------*/
-START_TEST(testFind)
+static bool oddElementFinder(const void *aObject,
+    void *bObject __attribute__((unused)))
+{
+  const TestStruct * const a = aObject;
+  return (a->z % 2) != 0;
+}
+/*----------------------------------------------------------------------------*/
+static bool simplifiedComparator(const void *aObject, void *bObject)
+{
+  const TestStruct * const a = aObject;
+  const TestStruct * const b = bObject;
+
+  return a->z == b->z;
+}
+/*----------------------------------------------------------------------------*/
+START_TEST(testGenericFunctions)
 {
   TestList list;
   testListInit(&list);
@@ -89,35 +103,155 @@ START_TEST(testFind)
   ck_assert(testListEmpty(&list) == false);
   checkElements(&list, 0, 1);
 
+  /* Clear list */
+  testListClear(&list);
+  ck_assert_uint_eq(testListSize(&list), 0);
+  ck_assert(testListEmpty(&list) == true);
+
+  testListDeinit(&list);
+}
+END_TEST
+/*----------------------------------------------------------------------------*/
+START_TEST(testErase)
+{
+  TestList list;
+  testListInit(&list);
+
+  /* Push elements */
+  for (int i = 0; i < MAX_SIZE; ++i)
+  {
+    const TestStruct element = createElement(i);
+    ck_assert(testListPushBack(&list, element) == true);
+  }
+
+  /* Remove even elements */
+  for (int i = 0; i < MAX_SIZE; i += 2)
+  {
+    const TestStruct element = createElement(i);
+    testListErase(&list, element);
+  }
+
+  ck_assert_uint_eq(testListSize(&list), MAX_SIZE / 2);
+  checkElements(&list, 1, 2);
+
+  /* Remove odd elements */
+  for (int i = 1; i < MAX_SIZE; i += 2)
+  {
+    const TestStruct element = createElement(i);
+    testListErase(&list, element);
+  }
+
+  ck_assert(testListEmpty(&list) == true);
+
+  testListDeinit(&list);
+}
+END_TEST
+/*----------------------------------------------------------------------------*/
+START_TEST(testEraseIf)
+{
+  TestList list;
+  testListInit(&list);
+
+  /* Push elements */
+  for (int i = 0; i < MAX_SIZE; ++i)
+  {
+    const TestStruct element = createElement(i);
+    ck_assert(testListPushBack(&list, element) == true);
+  }
+
+  /* Remove even elements */
+  testListEraseIf(&list, 0, evenElementFinder);
+  ck_assert_uint_eq(testListSize(&list), MAX_SIZE / 2);
+  checkElements(&list, 1, 2);
+
+  /* Remove odd elements */
+  testListEraseIf(&list, 0, oddElementFinder);
+  ck_assert(testListEmpty(&list) == true);
+
+  testListDeinit(&list);
+}
+END_TEST
+/*----------------------------------------------------------------------------*/
+START_TEST(testEraseNode)
+{
+  TestList list;
+  testListInit(&list);
+
+  /* Push elements */
+  for (int i = 0; i < MAX_SIZE; ++i)
+  {
+    const TestStruct element = createElement(i);
+    ck_assert(testListPushBack(&list, element) == true);
+  }
+
+  TestListNode *node;
+
+  /* Remove even elements */
+  node = testListFront(&list);
+  while (node)
+  {
+    node = testListEraseNode(&list, node);
+    if (node)
+      node = testListNext(node);
+  }
+  ck_assert_uint_eq(testListSize(&list), MAX_SIZE / 2);
+  checkElements(&list, 1, 2);
+
+  testListDeinit(&list);
+}
+END_TEST
+/*----------------------------------------------------------------------------*/
+START_TEST(testFind)
+{
+  TestList list;
+  testListInit(&list);
+
+  /* Push elements */
+  for (int i = 0; i < MAX_SIZE; ++i)
+  {
+    const TestStruct element = createElement(i);
+    ck_assert(testListPushBack(&list, element) == true);
+  }
+
   /* Find elements using default comparator */
   for (int i = 0; i < MAX_SIZE; ++i)
   {
     const TestStruct element = createElement(i);
-    const TestListNode * const node = testListFind(&list, element);
-
-    ck_assert_ptr_ne(node, 0);
-  }
-
-  /* Find elements using custom comparator in descending order */
-  for (int i = MAX_SIZE; i > 0; --i)
-  {
-    const TestStruct element = createElement(i - 1);
-    const TestListNode * const node = testListFindIf(&list, element,
-        customComparator);
-
-    ck_assert_ptr_ne(node, 0);
+    ck_assert_ptr_ne(testListFind(&list, element), 0);
   }
 
   /* Try to find non-existent elements */
   const TestStruct incorrectElement = createElement(MAX_SIZE);
+  ck_assert_ptr_eq(testListFind(&list, incorrectElement), 0);
 
-  const TestListNode * const incorrectDefaultNode = testListFind(&list,
-      incorrectElement);
-  ck_assert_ptr_eq(incorrectDefaultNode, 0);
+  testListDeinit(&list);
+}
+END_TEST
+/*----------------------------------------------------------------------------*/
+START_TEST(testFindIf)
+{
+  TestList list;
+  testListInit(&list);
 
-  const TestListNode * const incorrectCustomNode = testListFindIf(&list,
-      incorrectElement, customComparator);
-  ck_assert_ptr_eq(incorrectCustomNode, 0);
+  /* Push elements */
+  for (int i = 0; i < MAX_SIZE; ++i)
+  {
+    const TestStruct element = createElement(i);
+    ck_assert(testListPushBack(&list, element) == true);
+  }
+
+  TestStruct element = createElement(MAX_SIZE);
+
+  /* Try to find non-existent elements */
+  ck_assert_ptr_eq(testListFindIf(&list, &element, simplifiedComparator), 0);
+
+  /* Find elements using both comparator types */
+  for (int i = 0; i < MAX_SIZE; ++i)
+  {
+    element.z = i;
+    ck_assert_ptr_eq(testListFind(&list, element), 0);
+    ck_assert_ptr_ne(testListFindIf(&list, &element, simplifiedComparator), 0);
+  }
 
   testListDeinit(&list);
 }
@@ -128,9 +262,6 @@ START_TEST(testInsert)
   TestList list;
   testListInit(&list);
 
-  ck_assert(testListSize(&list) == 0);
-  ck_assert(testListEmpty(&list) == true);
-
   /* Push odd elements */
   for (int i = 1; i < MAX_SIZE; i += 2)
   {
@@ -139,7 +270,6 @@ START_TEST(testInsert)
   }
 
   ck_assert_uint_eq(testListSize(&list), MAX_SIZE / 2);
-  ck_assert(testListEmpty(&list) == false);
   checkElements(&list, 1, 2);
 
   /* Insert first element */
@@ -169,10 +299,6 @@ START_TEST(testInsert)
   ck_assert_uint_eq(testListSize(&list), MAX_SIZE);
   checkElements(&list, 0, 1);
 
-  /* Clear list */
-  testListClear(&list);
-  ck_assert_uint_eq(testListSize(&list), 0);
-
   testListDeinit(&list);
 }
 END_TEST
@@ -191,46 +317,6 @@ START_TEST(testPushBack)
 
   ck_assert_uint_eq(testListSize(&list), MAX_SIZE);
   checkElements(&list, 0, 1);
-
-  testListDeinit(&list);
-}
-END_TEST
-/*----------------------------------------------------------------------------*/
-START_TEST(testPushErase)
-{
-  TestList list;
-  testListInit(&list);
-
-  ck_assert(testListSize(&list) == 0);
-  ck_assert(testListEmpty(&list) == true);
-
-  /* Push elements */
-  for (int i = 0; i < MAX_SIZE; ++i)
-  {
-    const TestStruct element = createElement(i);
-    ck_assert(testListPushBack(&list, element) == true);
-  }
-
-  ck_assert_uint_eq(testListSize(&list), MAX_SIZE);
-  ck_assert(testListEmpty(&list) == false);
-  checkElements(&list, 0, 1);
-
-  TestListNode *node;
-
-  /* Remove even elements */
-  node = testListFront(&list);
-  while (node)
-  {
-    node = testListErase(&list, node);
-    if (node)
-      node = testListNext(node);
-  }
-  ck_assert_uint_eq(testListSize(&list), MAX_SIZE / 2);
-  checkElements(&list, 1, 2);
-
-  /* Clear list */
-  testListClear(&list);
-  ck_assert_uint_eq(testListSize(&list), 0);
 
   testListDeinit(&list);
 }
@@ -282,10 +368,14 @@ int main(void)
   Suite * const suite = suite_create("TypeGenericList");
   TCase * const testcase = tcase_create("Core");
 
+  tcase_add_test(testcase, testGenericFunctions);
+  tcase_add_test(testcase, testErase);
+  tcase_add_test(testcase, testEraseIf);
+  tcase_add_test(testcase, testEraseNode);
   tcase_add_test(testcase, testFind);
+  tcase_add_test(testcase, testFindIf);
   tcase_add_test(testcase, testInsert);
   tcase_add_test(testcase, testPushBack);
-  tcase_add_test(testcase, testPushErase);
   tcase_add_test(testcase, testPushFront);
   tcase_add_test(testcase, testMemoryFailure);
   suite_add_tcase(suite, testcase);

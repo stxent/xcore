@@ -12,9 +12,9 @@
 /*----------------------------------------------------------------------------*/
 typedef struct
 {
-  int64_t a;
-  int32_t b;
-  int8_t c;
+  int64_t x;
+  int32_t y;
+  int8_t z;
 } __attribute__((packed)) TestStruct;
 /*----------------------------------------------------------------------------*/
 extern void *__libc_malloc(size_t);
@@ -34,19 +34,19 @@ static bool compareElements(const TestStruct *a, const TestStruct *b)
   return memcmp(a, b, sizeof(TestStruct)) == 0;
 }
 /*----------------------------------------------------------------------------*/
-static TestStruct createElement(size_t index)
+static TestStruct createElement(int number)
 {
   return (TestStruct){
-      (int64_t)((index & 1) ? index : -index),
-      (int32_t)((index & 1) ? -index : index),
-      (int8_t)index
+      (int64_t)((number & 1) ? number : -number),
+      (int32_t)((number & 1) ? -number : number),
+      (int8_t)number
   };
 }
 /*----------------------------------------------------------------------------*/
-static void runPushPop(struct Queue *queue, size_t count)
+static void runPushPop(struct Queue *queue, int count)
 {
   /* Fill the queue with push back function */
-  for (size_t i = 0; i < count; ++i)
+  for (int i = 0; i < count; ++i)
   {
     const TestStruct element = createElement(i);
     queuePushBack(queue, &element);
@@ -57,7 +57,7 @@ static void runPushPop(struct Queue *queue, size_t count)
   ck_assert(queueFull(queue) == (count == MAX_CAPACITY));
 
   /* Pop elements from the queue while checking their values */
-  for (size_t i = 0; i < count; ++i)
+  for (int i = 0; i < count; ++i)
   {
     const TestStruct refElement = createElement(i);
     TestStruct element;
@@ -119,7 +119,7 @@ START_TEST(testPushPopSequence)
   /* Fill queue */
   for (int iter = 1; iter < MAX_CAPACITY * 2; ++iter)
   {
-    const size_t count = (size_t)(-abs(iter - MAX_CAPACITY) + MAX_CAPACITY);
+    const int count = -abs(iter - MAX_CAPACITY) + MAX_CAPACITY;
     runPushPop(&queue, count);
   }
 
@@ -136,7 +136,7 @@ START_TEST(testRandomAccess)
   ck_assert(result == true);
 
   /* Shift internal pointers */
-  for (size_t i = 0; i < MAX_CAPACITY / 2; ++i)
+  for (int i = 0; i < MAX_CAPACITY / 2; ++i)
   {
     const TestStruct element = createElement(0);
     queuePushBack(&queue, &element);
@@ -144,14 +144,14 @@ START_TEST(testRandomAccess)
   }
 
   /* Fill queue */
-  for (size_t i = 0; i < MAX_CAPACITY; ++i)
+  for (int i = 0; i < MAX_CAPACITY; ++i)
   {
     const TestStruct element = createElement(i);
     queuePushBack(&queue, &element);
   }
 
   /* Check values and overwrite them */
-  for (size_t i = 0; i < MAX_CAPACITY; ++i)
+  for (int i = 0; i < MAX_CAPACITY; ++i)
   {
     const TestStruct refElement = createElement(i);
     ck_assert(compareElements(queueAt(&queue, i), &refElement) == true);
@@ -159,7 +159,7 @@ START_TEST(testRandomAccess)
   }
 
   /* Check overwritten values */
-  for (size_t i = 0; i < MAX_CAPACITY; ++i)
+  for (int i = 0; i < MAX_CAPACITY; ++i)
   {
     const TestStruct refElement = createElement(MAX_CAPACITY - i);
     ck_assert(compareElements(queueAt(&queue, i), &refElement) == true);

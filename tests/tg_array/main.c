@@ -12,9 +12,9 @@
 /*----------------------------------------------------------------------------*/
 typedef struct
 {
-  int64_t a;
-  int32_t b;
-  int8_t c;
+  int64_t x;
+  int32_t y;
+  int8_t z;
 } __attribute__((packed)) TestStruct;
 
 DEFINE_ARRAY(TestStruct, Test, test)
@@ -36,57 +36,57 @@ static bool compareElements(const TestStruct *a, const TestStruct *b)
   return memcmp(a, b, sizeof(TestStruct)) == 0;
 }
 /*----------------------------------------------------------------------------*/
-static TestStruct createElement(size_t index)
+static TestStruct createElement(int number)
 {
   return (TestStruct){
-      (int64_t)((index & 1) ? index : -index),
-      (int32_t)((index & 1) ? -index : index),
-      (int8_t)index
+      (int64_t)((number & 1) ? number : -number),
+      (int32_t)((number & 1) ? -number : number),
+      (int8_t)number
   };
 }
 /*----------------------------------------------------------------------------*/
-static void checkElements(TestArray *array, size_t base, bool reverse)
+static void checkElements(TestArray *array, int base, bool reverse)
 {
-  const size_t size = testArraySize(array);
+  const size_t total = testArraySize(array);
 
-  for (size_t i = 0; i < size; ++i)
+  for (int i = 0; i < (int)total; ++i)
   {
-    const size_t id = base + (reverse ? size - i - 1 : i);
-    const TestStruct referenceElement = createElement(id);
+    const int number = base + (reverse ? ((int)total - i - 1) : i);
+    const TestStruct referenceElement = createElement(number);
     const TestStruct * const element = testArrayAt(array, i);
 
     ck_assert(compareElements(element, &referenceElement) == true);
   }
 }
 /*----------------------------------------------------------------------------*/
-static void fillArray(TestArray *array, size_t base, size_t count)
+static void fillArray(TestArray *array, int base, int count)
 {
-  for (size_t i = 0; i < count; ++i)
+  for (int i = 0; i < count; ++i)
     testArrayPushBack(array, createElement(base + i));
 }
 /*----------------------------------------------------------------------------*/
-static void eraseElements(TestArray *array, size_t start, size_t count)
+static void eraseElements(TestArray *array, int start, int count)
 {
   const size_t total = testArraySize(array);
 
-  for (size_t i = 0; i < count; ++i)
+  for (int i = 0; i < (int)count; ++i)
     testArrayErase(array, start);
 
-  ck_assert(testArraySize(array) == total - count);
+  ck_assert(testArraySize(array) == (size_t)(total - count));
 }
 /*----------------------------------------------------------------------------*/
 static void popElements(TestArray *array)
 {
-  size_t id = testArraySize(array) - 1;
+  int number = (int)testArraySize(array) - 1;
 
   while (testArraySize(array))
   {
-    const TestStruct referenceElement = createElement(id);
+    const TestStruct referenceElement = createElement(number);
     const TestStruct element = testArrayBack(array);
     testArrayPopBack(array);
 
     ck_assert(compareElements(&element, &referenceElement) == true);
-    --id;
+    --number;
   }
 }
 /*----------------------------------------------------------------------------*/
@@ -122,11 +122,11 @@ START_TEST(testElementInsertion)
   ck_assert(result == true);
 
   /* Insert even elements */
-  for (size_t i = 0; i < MAX_CAPACITY; i += 2)
+  for (int i = 0; i < MAX_CAPACITY; i += 2)
     testArrayInsert(&array, testArraySize(&array), createElement(i));
 
   /* Insert odd elements */
-  for (size_t i = 1; i < MAX_CAPACITY; i += 2)
+  for (int i = 1; i < MAX_CAPACITY; i += 2)
     testArrayInsert(&array, i, createElement(i));
 
   ck_assert_uint_eq(testArraySize(&array), MAX_CAPACITY);
@@ -175,9 +175,9 @@ START_TEST(testRandomAccess)
   checkElements(&array, 0, false);
 
   /* Reverse and check elements */
-  for (size_t forward = 0; forward < MAX_CAPACITY / 2; ++forward)
+  for (int forward = 0; forward < MAX_CAPACITY / 2; ++forward)
   {
-    const size_t backward = MAX_CAPACITY - forward - 1;
+    const int backward = MAX_CAPACITY - forward - 1;
     const TestStruct buffer = *testArrayAt(&array, forward);
     *testArrayAt(&array, forward) = *testArrayAt(&array, backward);
     *testArrayAt(&array, backward) = buffer;

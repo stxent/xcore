@@ -8,6 +8,16 @@
 #include <stdlib.h>
 #include <xcore/containers/list.h>
 /*----------------------------------------------------------------------------*/
+struct PredicateData
+{
+  const void *element;
+  size_t width;
+};
+/*----------------------------------------------------------------------------*/
+static size_t countListNodes(const struct ListNode *);
+static bool defaultComparator(const void *a, void *b);
+static void freeListChain(struct ListNode *);
+/*----------------------------------------------------------------------------*/
 static size_t countListNodes(const struct ListNode *current)
 {
   size_t result = 0;
@@ -19,6 +29,12 @@ static size_t countListNodes(const struct ListNode *current)
   }
 
   return result;
+}
+/*----------------------------------------------------------------------------*/
+static bool defaultComparator(const void *a, void *b)
+{
+  const struct PredicateData * const data = b;
+  return memcmp(a, data->element, data->width) == 0;
 }
 /*----------------------------------------------------------------------------*/
 static void freeListChain(struct ListNode *current)
@@ -53,7 +69,32 @@ void listClear(struct List *list)
   }
 }
 /*----------------------------------------------------------------------------*/
-struct ListNode *listErase(struct List *list, struct ListNode *node)
+void listErase(struct List *list, const void *element)
+{
+  struct PredicateData data = {element, list->width};
+  listEraseIf(list, &data, defaultComparator);
+}
+/*----------------------------------------------------------------------------*/
+void listEraseIf(struct List *list, void *argument,
+    bool (*predicate)(const void *, void *))
+{
+  struct ListNode **node = &list->head;
+
+  while (*node)
+  {
+    if (predicate((*node)->data, argument))
+    {
+      struct ListNode * const target = *node;
+
+      *node = (*node)->next;
+      free(target);
+    }
+    else
+      node = &(*node)->next;
+  }
+}
+/*----------------------------------------------------------------------------*/
+struct ListNode *listEraseNode(struct List *list, struct ListNode *node)
 {
   struct ListNode * const next = node->next;
   struct ListNode **current = &list->head;
@@ -71,26 +112,18 @@ struct ListNode *listErase(struct List *list, struct ListNode *node)
 /*----------------------------------------------------------------------------*/
 struct ListNode *listFind(struct List *list, const void *element)
 {
-  struct ListNode *node = list->head;
-
-  while (node)
-  {
-    if (!memcmp(node->data, element, list->width))
-      return node;
-    node = node->next;
-  }
-
-  return 0;
+  struct PredicateData data = {element, list->width};
+  return listFindIf(list, &data, defaultComparator);
 }
 /*----------------------------------------------------------------------------*/
-struct ListNode *listFindIf(struct List *list, const void *element,
-    int (*comparator)(const void *, const void *))
+struct ListNode *listFindIf(struct List *list, void *argument,
+    bool (*predicate)(const void *, void *))
 {
   struct ListNode *node = list->head;
 
   while (node)
   {
-    if (!comparator(node->data, element))
+    if (predicate(node->data, argument))
       return node;
     node = node->next;
   }

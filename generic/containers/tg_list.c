@@ -41,7 +41,26 @@ size_t tgListCountNodes(const struct TgListNode *current)
   return count;
 }
 /*----------------------------------------------------------------------------*/
-struct TgListNode *tgListErase(struct TgListNode **first,
+void tgListEraseIf(struct TgListNode **first, void *argument,
+    bool (*predicate)(const void *, void *))
+{
+  struct TgListNode **node = first;
+
+  while (*node)
+  {
+    if (predicate((*node)->data, argument))
+    {
+      struct TgListNode * const target = *node;
+
+      *node = (*node)->next;
+      free(target);
+    }
+    else
+      node = &(*node)->next;
+  }
+}
+/*----------------------------------------------------------------------------*/
+struct TgListNode *tgListEraseNode(struct TgListNode **first,
     struct TgListNode *node)
 {
   struct TgListNode * const next = node->next;
@@ -58,14 +77,14 @@ struct TgListNode *tgListErase(struct TgListNode **first,
   return next;
 }
 /*----------------------------------------------------------------------------*/
-struct TgListNode *tgListFindIf(struct TgListNode *first,
-    const void *element, int (*comparator)(const void *, const void *))
+struct TgListNode *tgListFindIf(struct TgListNode *first, void *argument,
+    bool (*predicate)(const void *, void *))
 {
   struct TgListNode *node = first;
 
   while (node)
   {
-    if (!comparator(node->data, element))
+    if (predicate(node->data, argument))
       return node;
     node = node->next;
   }

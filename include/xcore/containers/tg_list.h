@@ -19,9 +19,11 @@ BEGIN_DECLS
 
 void tgListAppend(struct TgListNode **, struct TgListNode *);
 size_t tgListCountNodes(const struct TgListNode *);
-struct TgListNode *tgListErase(struct TgListNode **, struct TgListNode *);
-struct TgListNode *tgListFindIf(struct TgListNode *, const void *,
-    int (*)(const void *, const void *));
+struct TgListNode *tgListEraseNode(struct TgListNode **, struct TgListNode *);
+void tgListEraseIf(struct TgListNode **, void *,
+    bool (*)(const void *, void *));
+struct TgListNode *tgListFindIf(struct TgListNode *, void *,
+    bool (*)(const void *, void *));
 void tgListFreeChain(struct TgListNode *);
 struct TgListNode *tgListGetTail(struct TgListNode *);
 
@@ -39,10 +41,9 @@ END_DECLS
       struct TgListNode *head; \
     } name##List; \
     \
-    static inline int prefix##ListGenericComparator(const void *a, \
-        const void *b) \
+    static inline bool prefix##ListDefaultComparator(const void *a, void *b) \
     { \
-      return memcmp(a, b, sizeof(type)); \
+      return memcmp(a, b, sizeof(type)) == 0; \
     } \
     \
     static inline void prefix##ListClear(name##List *list) \
@@ -64,24 +65,35 @@ END_DECLS
       return list->head == 0; \
     } \
     \
-    static inline name##ListNode *prefix##ListErase(name##List *list, \
+    static inline void prefix##ListErase(name##List *list, type element) \
+    { \
+      tgListEraseIf(&list->head, &element, prefix##ListDefaultComparator); \
+    } \
+    \
+    static inline void prefix##ListEraseIf(name##List *list, \
+        void *argument, bool (*predicate)(const void *, void *)) \
+    { \
+      tgListEraseIf(&list->head, argument, predicate); \
+    } \
+    \
+    static inline name##ListNode *prefix##ListEraseNode(name##List *list, \
         name##ListNode *node) \
     { \
-      return (name##ListNode *)tgListErase(&list->head, \
+      return (name##ListNode *)tgListEraseNode(&list->head, \
           (struct TgListNode *)node); \
     } \
     \
     static inline name##ListNode *prefix##ListFind(name##List *list, \
-        const type element) \
+        type element) \
     { \
       return (name##ListNode *)tgListFindIf(list->head, &element, \
-          prefix##ListGenericComparator); \
+          prefix##ListDefaultComparator); \
     } \
     \
     static inline name##ListNode *prefix##ListFindIf(name##List *list, \
-        const type element, int (*comparator)(const void *, const void *)) \
+        void *argument, bool (*predicate)(const void *, void *)) \
     { \
-      return (name##ListNode *)tgListFindIf(list->head, &element, comparator); \
+      return (name##ListNode *)tgListFindIf(list->head, argument, predicate); \
     } \
     \
     static inline name##ListNode *prefix##ListFront(name##List *list) \

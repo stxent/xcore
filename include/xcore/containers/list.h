@@ -34,10 +34,12 @@ BEGIN_DECLS
 void listInit(struct List *, size_t);
 void listDeinit(struct List *);
 void listClear(struct List *);
-struct ListNode *listErase(struct List *, struct ListNode *);
+void listErase(struct List *, const void *);
+void listEraseIf(struct List *, void *, bool (*)(const void *, void *));
+struct ListNode *listEraseNode(struct List *, struct ListNode *);
 struct ListNode *listFind(struct List *, const void *);
-struct ListNode *listFindIf(struct List *, const void *,
-    int (*)(const void *, const void *));
+struct ListNode *listFindIf(struct List *, void *,
+    bool (*)(const void *, void *));
 bool listInsert(struct List *, struct ListNode *, const void *);
 bool listPushBack(struct List *, const void *);
 bool listPushFront(struct List *, const void *);
