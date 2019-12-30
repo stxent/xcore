@@ -28,8 +28,14 @@
  * The classic MIN and MAX macros.
  * Note that statements will be evaluated twice.
  */
+
+#ifndef MAX
 #define MAX(a, b)               ((a) > (b) ? (a) : (b))
+#endif
+
+#ifndef MIN
 #define MIN(a, b)               ((a) > (b) ? (b) : (a))
+#endif
 /*----------------------------------------------------------------------------*/
 #define TO_STRING(text)         #text
 #define EXPAND_TO_STRING(text)  TO_STRING(text)
