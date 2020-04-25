@@ -1,12 +1,12 @@
 /*
- * xcore/core/cortex/armv7m/memory.h
- * Copyright (C) 2018 xent
+ * xcore/core/cortex/armv7em/accel.h
+ * Copyright (C) 2020 xent
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
-#ifndef XCORE_CORE_CORTEX_ARMV7M_MEMORY_H_
-#define XCORE_CORE_CORTEX_ARMV7M_MEMORY_H_
+#ifndef XCORE_CORE_CORTEX_ARMV7EM_ACCEL_H_
+#define XCORE_CORE_CORTEX_ARMV7EM_ACCEL_H_
 /*----------------------------------------------------------------------------*/
-#include "../armv6m/memory.h"
+#include "../armv7m/accel.h"
 /*----------------------------------------------------------------------------*/
-#endif /* XCORE_CORE_CORTEX_ARMV7M_MEMORY_H_ */
+#endif /* XCORE_CORE_CORTEX_ARMV7EM_ACCEL_H_ */

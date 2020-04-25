@@ -143,18 +143,4 @@ static inline uint32_t __rbit(uint32_t value)
 
 END_DECLS
 /*----------------------------------------------------------------------------*/
-BEGIN_DECLS
-
-static inline uint32_t countLeadingZeros32(uint32_t value)
-{
-  return __clz(value);
-}
-
-static inline uint32_t reverseBits32(uint32_t value)
-{
-  return __rbit(value);
-}
-
-END_DECLS
-/*----------------------------------------------------------------------------*/
 #endif /* XCORE_CORE_CORTEX_ARMV7M_ASM_H_ */
