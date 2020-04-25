@@ -31,10 +31,14 @@ enum IfParameter
 
   /** Alignment of the buffer length for user space buffers. */
   IF_ALIGNMENT,
-  /** Address within the internal address space of the device. */
+  /** Position in the 32-bit address space. */
   IF_POSITION,
-  /** Size of the internal address space. */
+  /** Position in the 64-bit address space. */
+  IF_POSITION_64,
+  /** Size of the available space in a 32-bit address space. */
   IF_SIZE,
+  /** Size of the available space in a 64-bit address space. */
+  IF_SIZE_64,
   /** Size of a data word in bits. */
   IF_WIDTH,
 
