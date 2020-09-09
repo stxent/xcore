@@ -1,5 +1,5 @@
 /*
- * xcore/fs.h
+ * xcore/fs/fs.h
  * Copyright (C) 2015 xent
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
@@ -9,8 +9,8 @@
  * Abstract file system interface for embedded applications.
  */
 
-#ifndef XCORE_FS_H_
-#define XCORE_FS_H_
+#ifndef XCORE_FS_FS_H_
+#define XCORE_FS_FS_H_
 /*----------------------------------------------------------------------------*/
 #include <stdint.h>
 #include <xcore/entity.h>
@@ -217,4 +217,4 @@ static inline enum Result fsNodeWrite(void *node, enum FsFieldType type,
 
 END_DECLS
 /*----------------------------------------------------------------------------*/
-#endif /* XCORE_FS_H_ */
+#endif /* XCORE_FS_FS_H_ */

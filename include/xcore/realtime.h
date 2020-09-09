@@ -93,6 +93,7 @@ END_DECLS
 /*----------------------------------------------------------------------------*/
 BEGIN_DECLS
 
+/* TODO Doxygen */
 enum Result rtMakeEpochTime(time64_t *, const struct RtDateTime *);
 void rtMakeTime(struct RtDateTime *, time64_t);
 

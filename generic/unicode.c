@@ -24,12 +24,17 @@ size_t uLengthFromUtf16(const char16_t *source)
       if (value > 0xDBFF)
         continue;
 
-      const uint32_t surrogate = fromLittleEndian16(*source++);
+      const uint32_t surrogate = fromLittleEndian16(*source);
+
+      /* Check for end of line */
+      if (!surrogate)
+        break;
 
       /* Check for low surrogate */
       if (surrogate < 0xDC00 || surrogate > 0xDFFF)
         continue;
 
+      ++source;
       value = (value & 0x03FF) << 10;
       value |= surrogate & 0x03FF;
       value += 0x10000;
@@ -95,12 +100,17 @@ size_t uFromUtf16(char *destination, const char16_t *source, size_t maxLength)
       if (value > 0xDBFF)
         continue;
 
-      const uint32_t surrogate = fromLittleEndian16(*source++);
+      const uint32_t surrogate = fromLittleEndian16(*source);
+
+      /* Check for end of line */
+      if (!surrogate)
+        break;
 
       /* Check for low surrogate */
       if (surrogate < 0xDC00 || surrogate > 0xDFFF)
         continue;
 
+      ++source;
       value = (value & 0x03FF) << 10;
       value |= surrogate & 0x03FF;
       value += 0x10000;

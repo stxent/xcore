@@ -60,8 +60,8 @@ void *malloc(size_t size)
 /*----------------------------------------------------------------------------*/
 static enum Result testClassInit(void *objectBase, const void *configBase)
 {
-  ck_assert_ptr_ne(objectBase, 0);
-  ck_assert_ptr_ne(configBase, 0);
+  ck_assert_ptr_nonnull(objectBase);
+  ck_assert_ptr_nonnull(configBase);
 
   const struct TestObjectConfig * const config = configBase;
   struct TestObject * const object = objectBase;
@@ -80,7 +80,7 @@ static enum Result testClassFailedInit(void *objectBase __attribute__((unused)),
 /*----------------------------------------------------------------------------*/
 static void testClassDeinit(void *objectBase)
 {
-  ck_assert_ptr_ne(objectBase, 0);
+  ck_assert_ptr_nonnull(objectBase);
 
   struct TestObject * const object = objectBase;
   ck_assert_str_eq(object->message, TEST_MESSAGE);
@@ -93,18 +93,18 @@ START_TEST(testObjectCreation)
 
   /* Simply construct and delete item */
   struct TestObject * const correctObject = init(DefaultEntity, &config);
-  ck_assert_ptr_ne(correctObject, 0);
+  ck_assert_ptr_nonnull(correctObject);
   ck_assert_str_eq(correctObject->message, TEST_MESSAGE);
   deinit(correctObject);
 
   /* Create an object of class without constructor and destructor */
   struct TestObject * const plainObject = init(UninitializedEntity, 0);
-  ck_assert_ptr_ne(plainObject, 0);
+  ck_assert_ptr_nonnull(plainObject);
   deinit(plainObject);
 
   /* Fail to construct an object */
   struct TestObject * const failedObject = init(InconstructibleEntity, &config);
-  ck_assert_ptr_eq(failedObject, 0);
+  ck_assert_ptr_null(failedObject);
 }
 END_TEST
 /*----------------------------------------------------------------------------*/
@@ -116,7 +116,7 @@ START_TEST(testMemoryFailure)
   struct TestObject * const object = init(DefaultEntity, &config);
   mallocHookActive = false;
 
-  ck_assert_ptr_eq(object, 0);
+  ck_assert_ptr_null(object);
 }
 END_TEST
 /*----------------------------------------------------------------------------*/

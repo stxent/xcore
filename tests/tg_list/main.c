@@ -217,12 +217,12 @@ START_TEST(testFind)
   for (int i = 0; i < MAX_SIZE; ++i)
   {
     const TestStruct element = createElement(i);
-    ck_assert_ptr_ne(testListFind(&list, element), 0);
+    ck_assert_ptr_nonnull(testListFind(&list, element));
   }
 
   /* Try to find non-existent elements */
   const TestStruct incorrectElement = createElement(MAX_SIZE);
-  ck_assert_ptr_eq(testListFind(&list, incorrectElement), 0);
+  ck_assert_ptr_null(testListFind(&list, incorrectElement));
 
   testListDeinit(&list);
 }
@@ -243,14 +243,14 @@ START_TEST(testFindIf)
   TestStruct element = createElement(MAX_SIZE);
 
   /* Try to find non-existent elements */
-  ck_assert_ptr_eq(testListFindIf(&list, &element, simplifiedComparator), 0);
+  ck_assert_ptr_null(testListFindIf(&list, &element, simplifiedComparator));
 
   /* Find elements using both comparator types */
   for (int i = 0; i < MAX_SIZE; ++i)
   {
     element.z = i;
-    ck_assert_ptr_eq(testListFind(&list, element), 0);
-    ck_assert_ptr_ne(testListFindIf(&list, &element, simplifiedComparator), 0);
+    ck_assert_ptr_null(testListFind(&list, element));
+    ck_assert_ptr_nonnull(testListFindIf(&list, &element, simplifiedComparator));
   }
 
   testListDeinit(&list);
@@ -280,18 +280,18 @@ START_TEST(testInsert)
   TestListNode *node = testListFront(&list);
   int id = 2;
 
-  ck_assert_ptr_ne(node, 0);
+  ck_assert_ptr_nonnull(node);
   node = testListNext(node);
 
   while (id < MAX_SIZE)
   {
-    ck_assert_ptr_ne(node, 0);
+    ck_assert_ptr_nonnull(node);
 
     const TestStruct element = createElement(id);
     ck_assert(testListInsert(&list, node, element) == true);
 
     node = testListNext(node);
-    ck_assert_ptr_ne(node, 0);
+    ck_assert_ptr_nonnull(node);
     node = testListNext(node);
 
     id += 2;
@@ -351,6 +351,11 @@ START_TEST(testMemoryFailure)
 
   mallocHookActive = true;
   result = testListPushFront(&list, element);
+  mallocHookActive = false;
+  ck_assert(result == false);
+
+  mallocHookActive = true;
+  result = testListPushBack(&list, element);
   mallocHookActive = false;
   ck_assert(result == false);
 

@@ -217,12 +217,12 @@ START_TEST(testFind)
   for (int i = 0; i < MAX_SIZE; ++i)
   {
     const TestStruct element = createElement(i);
-    ck_assert_ptr_ne(listFind(&list, &element), 0);
+    ck_assert_ptr_nonnull(listFind(&list, &element));
   }
 
   /* Try to find non-existent elements */
   const TestStruct incorrectElement = createElement(MAX_SIZE);
-  ck_assert_ptr_eq(listFind(&list, &incorrectElement), 0);
+  ck_assert_ptr_null(listFind(&list, &incorrectElement));
 
   listDeinit(&list);
 }
@@ -243,14 +243,14 @@ START_TEST(testFindIf)
   TestStruct element = createElement(MAX_SIZE);
 
   /* Try to find non-existent elements */
-  ck_assert_ptr_eq(listFindIf(&list, &element, simplifiedComparator), 0);
+  ck_assert_ptr_null(listFindIf(&list, &element, simplifiedComparator));
 
   /* Find elements using both comparator types */
   for (int i = 0; i < MAX_SIZE; ++i)
   {
     element.z = i;
-    ck_assert_ptr_eq(listFind(&list, &element), 0);
-    ck_assert_ptr_ne(listFindIf(&list, &element, simplifiedComparator), 0);
+    ck_assert_ptr_null(listFind(&list, &element));
+    ck_assert_ptr_nonnull(listFindIf(&list, &element, simplifiedComparator));
   }
 
   listDeinit(&list);
@@ -280,18 +280,18 @@ START_TEST(testInsert)
   struct ListNode *node = listFront(&list);
   int id = 2;
 
-  ck_assert_ptr_ne(node, 0);
+  ck_assert_ptr_nonnull(node);
   node = listNext(node);
 
   while (id < MAX_SIZE)
   {
-    ck_assert_ptr_ne(node, 0);
+    ck_assert_ptr_nonnull(node);
 
     const TestStruct element = createElement(id);
     ck_assert(listInsert(&list, node, &element) == true);
 
     node = listNext(node);
-    ck_assert_ptr_ne(node, 0);
+    ck_assert_ptr_nonnull(node);
     node = listNext(node);
 
     id += 2;
@@ -351,6 +351,11 @@ START_TEST(testMemoryFailure)
 
   mallocHookActive = true;
   result = listPushFront(&list, &element);
+  mallocHookActive = false;
+  ck_assert(result == false);
+
+  mallocHookActive = true;
+  result = listPushBack(&list, &element);
   mallocHookActive = false;
   ck_assert(result == false);
 

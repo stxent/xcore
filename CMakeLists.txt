@@ -7,8 +7,9 @@ cmake_policy(SET CMP0054 NEW)
 cmake_policy(SET CMP0069 NEW)
 
 option(BITWISE_CRC "Enable bitwise implementations of CRC." OFF)
-option(BUILD_TESTS "Enable building of example executables." OFF)
+option(BUILD_TESTS "Enable building of test executables." OFF)
 option(USE_LTO "Enable Link Time Optimization." OFF)
+set(FS_NAME_LENGTH 64 CACHE STRING "Maximum length of filesystem entry name in bytes.")
 
 # Default compiler flags
 set(FLAGS_DEFAULT "-fdata-sections -ffunction-sections -Wall -Wextra -Wshadow -pedantic")
@@ -29,7 +30,7 @@ if(${USE_LTO})
 endif()
 
 # Gather files for the library
-set(DIRECTORY_LIST core generic)
+set(DIRECTORY_LIST core fs generic)
 set(LIBRARY_OBJECTS "")
 set(LIBRARY_TARGETS "")
 

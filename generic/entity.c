@@ -47,5 +47,5 @@ void deinit(void *entity)
 /*----------------------------------------------------------------------------*/
 void deletedDestructorTrap(void *entity __attribute__((unused)))
 {
-  while (1);
+  exit(EXIT_FAILURE);
 }
