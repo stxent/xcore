@@ -81,7 +81,7 @@ struct InterfaceClass
 {
   CLASS_HEADER
 
-  enum Result (*setCallback)(void *, void (*)(void *), void *);
+  void (*setCallback)(void *, void (*)(void *), void *);
   enum Result (*getParam)(void *, enum IfParameter, void *);
   enum Result (*setParam)(void *, enum IfParameter, const void *);
   size_t (*read)(void *, void *, size_t);
@@ -100,13 +100,12 @@ BEGIN_DECLS
  * @param interface Pointer to an Interface object.
  * @param callback Callback function.
  * @param argument Callback function argument.
- * @return @b E_OK on success.
  */
-static inline enum Result ifSetCallback(void *interface,
-    void (*callback)(void *), void *argument)
+static inline void ifSetCallback(void *interface, void (*callback)(void *),
+    void *argument)
 {
-  return ((const struct InterfaceClass *)CLASS(interface))->
-      setCallback(interface, callback, argument);
+  ((const struct InterfaceClass *)CLASS(interface))->setCallback(interface,
+      callback, argument);
 }
 
 /**

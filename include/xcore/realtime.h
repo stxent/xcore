@@ -27,7 +27,7 @@ struct RtClockClass
   CLASS_HEADER
 
   enum Result (*setAlarm)(void *, time64_t);
-  enum Result (*setCallback)(void *, void (*)(void *), void *);
+  void (*setCallback)(void *, void (*)(void *), void *);
   enum Result (*setTime)(void *, time64_t);
   time64_t (*time)(void *);
 };
@@ -56,13 +56,12 @@ static inline enum Result rtSetAlarm(void *clock, time64_t alarmTime)
  * @param clock Pointer to an RtClock object.
  * @param callback Callback function.
  * @param argument Callback function argument.
- * @return @b E_OK on success.
  */
-static inline enum Result rtSetCallback(void *clock, void (*callback)(void *),
+static inline void rtSetCallback(void *clock, void (*callback)(void *),
     void *argument)
 {
-  return ((const struct RtClockClass *)CLASS(clock))->setCallback(clock,
-      callback, argument);
+  ((const struct RtClockClass *)CLASS(clock))->setCallback(clock, callback,
+      argument);
 }
 
 /**
