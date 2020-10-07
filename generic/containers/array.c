@@ -4,8 +4,8 @@
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
-#include <stdlib.h>
 #include <xcore/containers/array.h>
+#include <stdlib.h>
 /*----------------------------------------------------------------------------*/
 bool arrayInit(struct Array *array, size_t width, size_t capacity)
 {

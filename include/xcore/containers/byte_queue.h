@@ -7,11 +7,11 @@
 #ifndef XCORE_CONTAINERS_BYTE_QUEUE_H_
 #define XCORE_CONTAINERS_BYTE_QUEUE_H_
 /*----------------------------------------------------------------------------*/
+#include <xcore/helpers.h>
 #include <assert.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <xcore/helpers.h>
 /*----------------------------------------------------------------------------*/
 struct ByteQueue
 {

@@ -7,9 +7,9 @@
 #ifndef XCORE_CORE_X86_MEMORY_H_
 #define XCORE_CORE_X86_MEMORY_H_
 /*----------------------------------------------------------------------------*/
+#include <xcore/helpers.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include <xcore/helpers.h>
 /*----------------------------------------------------------------------------*/
 #define TO_BIG_ENDIAN_16(value) \
     ((((value) & 0x00FFU) << 8) | (((value) & 0xFF00U) >> 8))

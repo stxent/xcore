@@ -7,9 +7,9 @@
 #ifndef XCORE_CONTAINERS_QUEUE_H_
 #define XCORE_CONTAINERS_QUEUE_H_
 /*----------------------------------------------------------------------------*/
+#include <xcore/helpers.h>
 #include <stdbool.h>
 #include <stddef.h>
-#include <xcore/helpers.h>
 /*----------------------------------------------------------------------------*/
 struct Queue
 {

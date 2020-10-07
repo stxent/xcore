@@ -7,11 +7,11 @@
 #ifndef XCORE_CONTAINERS_TG_LIST_H_
 #define XCORE_CONTAINERS_TG_LIST_H_
 /*----------------------------------------------------------------------------*/
+#include <xcore/helpers.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
-#include <xcore/helpers.h>
 /*----------------------------------------------------------------------------*/
 struct TgListNode;
 /*----------------------------------------------------------------------------*/

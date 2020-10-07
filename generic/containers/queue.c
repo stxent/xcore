@@ -4,11 +4,11 @@
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
+#include <xcore/containers/queue.h>
 #include <assert.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <xcore/containers/queue.h>
 /*----------------------------------------------------------------------------*/
 bool queueInit(struct Queue *queue, size_t width, size_t capacity)
 {

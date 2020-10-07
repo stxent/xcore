@@ -4,12 +4,12 @@
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
-#include <check.h>
-#include <stdlib.h>
 #include <xcore/crc/crc7.h>
 #include <xcore/crc/crc8_dallas.h>
 #include <xcore/crc/crc16_ccitt.h>
 #include <xcore/crc/crc32.h>
+#include <check.h>
+#include <stdlib.h>
 /*----------------------------------------------------------------------------*/
 #ifdef CONFIG_DEBUG
 #define DEBUG_PRINT(...) printf(__VA_ARGS__)

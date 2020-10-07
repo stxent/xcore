@@ -7,11 +7,10 @@
 #ifndef XCORE_CONTAINERS_LIST_H_
 #define XCORE_CONTAINERS_LIST_H_
 /*----------------------------------------------------------------------------*/
+#include <xcore/helpers.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <string.h>
-#include <xcore/helpers.h>
-#include <xcore/error.h>
 /*----------------------------------------------------------------------------*/
 struct ListNode
 {

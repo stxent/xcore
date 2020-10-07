@@ -12,8 +12,8 @@
 #ifndef XCORE_FS_FS_H_
 #define XCORE_FS_FS_H_
 /*----------------------------------------------------------------------------*/
-#include <stdint.h>
 #include <xcore/entity.h>
+#include <stdint.h>
 /*----------------------------------------------------------------------------*/
 typedef uint8_t FsAccess;
 typedef uint32_t FsLength;

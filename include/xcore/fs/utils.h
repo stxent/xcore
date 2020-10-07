@@ -12,8 +12,8 @@
 #ifndef XCORE_FS_UTILS_H_
 #define XCORE_FS_UTILS_H_
 /*----------------------------------------------------------------------------*/
-#include <stdbool.h>
 #include <xcore/fs/fs.h>
+#include <stdbool.h>
 /*----------------------------------------------------------------------------*/
 BEGIN_DECLS
 

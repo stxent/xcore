@@ -7,8 +7,8 @@
 #ifndef XCORE_REALTIME_H_
 #define XCORE_REALTIME_H_
 /*----------------------------------------------------------------------------*/
-#include <stdint.h>
 #include <xcore/entity.h>
+#include <stdint.h>
 /*----------------------------------------------------------------------------*/
 typedef int64_t time64_t;
 

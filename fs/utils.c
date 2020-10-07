@@ -4,10 +4,10 @@
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
+#include <xcore/fs/utils.h>
 #include <assert.h>
 #include <stddef.h>
 #include <string.h>
-#include <xcore/fs/utils.h>
 /*----------------------------------------------------------------------------*/
 bool fsExtractBaseName(char *buffer, const char *path)
 {

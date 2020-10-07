@@ -4,9 +4,9 @@
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
+#include <xcore/entity.h>
 #include <assert.h>
 #include <stdlib.h>
-#include <xcore/entity.h>
 /*----------------------------------------------------------------------------*/
 void deletedDestructorTrap(void *) __attribute__((weak));
 /*----------------------------------------------------------------------------*/

@@ -7,8 +7,6 @@
 #ifndef XCORE_CORE_CORTEX_MEMORY_H_
 #define XCORE_CORE_CORTEX_MEMORY_H_
 /*----------------------------------------------------------------------------*/
-#include <stdbool.h>
-/*----------------------------------------------------------------------------*/
 #define TO_BIG_ENDIAN_16(value) \
     ((((value) & 0x00FFU) << 8) | (((value) & 0xFF00U) >> 8))
 #define TO_LITTLE_ENDIAN_16(value)      (value)

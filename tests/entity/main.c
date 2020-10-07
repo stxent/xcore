@@ -4,10 +4,10 @@
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
+#include <xcore/entity.h>
 #include <check.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#include <xcore/entity.h>
 /*----------------------------------------------------------------------------*/
 static const char TEST_MESSAGE[] = "Lorem ipsum";
 /*----------------------------------------------------------------------------*/

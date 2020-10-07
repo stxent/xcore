@@ -7,9 +7,9 @@
 #ifndef XCORE_CRC_CRC8_DALLAS_H_
 #define XCORE_CRC_CRC8_DALLAS_H_
 /*----------------------------------------------------------------------------*/
+#include <xcore/helpers.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <xcore/helpers.h>
 /*----------------------------------------------------------------------------*/
 BEGIN_DECLS
 

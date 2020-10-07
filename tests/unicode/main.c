@@ -4,9 +4,9 @@
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
+#include <xcore/unicode.h>
 #include <check.h>
 #include <stdlib.h>
-#include <xcore/unicode.h>
 /*----------------------------------------------------------------------------*/
 #define MAX_BUFFER_LENGTH 64
 

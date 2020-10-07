@@ -4,9 +4,9 @@
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
+#include <xcore/containers/array.h>
 #include <check.h>
 #include <stdlib.h>
-#include <xcore/containers/array.h>
 /*----------------------------------------------------------------------------*/
 #define MAX_CAPACITY 17
 /*----------------------------------------------------------------------------*/

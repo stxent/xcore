@@ -7,8 +7,8 @@
 #ifndef XCORE_CORE_CORTEX_ARMV6M_ASM_H_
 #define XCORE_CORE_CORTEX_ARMV6M_ASM_H_
 /*----------------------------------------------------------------------------*/
-#include <stdint.h>
 #include <xcore/helpers.h>
+#include <stdint.h>
 /*----------------------------------------------------------------------------*/
 BEGIN_DECLS
 

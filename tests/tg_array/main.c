@@ -4,9 +4,9 @@
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
-#include <check.h>
-#include <xcore/helpers.h>
 #include <xcore/containers/tg_array.h>
+#include <xcore/helpers.h>
+#include <check.h>
 /*----------------------------------------------------------------------------*/
 #define MAX_CAPACITY 17
 /*----------------------------------------------------------------------------*/

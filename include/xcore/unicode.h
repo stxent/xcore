@@ -7,10 +7,10 @@
 #ifndef XCORE_UNICODE_H_
 #define XCORE_UNICODE_H_
 /*----------------------------------------------------------------------------*/
+#include <xcore/helpers.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <uchar.h>
-#include <xcore/helpers.h>
 /*----------------------------------------------------------------------------*/
 BEGIN_DECLS
 

@@ -4,9 +4,9 @@
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
+#include <xcore/containers/byte_queue.h>
 #include <stdlib.h>
 #include <string.h>
-#include <xcore/containers/byte_queue.h>
 /*----------------------------------------------------------------------------*/
 bool byteQueueInit(struct ByteQueue *queue, size_t capacity)
 {

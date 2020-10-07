@@ -4,10 +4,10 @@
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
+#include "tfs.h"
+#include <xcore/fs/utils.h>
 #include <check.h>
 #include <stdlib.h>
-#include <xcore/fs/utils.h>
-#include "tfs.h"
 /*----------------------------------------------------------------------------*/
 #define MAX_BUFFER_LENGTH 128
 /*----------------------------------------------------------------------------*/

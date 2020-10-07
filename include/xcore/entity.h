@@ -7,9 +7,9 @@
 #ifndef XCORE_ENTITY_H_
 #define XCORE_ENTITY_H_
 /*----------------------------------------------------------------------------*/
-#include <stddef.h>
 #include <xcore/error.h>
 #include <xcore/helpers.h>
+#include <stddef.h>
 /*----------------------------------------------------------------------------*/
 #define CLASS_HEADER \
     size_t size;\
