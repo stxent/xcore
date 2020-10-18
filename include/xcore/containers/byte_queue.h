@@ -29,7 +29,9 @@ struct ByteQueue
 BEGIN_DECLS
 
 bool byteQueueInit(struct ByteQueue *, size_t);
+void byteQueueInitArena(struct ByteQueue *, size_t, void *);
 void byteQueueDeinit(struct ByteQueue *);
+void byteQueueDeinitArena(struct ByteQueue *);
 size_t byteQueuePopArray(struct ByteQueue *, void *, size_t);
 size_t byteQueuePushArray(struct ByteQueue *, const void *, size_t);
 

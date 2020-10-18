@@ -128,6 +128,31 @@ START_TEST(testMultiByteInterface)
 }
 END_TEST
 /*----------------------------------------------------------------------------*/
+START_TEST(testPushPopArenaSequence)
+{
+  struct ByteQueue queue;
+  uint8_t arena[MAX_CAPACITY];
+
+  /* Queue initialization */
+  byteQueueInitArena(&queue, MAX_CAPACITY, arena);
+
+  for (size_t i = 0; i < 7; ++i)
+  {
+    for (size_t j = 0; j < MAX_CAPACITY / 3; ++j)
+    {
+      const uint8_t id = (uint8_t)(i * MAX_CAPACITY / 3 + j);
+
+      byteQueuePushBack(&queue, id);
+      ck_assert_uint_eq(byteQueueFront(&queue), id);
+      byteQueuePopFront(&queue);
+    }
+  }
+
+  ck_assert_uint_eq(byteQueueSize(&queue), 0);
+  byteQueueDeinitArena(&queue);
+}
+END_TEST
+/*----------------------------------------------------------------------------*/
 START_TEST(testPushPopSequence)
 {
   struct ByteQueue queue;
@@ -217,6 +242,7 @@ int main(void)
   TCase * const testcase = tcase_create("Core");
 
   tcase_add_test(testcase, testSingleByteInterface);
+  tcase_add_test(testcase, testPushPopArenaSequence);
   tcase_add_test(testcase, testPushPopSequence);
   tcase_add_test(testcase, testMultiByteInterface);
   tcase_add_test(testcase, testMemoryFailure);

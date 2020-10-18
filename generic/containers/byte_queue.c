@@ -22,9 +22,20 @@ bool byteQueueInit(struct ByteQueue *queue, size_t capacity)
     return false;
 }
 /*----------------------------------------------------------------------------*/
+void byteQueueInitArena(struct ByteQueue *queue, size_t capacity, void *arena)
+{
+  queue->data = arena;
+  queue->capacity = capacity;
+  byteQueueClear(queue);
+}
+/*----------------------------------------------------------------------------*/
 void byteQueueDeinit(struct ByteQueue *queue)
 {
   free(queue->data);
+}
+/*----------------------------------------------------------------------------*/
+void byteQueueDeinitArena(struct ByteQueue *queue __attribute__((unused)))
+{
 }
 /*----------------------------------------------------------------------------*/
 size_t byteQueuePopArray(struct ByteQueue *queue, void *buffer, size_t length)
