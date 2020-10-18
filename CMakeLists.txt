@@ -39,16 +39,43 @@ foreach(ENTRY ${DIRECTORY_LIST})
     if(TARGET xcore_${ENTRY})
         list(APPEND LIBRARY_TARGETS xcore_${ENTRY})
         list(APPEND LIBRARY_OBJECTS $<TARGET_OBJECTS:xcore_${ENTRY}>)
-        target_include_directories(xcore_${ENTRY} PUBLIC "${PROJECT_SOURCE_DIR}/include")
+        target_include_directories(xcore_${ENTRY} PUBLIC
+                $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+                $<INSTALL_INTERFACE:include>
+        )
+        install(TARGETS xcore_${ENTRY}
+                EXPORT xcore-targets
+                PUBLIC_HEADER DESTINATION include
+        )
     endif()
 endforeach()
 
 add_library(${PROJECT_NAME} ${LIBRARY_OBJECTS})
 target_link_libraries(${PROJECT_NAME} PUBLIC ${LIBRARY_TARGETS})
 
-install(TARGETS ${PROJECT_NAME} ARCHIVE DESTINATION lib)
-
 if(${BUILD_TESTS})
     enable_testing()
     add_subdirectory(tests)
 endif()
+
+# Library installation configuration
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/xcore
+        DESTINATION include
+        FILES_MATCHING PATTERN "*.h"
+)
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/toolchains
+        DESTINATION lib/xcore
+        FILES_MATCHING PATTERN "*.cmake"
+)
+install(TARGETS ${PROJECT_NAME}
+        EXPORT xcore-targets
+        ARCHIVE DESTINATION lib
+)
+install(EXPORT xcore-targets
+        FILE xcore-targets.cmake
+        DESTINATION lib/xcore
+)
+install(FILES "${PROJECT_SOURCE_DIR}/config.cmake.in"
+        DESTINATION lib/xcore
+        RENAME xcore-config.cmake
+)
