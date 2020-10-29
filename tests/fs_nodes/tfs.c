@@ -8,6 +8,8 @@
 #include <xcore/containers/tg_list.h>
 #include <assert.h>
 /*----------------------------------------------------------------------------*/
+#define INITIAL_LENGTH 16
+
 DEFINE_LIST(void *, Pointer, pointer)
 /*----------------------------------------------------------------------------*/
 struct TfsNode;
@@ -33,6 +35,10 @@ struct TfsNode
   struct TfsNode *parent;
   PointerList children;
   char *name;
+
+  size_t dataCapacity;
+  size_t dataLength;
+  uint8_t *dataBuffer;
 };
 
 struct TfsNodeProxyConfig
@@ -46,6 +52,10 @@ struct TfsNodeProxy
 
   struct TfsNode *node;
 };
+/*----------------------------------------------------------------------------*/
+static bool reallocateDataBuffer(struct TfsNode *, size_t);
+static enum Result writeDataBuffer(struct TfsNode *, FsLength,
+    const void *, size_t, size_t *);
 /*----------------------------------------------------------------------------*/
 /* Handle functions */
 static enum Result tfsHandleInit(void *, const void *);
@@ -101,6 +111,51 @@ const struct FsNodeClass * const TfsNodeProxy = &(const struct FsNodeClass){
     .remove = tfsNodeProxyRemove,
     .write = tfsNodeProxyWrite
 };
+/*----------------------------------------------------------------------------*/
+static bool reallocateDataBuffer(struct TfsNode *node, size_t length)
+{
+  assert(length > node->dataCapacity);
+
+  size_t dataCapacity = node->dataCapacity;
+
+  if (!dataCapacity)
+    dataCapacity = INITIAL_LENGTH;
+  while (dataCapacity < length)
+    dataCapacity *= 2;
+
+  uint8_t * const reallocatedDataBuffer = malloc(dataCapacity);
+
+  if (!reallocatedDataBuffer)
+    return false;
+
+  if (node->dataLength > 0)
+    memcpy(reallocatedDataBuffer, node->dataBuffer, node->dataLength);
+  node->dataBuffer = reallocatedDataBuffer;
+  node->dataCapacity = dataCapacity;
+
+  return true;
+}
+/*----------------------------------------------------------------------------*/
+static enum Result writeDataBuffer(struct TfsNode *node, FsLength position,
+    const void *buffer, size_t length, size_t *written)
+{
+  const size_t end = position + length;
+
+  if (end > node->dataCapacity)
+  {
+    if (!reallocateDataBuffer(node, position + length))
+      return E_MEMORY;
+  }
+
+  memcpy(node->dataBuffer + position, buffer, length);
+  if (end > node->dataLength)
+    node->dataLength = end;
+
+  if (written)
+    *written = length;
+
+  return E_OK;
+}
 /*----------------------------------------------------------------------------*/
 static enum Result tfsHandleInit(void *object,
     const void *configBase __attribute__((unused)))
@@ -159,6 +214,10 @@ static enum Result tfsNodeInit(void *object, const void *configBase)
   }
   else
     node->name = 0;
+
+  node->dataCapacity = 0;
+  node->dataLength = 0;
+  node->dataBuffer = 0;
 
   return E_OK;
 }
@@ -259,11 +318,27 @@ static void tfsNodeProxyFree(void *object)
 static enum Result tfsNodeProxyLength(void *object, enum FsFieldType type,
     FsLength *length)
 {
-  /* TODO */
-  (void)object;
-  (void)type;
-  (void)length;
-  return E_INVALID;
+  const struct TfsNodeProxy * const proxy = object;
+  const struct TfsNode * const node = proxy->node;
+
+  switch (type)
+  {
+    case FS_NODE_DATA:
+      if (length)
+        *length = (FsLength)(node->dataLength);
+      return E_OK;
+
+    case FS_NODE_NAME:
+      if (!node->name)
+        return E_INVALID;
+
+      if (length)
+        *length = (FsLength)(strlen(node->name) + 1);
+      return E_OK;
+
+    default:
+      return E_INVALID;
+  }
 }
 /*----------------------------------------------------------------------------*/
 static enum Result tfsNodeProxyNext(void *object)
@@ -307,8 +382,27 @@ static enum Result tfsNodeProxyRead(void *object, enum FsFieldType type,
 
   switch (type)
   {
+    case FS_NODE_DATA:
+    {
+      if (position <= node->dataLength)
+      {
+        const size_t remaining = node->dataLength - position;
+        const size_t chunk = MIN(remaining, length);
+
+        memcpy(buffer, node->dataBuffer + position, chunk);
+        if (read)
+          *read = chunk;
+        return E_OK;
+      }
+      else
+        return E_VALUE;
+    }
+
     case FS_NODE_NAME:
     {
+      if (!node->name)
+        return E_INVALID;
+
       const size_t nameLength = strlen(node->name) + 1;
 
       if (position)
@@ -348,13 +442,15 @@ static enum Result tfsNodeProxyRemove(void *rootObject, void *object)
 static enum Result tfsNodeProxyWrite(void *object, enum FsFieldType type,
     FsLength position, const void *buffer, size_t length, size_t *written)
 {
-  /* TODO */
-  (void)object;
-  (void)type;
-  (void)position;
-  (void)buffer;
-  (void)length;
-  (void)written;
+  struct TfsNodeProxy * const proxy = object;
+  struct TfsNode * const node = proxy->node;
 
-  return E_INVALID;
+  switch (type)
+  {
+    case FS_NODE_DATA:
+      return writeDataBuffer(node, position, buffer, length, written);
+
+    default:
+      return E_INVALID;
+  }
 }
