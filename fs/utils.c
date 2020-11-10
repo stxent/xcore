@@ -139,16 +139,21 @@ const char *fsGetChunk(char *dst, const char *src)
 
   if (*src == '/')
   {
+    /* Strip leading slashes */
+    while (*++src == '/');
+
     *dst++ = '/';
     *dst = '\0';
-    return src + 1;
+    return src;
   }
 
   while (*src && counter++ < FS_NAME_LENGTH - 1)
   {
     if (*src == '/')
     {
-      ++src;
+      /* Strip trailing slashes */
+      while (*++src == '/');
+
       break;
     }
     *dst++ = *src++;

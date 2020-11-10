@@ -9,12 +9,6 @@
 #include <stdlib.h>
 /*----------------------------------------------------------------------------*/
 #define MAX_BUFFER_LENGTH 128
-
-#ifdef CONFIG_DEBUG
-#define DEBUG_PRINT(...) printf(__VA_ARGS__)
-#else
-#define DEBUG_PRINT(...) do {} while (0)
-#endif
 /*----------------------------------------------------------------------------*/
 START_TEST(testBaseNameExtraction)
 {
@@ -43,6 +37,55 @@ START_TEST(testBaseNameExtraction)
   const bool path3Res = fsExtractBaseName(buffer, "");
   ck_assert_mem_eq(buffer, empty, MAX_BUFFER_LENGTH);
   ck_assert(path3Res == false);
+}
+END_TEST
+/*----------------------------------------------------------------------------*/
+START_TEST(testChunkExtraction)
+{
+  char buffer[MAX_BUFFER_LENGTH];
+
+  static const char path0Src[] = "/home/user directory/some file.txt";
+  static const char path0Step0[] = "/";
+  static const char path0Step1[] = "home";
+  static const char path0Step2[] = "user directory";
+  static const char path0Step3[] = "some file.txt";
+  static const char path0Step4[] = "";
+
+  const char *path0Res0 = fsGetChunk(buffer, path0Src);
+  ck_assert_str_eq(buffer, path0Step0);
+  ck_assert_ptr_eq(path0Res0, path0Src + strlen(path0Step0));
+
+  const char *path0Res1 = fsGetChunk(buffer, path0Res0);
+  ck_assert_str_eq(buffer, path0Step1);
+
+  const char *path0Res2 = fsGetChunk(buffer, path0Res1);
+  ck_assert_str_eq(buffer, path0Step2);
+
+  const char *path0Res3 = fsGetChunk(buffer, path0Res2);
+  ck_assert_str_eq(buffer, path0Step3);
+
+  fsGetChunk(buffer, path0Res3);
+  ck_assert_str_eq(buffer, path0Step4);
+}
+END_TEST
+/*----------------------------------------------------------------------------*/
+START_TEST(testChunkStripping)
+{
+  char buffer[MAX_BUFFER_LENGTH];
+
+  static const char path0Src[] = "//home//user directory";
+  static const char path0Step0[] = "/";
+  static const char path0Step1[] = "home";
+  static const char path0Step2[] = "user directory";
+
+  const char *path0Res0 = fsGetChunk(buffer, path0Src);
+  ck_assert_str_eq(buffer, path0Step0);
+
+  const char *path0Res1 = fsGetChunk(buffer, path0Res0);
+  ck_assert_str_eq(buffer, path0Step1);
+
+  fsGetChunk(buffer, path0Res1);
+  ck_assert_str_eq(buffer, path0Step2);
 }
 END_TEST
 /*----------------------------------------------------------------------------*/
@@ -89,39 +132,6 @@ START_TEST(testNameStripping)
 
   const bool path3Res = fsStripName("");
   ck_assert(path3Res == false);
-}
-END_TEST
-/*----------------------------------------------------------------------------*/
-START_TEST(testChunkExtraction)
-{
-  char buffer[MAX_BUFFER_LENGTH];
-
-  static const char path0Src[] = "/home/user directory/some file.txt";
-  static const char path0Step0[] = "/";
-  static const char path0Step1[] = "home";
-  static const char path0Step2[] = "user directory";
-  static const char path0Step3[] = "some file.txt";
-  static const char path0Step4[] = "";
-
-  const char *path0Res0 = fsGetChunk(buffer, path0Src);
-  ck_assert_str_eq(buffer, path0Step0);
-  ck_assert_ptr_eq(path0Res0, path0Src + strlen(path0Step0));
-
-  const char *path0Res1 = fsGetChunk(buffer, path0Res0);
-  ck_assert_str_eq(buffer, path0Step1);
-  ck_assert_ptr_eq(path0Res1, path0Res0 + 1 + strlen(path0Step1));
-
-  const char *path0Res2 = fsGetChunk(buffer, path0Res1);
-  ck_assert_str_eq(buffer, path0Step2);
-  ck_assert_ptr_eq(path0Res2, path0Res1 + 1 + strlen(path0Step2));
-
-  const char *path0Res3 = fsGetChunk(buffer, path0Res2);
-  ck_assert_str_eq(buffer, path0Step3);
-  ck_assert_ptr_eq(path0Res3, path0Res2 + strlen(path0Step3));
-
-  const char *path0Res4 = fsGetChunk(buffer, path0Res3);
-  ck_assert_str_eq(buffer, path0Step4);
-  ck_assert_ptr_eq(path0Res4, path0Res3);
 }
 END_TEST
 /*----------------------------------------------------------------------------*/
@@ -187,9 +197,10 @@ int main(void)
   TCase * const testcase = tcase_create("Core");
 
   tcase_add_test(testcase, testBaseNameExtraction);
+  tcase_add_test(testcase, testChunkExtraction);
+  tcase_add_test(testcase, testChunkStripping);
   tcase_add_test(testcase, testNameExtraction);
   tcase_add_test(testcase, testNameStripping);
-  tcase_add_test(testcase, testChunkExtraction);
   tcase_add_test(testcase, testPathJoining);
   suite_add_tcase(suite, testcase);
 
