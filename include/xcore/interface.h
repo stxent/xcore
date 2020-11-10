@@ -82,8 +82,8 @@ struct InterfaceClass
   CLASS_HEADER
 
   void (*setCallback)(void *, void (*)(void *), void *);
-  enum Result (*getParam)(void *, enum IfParameter, void *);
-  enum Result (*setParam)(void *, enum IfParameter, const void *);
+  enum Result (*getParam)(void *, int, void *);
+  enum Result (*setParam)(void *, int, const void *);
   size_t (*read)(void *, void *, size_t);
   size_t (*write)(void *, const void *, size_t);
 };
@@ -115,8 +115,7 @@ static inline void ifSetCallback(void *interface, void (*callback)(void *),
  * @param data Pointer to a variable where a value of the option will be stored.
  * @return @b E_OK on success.
  */
-static inline enum Result ifGetParam(void *interface,
-    enum IfParameter parameter, void *data)
+static inline enum Result ifGetParam(void *interface, int parameter, void *data)
 {
   return ((const struct InterfaceClass *)CLASS(interface))->getParam(interface,
       parameter, data);
@@ -129,8 +128,8 @@ static inline enum Result ifGetParam(void *interface,
  * @param data Pointer to a new value of the option.
  * @return @b E_OK on success.
  */
-static inline enum Result ifSetParam(void *interface,
-    enum IfParameter parameter, const void *data)
+static inline enum Result ifSetParam(void *interface, int parameter,
+    const void *data)
 {
   return ((const struct InterfaceClass *)CLASS(interface))->setParam(interface,
       parameter, data);
