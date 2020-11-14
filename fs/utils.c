@@ -9,6 +9,34 @@
 #include <stddef.h>
 #include <string.h>
 /*----------------------------------------------------------------------------*/
+static char *copyPathPart(char *, const char *);
+/*----------------------------------------------------------------------------*/
+static char *copyPathPart(char *output, const char *input)
+{
+  /* Prepend output with slash */
+  if (*input != '/')
+    *output++ = '/';
+
+  do
+  {
+    /* Replace continuous slashes with single slash */
+    if (*input == '/')
+    {
+      while (*++input == '/');
+      *output++ = '/';
+    }
+    else
+      *output++ = *input++;
+  }
+  while (*input);
+
+  /* Remove trailing slash if exists */
+  if (*(output - 1) == '/')
+    --output;
+
+  return output;
+}
+/*----------------------------------------------------------------------------*/
 bool fsExtractBaseName(char *buffer, const char *path)
 {
   assert(buffer);
@@ -169,31 +197,20 @@ void fsJoinPaths(char *buffer, const char *prefix, const char *suffix)
   assert(prefix);
   assert(suffix);
 
-  const size_t prefixLength = strlen(prefix);
-  const size_t suffixLength = strlen(suffix);
+  const char * const begin = buffer;
 
-  if (prefixLength > 0)
+  if (*suffix != '/' && *prefix != '\0')
   {
-    if (*prefix != '/')
-      *buffer++ = '/';
-    memcpy(buffer, prefix, prefixLength);
-    buffer += prefixLength;
-
-    if (*(buffer - 1) != '/')
-      *buffer++ = '/';
+    buffer = copyPathPart(buffer, prefix);
   }
-  else
+
+  if (*suffix != '\0')
+  {
+    buffer = copyPathPart(buffer, suffix);
+  }
+
+  if (buffer == begin)
     *buffer++ = '/';
-
-  if (suffixLength > 0)
-  {
-    memcpy(buffer, suffix, suffixLength);
-    buffer += suffixLength;
-  }
-  else if (prefixLength > 0)
-  {
-    --buffer;
-  }
 
   *buffer = '\0';
 }

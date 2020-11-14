@@ -145,24 +145,24 @@ void joinPathsAndCompare(const char *a, const char *b, const char *ref)
 START_TEST(testPathJoining)
 {
   joinPathsAndCompare(
-      "/home/",
-      "file.txt",
-      "/home/file.txt");
-
-  joinPathsAndCompare(
-      "/home",
-      "some file.txt",
-      "/home/some file.txt");
-
-  joinPathsAndCompare(
-      "/home/",
       "",
-      "/home");
+      "",
+      "/");
 
   joinPathsAndCompare(
-      "/home",
+      "/",
       "",
-      "/home");
+      "/");
+
+  joinPathsAndCompare(
+      "",
+      "/",
+      "/");
+
+  joinPathsAndCompare(
+      "/",
+      "/",
+      "/");
 
   joinPathsAndCompare(
       "home",
@@ -170,24 +170,54 @@ START_TEST(testPathJoining)
       "/home");
 
   joinPathsAndCompare(
+      "/home/",
+      "",
+      "/home");
+
+  joinPathsAndCompare(
+      "/home",
+      "user",
+      "/home/user");
+
+  joinPathsAndCompare(
+      "/home/",
+      "user",
+      "/home/user");
+
+  joinPathsAndCompare(
+      "/home",
+      "/user",
+      "/user");
+
+  joinPathsAndCompare(
+      "/home",
+      "/user/",
+      "/user");
+
+  joinPathsAndCompare(
+      "/home",
+      "//user//",
+      "/user");
+
+  joinPathsAndCompare(
       "/",
-      "file.txt",
-      "/file.txt");
-
-  joinPathsAndCompare(
-      "/a",
-      "file.txt",
-      "/a/file.txt");
+      "user",
+      "/user");
 
   joinPathsAndCompare(
       "",
-      "file.txt",
-      "/file.txt");
+      "user",
+      "/user");
 
   joinPathsAndCompare(
-      "",
-      "",
-      "/");
+      "//home//user//",
+      "pictures//file.txt",
+      "/home/user/pictures/file.txt");
+
+  joinPathsAndCompare(
+      "/some directory/",
+      "some file.txt",
+      "/some directory/some file.txt");
 }
 END_TEST
 /*----------------------------------------------------------------------------*/
