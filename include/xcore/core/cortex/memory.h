@@ -1,7 +1,7 @@
 /*
  * xcore/core/cortex/memory.h
  * Copyright (C) 2018 xent
- * Project is distributed under the terms of the GNU General Public License v3.0
+ * Project is distributed under the terms of the MIT License
  */
 
 #ifndef XCORE_CORE_CORTEX_MEMORY_H_

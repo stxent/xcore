@@ -1,7 +1,7 @@
 /*
  * xcore/core/x86/accel.h
  * Copyright (C) 2020 xent
- * Project is distributed under the terms of the GNU General Public License v3.0
+ * Project is distributed under the terms of the MIT License
  */
 
 #ifndef XCORE_CORE_X86_ACCEL_H_

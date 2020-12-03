@@ -1,7 +1,7 @@
 /*
  * xcore/containers/array.h
  * Copyright (C) 2016 xent
- * Project is distributed under the terms of the GNU General Public License v3.0
+ * Project is distributed under the terms of the MIT License
  */
 
 #ifndef XCORE_CONTAINERS_ARRAY_H_

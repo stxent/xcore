@@ -1,7 +1,7 @@
 /*
  * xcore/crc/crc32.h
  * Copyright (C) 2015 xent
- * Project is distributed under the terms of the GNU General Public License v3.0
+ * Project is distributed under the terms of the MIT License
  */
 
 #ifndef XCORE_CRC_CRC32_H_

@@ -1,5 +1,5 @@
 # Copyright (C) 2020 xent
-# Project is distributed under the terms of the GNU General Public License v3.0
+# Project is distributed under the terms of the MIT License
 
 function(list_directories _search_results _directory_path)
     file(GLOB _entry_list RELATIVE "${_directory_path}" "${_directory_path}/*")
