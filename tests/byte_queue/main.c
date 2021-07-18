@@ -34,6 +34,23 @@ static void fillTestBuffer(uint8_t *buffer, size_t base, size_t count)
     buffer[i] = (uint8_t)(base + i);
 }
 /*----------------------------------------------------------------------------*/
+START_TEST(testEmptyContainer)
+{
+  struct ByteQueue queue;
+
+  /* Queue initialization */
+  const bool result = byteQueueInit(&queue, 0);
+  ck_assert(result == true);
+
+  ck_assert_uint_eq(byteQueueCapacity(&queue), 0);
+  ck_assert_uint_eq(byteQueueSize(&queue), 0);
+  ck_assert(byteQueueEmpty(&queue) == true);
+  ck_assert(byteQueueFull(&queue) == true);
+
+  byteQueueDeinit(&queue);
+}
+END_TEST
+/*----------------------------------------------------------------------------*/
 START_TEST(testMultiByteInterface)
 {
   struct ByteQueue queue;
@@ -241,6 +258,7 @@ int main(void)
   Suite * const suite = suite_create("ByteQueue");
   TCase * const testcase = tcase_create("Core");
 
+  tcase_add_test(testcase, testEmptyContainer);
   tcase_add_test(testcase, testSingleByteInterface);
   tcase_add_test(testcase, testPushPopArenaSequence);
   tcase_add_test(testcase, testPushPopSequence);

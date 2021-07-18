@@ -22,8 +22,10 @@ enum IfParameter
   /** Elements pending in the transmit queue. */
   IF_PENDING,
 
-  /** Unique identifier of the device. */
+  /** Unique identifier of the device, 32-bit value. */
   IF_ADDRESS,
+  /** Unique identifier of the device, 64-bit value. */
+  IF_ADDRESS_64,
   /** Priority of interrupts or direct memory access requests. */
   IF_PRIORITY,
   /** Data rate. */

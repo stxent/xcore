@@ -73,6 +73,23 @@ static void runPushPop(struct Queue *queue, int count)
   ck_assert(queueFull(queue) == false);
 }
 /*----------------------------------------------------------------------------*/
+START_TEST(testEmptyContainer)
+{
+  struct Queue queue;
+
+  /* Queue initialization */
+  const bool result = queueInit(&queue, sizeof(TestStruct), 0);
+  ck_assert(result == true);
+
+  ck_assert_uint_eq(queueCapacity(&queue), 0);
+  ck_assert_uint_eq(queueSize(&queue), 0);
+  ck_assert(queueEmpty(&queue) == true);
+  ck_assert(queueFull(&queue) == true);
+
+  queueDeinit(&queue);
+}
+END_TEST
+/*----------------------------------------------------------------------------*/
 START_TEST(testPointerReset)
 {
   const TestStruct buffer = createElement(0);
@@ -186,6 +203,7 @@ int main(void)
   Suite * const suite = suite_create("Queue");
   TCase * const testcase = tcase_create("Core");
 
+  tcase_add_test(testcase, testEmptyContainer);
   tcase_add_test(testcase, testPointerReset);
   tcase_add_test(testcase, testPushPopSequence);
   tcase_add_test(testcase, testRandomAccess);

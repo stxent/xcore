@@ -145,6 +145,23 @@ START_TEST(testElementInsertion)
 }
 END_TEST
 /*----------------------------------------------------------------------------*/
+START_TEST(testEmptyContainer)
+{
+  struct Array array;
+
+  /* Array initialization */
+  const bool result = arrayInit(&array, sizeof(TestStruct), 0);
+  ck_assert(result == true);
+
+  ck_assert_uint_eq(arrayCapacity(&array), 0);
+  ck_assert_uint_eq(arraySize(&array), 0);
+  ck_assert(arrayEmpty(&array) == true);
+  ck_assert(arrayFull(&array) == true);
+
+  arrayDeinit(&array);
+}
+END_TEST
+/*----------------------------------------------------------------------------*/
 START_TEST(testPushPopSequence)
 {
   struct Array array;
@@ -223,6 +240,7 @@ int main(void)
   Suite * const suite = suite_create("Array");
   TCase * const testcase = tcase_create("Core");
 
+  tcase_add_test(testcase, testEmptyContainer);
   tcase_add_test(testcase, testRandomAccess);
   tcase_add_test(testcase, testElementErasure);
   tcase_add_test(testcase, testElementInsertion);

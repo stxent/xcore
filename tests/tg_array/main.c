@@ -136,6 +136,23 @@ START_TEST(testElementInsertion)
 }
 END_TEST
 /*----------------------------------------------------------------------------*/
+START_TEST(testEmptyContainer)
+{
+  TestArray array;
+
+  /* Array initialization */
+  const bool result = testArrayInit(&array, 0);
+  ck_assert(result == true);
+
+  ck_assert_uint_eq(testArrayCapacity(&array), 0);
+  ck_assert_uint_eq(testArraySize(&array), 0);
+  ck_assert(testArrayEmpty(&array) == true);
+  ck_assert(testArrayFull(&array) == true);
+
+  testArrayDeinit(&array);
+}
+END_TEST
+/*----------------------------------------------------------------------------*/
 START_TEST(testPushPopSequence)
 {
   TestArray array;
@@ -212,6 +229,7 @@ int main(void)
   Suite * const suite = suite_create("TypeGenericArray");
   TCase * const testcase = tcase_create("Core");
 
+  tcase_add_test(testcase, testEmptyContainer);
   tcase_add_test(testcase, testRandomAccess);
   tcase_add_test(testcase, testElementErasure);
   tcase_add_test(testcase, testElementInsertion);

@@ -69,6 +69,23 @@ static void runPushPop(TestQueue *queue, int count)
   ck_assert(testQueueFull(queue) == false);
 }
 /*----------------------------------------------------------------------------*/
+START_TEST(testEmptyContainer)
+{
+  TestQueue queue;
+
+  /* Queue initialization */
+  const bool result = testQueueInit(&queue, 0);
+  ck_assert(result == true);
+
+  ck_assert_uint_eq(testQueueCapacity(&queue), 0);
+  ck_assert_uint_eq(testQueueSize(&queue), 0);
+  ck_assert(testQueueEmpty(&queue) == true);
+  ck_assert(testQueueFull(&queue) == true);
+
+  testQueueDeinit(&queue);
+}
+END_TEST
+/*----------------------------------------------------------------------------*/
 START_TEST(testPointerReset)
 {
   TestQueue queue;
@@ -177,6 +194,7 @@ int main(void)
   Suite * const suite = suite_create("TypeGenericQueue");
   TCase * const testcase = tcase_create("Core");
 
+  tcase_add_test(testcase, testEmptyContainer);
   tcase_add_test(testcase, testPointerReset);
   tcase_add_test(testcase, testPushPopSequence);
   tcase_add_test(testcase, testRandomAccess);
