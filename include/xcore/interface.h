@@ -45,6 +45,16 @@ enum IfParameter
   IF_WIDTH,
 
   /**
+   * Stop the interface from reading a new data. Data pointer should be set
+   * to zero.
+   */
+  IF_DISABLE,
+  /**
+   * Enable a reception of a new data. Data pointer should be set
+   * to zero.
+   */
+  IF_ENABLE,
+  /**
    * Get execution status of the last command. Returns @b E_OK when interface
    * is ready to accept a new command. Data pointer should be set to zero.
    */

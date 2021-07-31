@@ -29,6 +29,7 @@ struct RtClockClass
   enum Result (*setAlarm)(void *, time64_t);
   void (*setCallback)(void *, void (*)(void *), void *);
   enum Result (*setTime)(void *, time64_t);
+  void (*stop)(void *);
   time64_t (*time)(void *);
 };
 
@@ -67,17 +68,25 @@ static inline void rtSetCallback(void *clock, void (*callback)(void *),
 /**
  * Set current time.
  * @param clock Pointer to an RtClock object.
- * @param currentTime Current time.
+ * @param timestamp Current time in the UNIX time format.
  * @return @b E_OK on success.
  */
-static inline enum Result rtSetTime(void *clock, time64_t currentTime)
+static inline enum Result rtSetTime(void *clock, time64_t timestamp)
 {
-  return ((const struct RtClockClass *)CLASS(clock))->setTime(clock,
-      currentTime);
+  return ((const struct RtClockClass *)CLASS(clock))->setTime(clock, timestamp);
 }
 
 /**
- * Get current calendar time.
+ * Stop the clock.
+ * @param clock Pointer to an RtClock object.
+ */
+static inline void rtStop(void *clock)
+{
+  ((const struct RtClockClass *)CLASS(clock))->stop(clock);
+}
+
+/**
+ * Get current calendar date and time.
  * The value returned generally represents the number of seconds
  * since 00:00 hours, Jan 1, 1970 UTC.
  * @param clock Pointer to an RtClock object.
@@ -92,7 +101,6 @@ END_DECLS
 /*----------------------------------------------------------------------------*/
 BEGIN_DECLS
 
-/* TODO Doxygen */
 enum Result rtMakeEpochTime(time64_t *, const struct RtDateTime *);
 void rtMakeTime(struct RtDateTime *, time64_t);
 

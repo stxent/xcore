@@ -19,49 +19,61 @@ static const uint16_t yearLengths[] = {
     366, 365, 365, 365
 };
 /*----------------------------------------------------------------------------*/
+/**
+ * Convert a date and time structure to a UNIX timestamp.
+ * @param result Pointer to an output value.
+ * @param datetime Date and time structure to convert.
+ * @return @b E_OK on success, @b E_VALUE when a date and time structure
+ * contains incorrect values.
+ */
 enum Result rtMakeEpochTime(time64_t *result,
-    const struct RtDateTime *timestamp)
+    const struct RtDateTime *datetime)
 {
-  if (!timestamp->month || timestamp->month > 12)
+  if (!datetime->month || datetime->month > 12)
     return E_VALUE;
 
   /* Stores how many seconds have passed from 01.01.1970, 00:00:00 */
   time64_t seconds = 0;
 
   /* If the current year is a leap one than add one day or 86400 seconds */
-  if (!(timestamp->year % 4) && (timestamp->month > 2))
+  if (!(datetime->year % 4) && (datetime->month > 2))
     seconds += SECONDS_PER_DAY;
 
-  uint8_t month = timestamp->month - 1;
+  uint8_t month = datetime->month - 1;
 
   /* Sum the days from January to the current month */
   while (month)
     seconds += monthLengths[--month] * SECONDS_PER_DAY;
 
   /* Add the number of days from each year with leap years */
-  seconds += ((timestamp->year - START_YEAR) * 365
-      + ((timestamp->year - START_YEAR + 1) / 4)) * SECONDS_PER_DAY;
+  seconds += ((datetime->year - START_YEAR) * 365
+      + ((datetime->year - START_YEAR + 1) / 4)) * SECONDS_PER_DAY;
 
   /*
    * Add the number of days from the current month, each hour,
    * minute and second from the current day.
    */
-  seconds += (timestamp->day - 1) * SECONDS_PER_DAY + timestamp->second
-      + timestamp->minute * 60 + timestamp->hour * SECONDS_PER_HOUR;
+  seconds += (datetime->day - 1) * SECONDS_PER_DAY + datetime->second
+      + datetime->minute * 60 + datetime->hour * SECONDS_PER_HOUR;
 
   *result = seconds;
   return E_OK;
 }
 /*----------------------------------------------------------------------------*/
-void rtMakeTime(struct RtDateTime *timestamp, time64_t epochTime)
+/**
+ * Convert a UNIX timestamp to a date and time structure.
+ * @param datetime Pointer to an output date and time structure.
+ * @param timestamp UNIX timestamp to convert.
+*/
+void rtMakeTime(struct RtDateTime *datetime, time64_t timestamp)
 {
   /* TODO Add handling of negative times and years after 2100 */
-  const uint64_t seconds = epochTime > 0 ? epochTime : -epochTime;
+  const uint64_t seconds = timestamp > 0 ? timestamp : -timestamp;
   const uint32_t dayclock = seconds % SECONDS_PER_DAY;
 
-  timestamp->second = dayclock % 60;
-  timestamp->minute = (dayclock % 3600) / 60;
-  timestamp->hour = dayclock / 3600;
+  datetime->second = dayclock % 60;
+  datetime->minute = (dayclock % 3600) / 60;
+  datetime->hour = dayclock / 3600;
 
   uint32_t days = seconds / SECONDS_PER_DAY;
   uint32_t years;
@@ -88,9 +100,9 @@ void rtMakeTime(struct RtDateTime *timestamp, time64_t epochTime)
     days -= years * 365;
   }
 
-  timestamp->year = START_YEAR + years;
+  datetime->year = START_YEAR + years;
 
-  const uint8_t offset = !(timestamp->year % 4) && days >= 60 ? 1 : 0;
+  const uint8_t offset = !(datetime->year % 4) && days >= 60 ? 1 : 0;
   uint8_t month = 0;
 
   days -= offset;
@@ -100,6 +112,6 @@ void rtMakeTime(struct RtDateTime *timestamp, time64_t epochTime)
   if (month == 1)
     days += offset;
 
-  timestamp->day = days + 1;
-  timestamp->month = month + 1;
+  datetime->day = days + 1;
+  datetime->month = month + 1;
 }
