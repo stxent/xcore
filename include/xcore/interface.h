@@ -14,44 +14,66 @@
 /*----------------------------------------------------------------------------*/
 #include <xcore/entity.h>
 /*----------------------------------------------------------------------------*/
-/** Interface options. */
+/** Interface parameters. */
 enum IfParameter
 {
-  /** Elements available in the receive queue. */
-  IF_AVAILABLE,
-  /** Elements pending in the transmit queue. */
-  IF_PENDING,
+  /**
+   * Number of elements available in the receive queue.
+   * Parameter type is \a size_t.
+   */
+  IF_RX_AVAILABLE,
+  /** Free space in the receive queue. Parameter type is \a size_t. */
+  IF_RX_PENDING,
+  /**
+   * Maximum number of elements in the receive queue.
+   * Parameter type is \a size_t.
+   */
+  IF_RX_WATERMARK,
+  /**
+   * Number of pending elements in the transmit queue.
+   * Parameter type is \a size_t.
+   */
+  IF_TX_AVAILABLE,
+  /** Free space in the transmit queue. Parameter type is \a size_t. */
+  IF_TX_PENDING,
+  /**
+   * Maximum number of elements in the transmit queue.
+   * Parameter type is \a size_t.
+   */
+  IF_TX_WATERMARK,
 
-  /** Unique identifier of the device, 32-bit value. */
+  /**
+   * Unique identifier of the device, 32-bit value.
+   * Parameter type is \a uint32_t.
+   */
   IF_ADDRESS,
-  /** Unique identifier of the device, 64-bit value. */
+  /**
+   * Unique identifier of the device, 64-bit value.
+   * Parameter type is \a uint64_t.
+   */
   IF_ADDRESS_64,
-  /** Priority of interrupts or direct memory access requests. */
-  IF_PRIORITY,
-  /** Data rate. */
+  /** Data rate. Parameter type is \a uint32_t. */
   IF_RATE,
 
-  /** Alignment of the buffer length for user space buffers. */
-  IF_ALIGNMENT,
-  /** Position in the 32-bit address space. */
+  /** Position in the 32-bit address space. Parameter type is \a uint32_t. */
   IF_POSITION,
-  /** Position in the 64-bit address space. */
+  /** Position in the 64-bit address space. Parameter type is \a uint64_t. */
   IF_POSITION_64,
-  /** Size of the available space in a 32-bit address space. */
+  /** Volume size, 32-bit value. Parameter type is \a uint32_t. */
   IF_SIZE,
-  /** Size of the available space in a 64-bit address space. */
+  /** Volume size, 64-bit value. Parameter type is \a uint64_t. */
   IF_SIZE_64,
-  /** Size of a data word in bits. */
+  /** Size of a data word in bits. Parameter type is \a uint32_t. */
   IF_WIDTH,
 
   /**
-   * Stop the interface from reading a new data. Data pointer should be set
-   * to zero.
+   * Stop the interface from reading a new data.
+   * Data pointer should be set to zero.
    */
   IF_DISABLE,
   /**
-   * Enable a reception of a new data. Data pointer should be set
-   * to zero.
+   * Enable a reception of a new data.
+   * Data pointer should be set to zero.
    */
   IF_ENABLE,
   /**
@@ -61,19 +83,16 @@ enum IfParameter
   IF_STATUS,
 
   /**
-   * Select blocking mode for the interface. Data pointer should be set
-   * to zero.
+   * Selects blocking mode for the interface. Read and write calls are blocked
+   * until all data has been received or transmitted.
+   * Data pointer should be set to zero.
    */
   IF_BLOCKING,
   /**
-   * Select non-blocking mode for the interface. Data pointer should be set
-   * to zero.
-   */
-  IF_NONBLOCKING,
-  /**
-   * Select zero-copy mode for the interface. Data pointer should be set
-   * to zero. This mode is similar to the non-blocking mode except for
-   * user space buffers being unavailable until the transfer completion.
+   * Selects zero-copy mode for the interface. Read and write calls
+   * will not block and will immediately return the number of items added. 
+   * User space buffers are unavailable until the transfer is complete.
+   * Data pointer should be set to zero.
    */
   IF_ZEROCOPY,
 
