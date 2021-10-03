@@ -5,6 +5,7 @@
  */
 
 #include <xcore/realtime.h>
+#include <stdbool.h>
 /*----------------------------------------------------------------------------*/
 #define SECONDS_PER_DAY   86400
 #define SECONDS_PER_HOUR  3600
@@ -12,10 +13,10 @@
 #define OFFSET_YEARS      2
 #define OFFSET_SECONDS    (OFFSET_YEARS * 365 * SECONDS_PER_DAY)
 /*----------------------------------------------------------------------------*/
-static const uint8_t monthLengths[] = {
+static const uint8_t MONTH_LENGTHS[] = {
     31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
 };
-static const uint16_t yearLengths[] = {
+static const uint16_t YEAR_LENGTHS[] = {
     366, 365, 365, 365
 };
 /*----------------------------------------------------------------------------*/
@@ -29,21 +30,35 @@ static const uint16_t yearLengths[] = {
 enum Result rtMakeEpochTime(time64_t *result,
     const struct RtDateTime *datetime)
 {
-  if (!datetime->month || datetime->month > 12)
+  if (!datetime->day || !datetime->month || datetime->month > 12)
     return E_VALUE;
+  if (datetime->hour >= 24 || datetime->minute >= 60 || datetime->second >= 60)
+    return E_VALUE;
+
+  unsigned int month = datetime->month - 1;
+  const bool leapYear = datetime->year % 4 == 0;
+
+  if (leapYear && month == 1)
+  {
+    if (datetime->day > MONTH_LENGTHS[month] + 1)
+      return E_VALUE;
+  }
+  else
+  {
+    if (datetime->day > MONTH_LENGTHS[month])
+      return E_VALUE;
+  }
 
   /* Stores how many seconds have passed from 01.01.1970, 00:00:00 */
   time64_t seconds = 0;
 
   /* If the current year is a leap one than add one day or 86400 seconds */
-  if (!(datetime->year % 4) && (datetime->month > 2))
+  if (leapYear && month > 1)
     seconds += SECONDS_PER_DAY;
-
-  uint8_t month = datetime->month - 1;
 
   /* Sum the days from January to the current month */
   while (month)
-    seconds += monthLengths[--month] * SECONDS_PER_DAY;
+    seconds += MONTH_LENGTHS[--month] * SECONDS_PER_DAY;
 
   /* Add the number of days from each year with leap years */
   seconds += ((datetime->year - START_YEAR) * 365
@@ -69,11 +84,11 @@ void rtMakeTime(struct RtDateTime *datetime, time64_t timestamp)
 {
   /* TODO Add handling of negative times and years after 2100 */
   const uint64_t seconds = timestamp > 0 ? timestamp : -timestamp;
-  const uint32_t dayclock = seconds % SECONDS_PER_DAY;
+  const uint32_t daySeconds = seconds % SECONDS_PER_DAY;
 
-  datetime->second = dayclock % 60;
-  datetime->minute = (dayclock % 3600) / 60;
-  datetime->hour = dayclock / 3600;
+  datetime->second = daySeconds % 60;
+  datetime->minute = (daySeconds % 3600) / 60;
+  datetime->hour = daySeconds / 3600;
 
   uint32_t days = seconds / SECONDS_PER_DAY;
   uint32_t years;
@@ -88,9 +103,9 @@ void rtMakeTime(struct RtDateTime *datetime, time64_t timestamp)
     years = leapCycles * 4 + OFFSET_YEARS;
     days -= years * 365 + leapCycles;
 
-    for (uint8_t number = 0; days >= yearLengths[number]; ++number)
+    for (uint8_t number = 0; days >= YEAR_LENGTHS[number]; ++number)
     {
-      days -= yearLengths[number];
+      days -= YEAR_LENGTHS[number];
       ++years;
     }
   }
@@ -106,8 +121,8 @@ void rtMakeTime(struct RtDateTime *datetime, time64_t timestamp)
   uint8_t month = 0;
 
   days -= offset;
-  while (days >= monthLengths[month])
-    days -= monthLengths[month++];
+  while (days >= MONTH_LENGTHS[month])
+    days -= MONTH_LENGTHS[month++];
 
   if (month == 1)
     days += offset;
