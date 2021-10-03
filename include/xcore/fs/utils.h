@@ -22,6 +22,7 @@ bool fsExtractBaseName(char *buffer, const char *path);
 const char *fsExtractName(const char *path);
 const char *fsFollowNextPart(struct FsHandle *handle, struct FsNode **node,
     const char *path, bool leaf);
+FsSpace fsFindUsedSpace(struct FsHandle *handle, struct FsNode *node);
 struct FsNode *fsFollowPath(struct FsHandle *handle, const char *path,
     bool leaf);
 const char *fsGetChunk(char *dst, const char *src);

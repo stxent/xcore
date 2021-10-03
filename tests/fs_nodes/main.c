@@ -18,6 +18,7 @@ static const char PATH_SYS[] = "/sys";
 
 static const char PATH_HOME_ROOT[] = "/home/root";
 static const char PATH_HOME_USER[] = "/home/user";
+static const char PATH_HOME_RESERVED[] = "/home/xx";
 
 static const char PATH_HOME_USER_FILE[] = "/home/user/file.txt";
 static const char PATH_HOME_USER_IMAGE[] = "/home/user/image.bmp";
@@ -65,6 +66,7 @@ static void freeTestHandle(struct FsHandle *handle)
   freeNode(handle, PATH_HOME_USER_IMAGE);
 
   /* Level 2 inside "/home" */
+  freeNode(handle, PATH_HOME_RESERVED);
   freeNode(handle, PATH_HOME_ROOT);
   freeNode(handle, PATH_HOME_USER);
 
@@ -118,6 +120,7 @@ static struct FsHandle *makeTestHandle(void)
   /* Level 2 inside "/home" */
   makeNode(handle, PATH_HOME_ROOT);
   makeNode(handle, PATH_HOME_USER);
+  makeNode(handle, PATH_HOME_RESERVED);
 
   /* Level 3 inside "/home/user directory" */
   makeNode(handle, PATH_HOME_USER_FILE);
@@ -148,6 +151,11 @@ START_TEST(testNodeLength)
   ck_assert_uint_eq(count, MAX_BUFFER_LENGTH);
 
   count = 0;
+  res = fsNodeLength(node, FS_NODE_SPACE, &count);
+  ck_assert_uint_eq(res, E_OK);
+  ck_assert_uint_eq(count, MAX_BUFFER_LENGTH);
+
+  count = 0;
   res = fsNodeLength(node, FS_NODE_NAME, &count);
   ck_assert_uint_eq(res, E_OK);
   ck_assert_uint_eq(count, strlen(fsExtractName(PATH_HOME_USER_FILE)) + 1);
@@ -168,6 +176,49 @@ START_TEST(testNodeLength)
   fsNodeFree(root);
 
   /* Release all resources */
+  freeTestHandle(handle);
+}
+END_TEST
+/*----------------------------------------------------------------------------*/
+START_TEST(testNodeRenaming)
+{
+  struct FsHandle * const handle = makeTestHandle();
+  struct FsNode * const node = fsOpenNode(handle, PATH_HOME_RESERVED);
+  ck_assert_ptr_nonnull(node);
+
+  size_t written;
+  enum Result res;
+
+  /* Rename to a reserved name */
+  res = fsNodeWrite(node, FS_NODE_NAME, 0, "..", 3, &written);
+  ck_assert_uint_eq(res, E_OK);
+  ck_assert_uint_eq(written, 3);
+
+  /* Renaming failure */
+  mallocHookFails = 1;
+  res = fsNodeWrite(node, FS_NODE_NAME, 0, "xx", 3, &written);
+  ck_assert_uint_ne(res, E_OK);
+
+  /* Incorrect position */
+  res = fsNodeWrite(node, FS_NODE_NAME, 1, "x", 2, &written);
+  ck_assert_uint_ne(res, E_OK);
+
+  /* Name length does not match buffer content */
+  res = fsNodeWrite(node, FS_NODE_NAME, 0, "x", 3, &written);
+  ck_assert_uint_ne(res, E_OK);
+
+  /* Erase name */
+  res = fsNodeWrite(node, FS_NODE_NAME, 0, 0, 0, &written);
+  ck_assert_uint_eq(res, E_OK);
+  ck_assert_uint_eq(written, 0);
+
+  /* Restore original name */
+  written = 0;
+  res = fsNodeWrite(node, FS_NODE_NAME, 0, "xx", 3, &written);
+  ck_assert_uint_eq(res, E_OK);
+  ck_assert_uint_eq(written, 3);
+
+  fsNodeFree(node);
   freeTestHandle(handle);
 }
 END_TEST
@@ -273,7 +324,7 @@ START_TEST(testReadWrite)
   }
 
   memset(buffer, 0, sizeof(buffer));
-  res = fsNodeWrite(node, FS_NODE_NAME, 0,
+  res = fsNodeWrite(node, FS_TYPE_END, 0,
       buffer, sizeof(buffer), 0);
   ck_assert_uint_ne(res, E_OK);
 
@@ -441,17 +492,129 @@ START_TEST(testTfsMemoryErrors)
 }
 END_TEST
 /*----------------------------------------------------------------------------*/
+START_TEST(testUsedSpaceCalculation)
+{
+  static const size_t MAX_FILE_SIZE = 16384;
+  static const char data[MAX_BUFFER_LENGTH] = {0};
+
+  struct FsHandle * const handle = makeTestHandle();
+  struct FsNode *node;
+  enum Result res;
+  FsSpace used;
+
+  /* Node with full capacity usage */
+
+  node = fsOpenNode(handle, PATH_HOME_USER_FILE);
+  ck_assert_ptr_nonnull(node);
+
+  for (size_t i = 0; i < MAX_FILE_SIZE / MAX_BUFFER_LENGTH; ++i)
+  {
+    res = fsNodeWrite(node, FS_NODE_DATA, (FsLength)(i * MAX_BUFFER_LENGTH),
+        data, MAX_BUFFER_LENGTH, 0);
+    ck_assert_uint_eq(res, E_OK);
+  }
+
+  fsNodeFree(node);
+
+  used = fsFindUsedSpace(handle, 0);
+  ck_assert_uint_eq(used, MAX_FILE_SIZE);
+
+  /* Node with partial capacity usage */
+
+  node = fsOpenNode(handle, PATH_HOME_USER_FILE);
+  ck_assert_ptr_nonnull(node);
+
+  for (size_t i = 0; i < (MAX_FILE_SIZE * 3) / (MAX_BUFFER_LENGTH * 4); ++i)
+  {
+    res = fsNodeWrite(node, FS_NODE_DATA, (FsLength)(i * MAX_BUFFER_LENGTH),
+        data, MAX_BUFFER_LENGTH, 0);
+    ck_assert_uint_eq(res, E_OK);
+  }
+
+  fsNodeFree(node);
+
+  used = fsFindUsedSpace(handle, 0);
+  ck_assert_uint_eq(used, MAX_FILE_SIZE);
+
+  freeTestHandle(handle);
+}
+END_TEST
+/*----------------------------------------------------------------------------*/
+START_TEST(testUsedSpaceErrors)
+{
+  static const size_t MAX_FILE_SIZE = 16384;
+  static const char data[MAX_BUFFER_LENGTH] = {0};
+
+  struct FsHandle * const handle = makeTestHandle();
+  struct FsNode *node;
+  enum Result res;
+
+  /* Make node with filled with data */
+
+  node = fsOpenNode(handle, PATH_HOME_USER_FILE);
+  ck_assert_ptr_nonnull(node);
+
+  for (size_t i = 0; i < MAX_FILE_SIZE / MAX_BUFFER_LENGTH; ++i)
+  {
+    res = fsNodeWrite(node, FS_NODE_DATA, (FsLength)(i * MAX_BUFFER_LENGTH),
+        data, MAX_BUFFER_LENGTH, 0);
+    ck_assert_uint_eq(res, E_OK);
+  }
+
+  fsNodeFree(node);
+
+  /* Test usage */
+
+  node = fsOpenNode(handle, PATH_HOME_RESERVED);
+  ck_assert_ptr_nonnull(node);
+
+  FsSpace used;
+
+  /* Make node with a reserved name */
+  res = fsNodeWrite(node, FS_NODE_NAME, 0, "..", 3, 0);
+  ck_assert_uint_eq(res, E_OK);
+  used = fsFindUsedSpace(handle, 0);
+  ck_assert_uint_eq(used, MAX_FILE_SIZE);
+
+  /* Test head allocation failure */
+  mallocHookFails = 1;
+  used = fsFindUsedSpace(handle, 0);
+  ck_assert_uint_eq(used, 0);
+
+  /* Test incorrect name skipping */
+  res = fsNodeWrite(node, FS_NODE_NAME, 0, 0, 0, 0);
+  ck_assert_uint_eq(res, E_OK);
+  used = fsFindUsedSpace(handle, 0);
+  ck_assert_uint_eq(used, MAX_FILE_SIZE);
+
+  /* Test incorrect name reading */
+  res = fsNodeWrite(node, FS_NODE_NAME, 0, "\x7F", 2, 0);
+  ck_assert_uint_eq(res, E_OK);
+  used = fsFindUsedSpace(handle, 0);
+  ck_assert_uint_eq(used, 0);
+
+  /* Restore original node name */
+  fsNodeWrite(node, FS_NODE_NAME, 0, "xx", 3, 0);
+  fsNodeFree(node);
+
+  freeTestHandle(handle);
+}
+END_TEST
+/*----------------------------------------------------------------------------*/
 int main(void)
 {
   Suite * const suite = suite_create("TestFileSystem");
   TCase * const testcase = tcase_create("Core");
 
   tcase_add_test(testcase, testNodeLength);
+  tcase_add_test(testcase, testNodeRenaming);
   tcase_add_test(testcase, testPartExtraction);
   tcase_add_test(testcase, testPathFollowing);
   tcase_add_test(testcase, testReadWrite);
   tcase_add_test(testcase, testTfsErrors);
   tcase_add_test(testcase, testTfsMemoryErrors);
+  tcase_add_test(testcase, testUsedSpaceCalculation);
+  tcase_add_test(testcase, testUsedSpaceErrors);
   suite_add_tcase(suite, testcase);
 
   SRunner * const runner = srunner_create(suite);

@@ -17,11 +17,12 @@
 /*----------------------------------------------------------------------------*/
 typedef uint8_t FsAccess;
 typedef uint32_t FsLength;
+typedef uint64_t FsSpace;
 
 enum
 {
   /** Read access allows to read data and list directory content. */
-  FS_ACCESS_READ = 0x01,
+  FS_ACCESS_READ  = 0x01,
   /** Write access allows to modify data, append or delete nodes. */
   FS_ACCESS_WRITE = 0x02
 };
@@ -30,7 +31,7 @@ enum FsFieldType
 {
   /** Access rights to the node. */
   FS_NODE_ACCESS,
-  /** Node payload. */
+  /** Node data. */
   FS_NODE_DATA,
   /** Numeric identifier of the node. */
   FS_NODE_ID,
@@ -38,6 +39,8 @@ enum FsFieldType
   FS_NODE_NAME,
   /** Owner of the node. */
   FS_NODE_OWNER,
+  /** Space allocated for the node data. */
+  FS_NODE_SPACE,
   /** Access time in microseconds. */
   FS_NODE_TIME,
 

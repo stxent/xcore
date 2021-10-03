@@ -54,6 +54,7 @@ struct TfsNodeProxy
 };
 /*----------------------------------------------------------------------------*/
 static bool reallocateDataBuffer(struct TfsNode *, size_t);
+static bool renameNode(struct TfsNode *, const char *);
 static enum Result writeDataBuffer(struct TfsNode *, FsLength,
     const void *, size_t, size_t *);
 /*----------------------------------------------------------------------------*/
@@ -134,6 +135,33 @@ static bool reallocateDataBuffer(struct TfsNode *node, size_t length)
   node->dataCapacity = dataCapacity;
 
   return true;
+}
+/*----------------------------------------------------------------------------*/
+static bool renameNode(struct TfsNode *node, const char *name)
+{
+  const size_t length = name ? strlen(name) : 0;
+
+  if (length > 0)
+  {
+    char * const buffer = malloc(length + 1);
+
+    if (buffer)
+    {
+      strcpy(buffer, name);
+
+      free(node->name);
+      node->name = buffer;
+      return true;
+    }
+    else
+      return false;
+  }
+  else
+  {
+    free(node->name);
+    node->name = 0;
+    return true;
+  }
 }
 /*----------------------------------------------------------------------------*/
 static enum Result writeDataBuffer(struct TfsNode *node, FsLength position,
@@ -225,9 +253,7 @@ static enum Result tfsNodeInit(void *object, const void *configBase)
 static void tfsNodeDeinit(void *object)
 {
   struct TfsNode * const node = object;
-
-  if (node->name != 0)
-    free(node->name);
+  free(node->name);
 }
 /*----------------------------------------------------------------------------*/
 static enum Result tfsNodeProxyInit(void *object, const void *configBase)
@@ -325,7 +351,7 @@ static enum Result tfsNodeProxyLength(void *object, enum FsFieldType type,
   {
     case FS_NODE_DATA:
       if (length)
-        *length = (FsLength)(node->dataLength);
+        *length = (FsLength)node->dataLength;
       return E_OK;
 
     case FS_NODE_NAME:
@@ -334,6 +360,11 @@ static enum Result tfsNodeProxyLength(void *object, enum FsFieldType type,
 
       if (length)
         *length = (FsLength)(strlen(node->name) + 1);
+      return E_OK;
+
+    case FS_NODE_SPACE:
+      if (length)
+        *length = (FsLength)node->dataCapacity;
       return E_OK;
 
     default:
@@ -410,6 +441,10 @@ static enum Result tfsNodeProxyRead(void *object, enum FsFieldType type,
       if (length < nameLength)
         return E_VALUE;
 
+      /* Read error simulation */
+      if (node->name[0] == '\x7F')
+        return E_ERROR;
+
       strcpy(buffer, node->name);
       count = nameLength;
       break;
@@ -449,6 +484,21 @@ static enum Result tfsNodeProxyWrite(void *object, enum FsFieldType type,
   {
     case FS_NODE_DATA:
       return writeDataBuffer(node, position, buffer, length, written);
+
+    case FS_NODE_NAME:
+      if (position)
+        return E_VALUE;
+      if (length && strnlen(buffer, length) + 1 != length)
+        return E_VALUE;
+
+      if (renameNode(node, length ? buffer : 0))
+      {
+        if (written)
+          *written = length;
+        return E_OK;
+      }
+      else
+        return E_MEMORY;
 
     default:
       return E_INVALID;

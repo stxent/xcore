@@ -12,7 +12,9 @@ foreach(TEST_NAME ${TEST_LIST})
     file(GLOB_RECURSE TEST_SOURCES "${TEST_NAME}/*.c")
     add_executable(${TEST_NAME} ${TEST_SOURCES})
     add_test(${TEST_NAME} ${TEST_NAME})
-    target_compile_definitions(${TEST_NAME} PRIVATE _POSIX_C_SOURCE=200809L)
+    target_compile_definitions(${TEST_NAME}
+            PRIVATE _POSIX_C_SOURCE=200809L
+            PRIVATE -DFS_NAME_LENGTH=${FS_NAME_LENGTH})
     target_compile_options(${TEST_NAME} PRIVATE --coverage)
     target_link_libraries(${TEST_NAME} PRIVATE xcore check gcov)
 endforeach()

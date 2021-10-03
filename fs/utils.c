@@ -9,7 +9,58 @@
 #include <stddef.h>
 #include <string.h>
 /*----------------------------------------------------------------------------*/
+static enum Result computeNodeUsage(struct FsNode *, FsSpace *);
 static char *copyPathPart(char *, const char *);
+static bool isReservedName(const char *);
+/*----------------------------------------------------------------------------*/
+static enum Result computeNodeUsage(struct FsNode *node, FsSpace *result)
+{
+  struct FsNode *child = fsNodeHead(node);
+  enum Result res = E_OK;
+  FsLength length;
+
+  if (fsNodeLength(node, FS_NODE_SPACE, &length) == E_OK)
+    *result += (FsSpace)length;
+
+  while (child)
+  {
+    bool reserved = false;
+
+    if (fsNodeLength(child, FS_NODE_NAME, &length) == E_OK)
+    {
+      if (length >= 2 && length <= 3)
+      {
+        char name[FS_NAME_LENGTH];
+
+        res = fsNodeRead(child, FS_NODE_NAME, 0, name, sizeof(name), 0);
+        if (res != E_OK)
+          break;
+
+        reserved = isReservedName(name);
+      }
+    }
+
+    if (!reserved)
+    {
+      res = computeNodeUsage(child, result);
+      if (res != E_OK)
+        break;
+    }
+
+    res = fsNodeNext(child);
+    if (res != E_OK)
+    {
+      if (res == E_ENTRY)
+        res = E_OK;
+      break;
+    }
+  }
+
+  if (child)
+    fsNodeFree(child);
+
+  return res;
+}
 /*----------------------------------------------------------------------------*/
 static char *copyPathPart(char *output, const char *input)
 {
@@ -35,6 +86,11 @@ static char *copyPathPart(char *output, const char *input)
     --output;
 
   return output;
+}
+/*----------------------------------------------------------------------------*/
+static bool isReservedName(const char *name)
+{
+  return name[0] == '.' && (!name[1] || (name[1] == '.' && !name[2]));
 }
 /*----------------------------------------------------------------------------*/
 bool fsExtractBaseName(char *buffer, const char *path)
@@ -78,6 +134,24 @@ const char *fsExtractName(const char *path)
   return length ? path : 0;
 }
 /*----------------------------------------------------------------------------*/
+FsSpace fsFindUsedSpace(struct FsHandle *handle, struct FsNode *node)
+{
+  struct FsNode * const parent = node ? node : fsHandleRoot(handle);
+
+  if (parent)
+  {
+    FsSpace used = 0;
+    const enum Result res = computeNodeUsage(parent, &used);
+
+    if (!node)
+      fsNodeFree(parent);
+
+    return res == E_OK ? used : 0;
+  }
+  else
+    return 0;
+}
+/*----------------------------------------------------------------------------*/
 const char *fsFollowNextPart(struct FsHandle *handle, struct FsNode **node,
     const char *path, bool leaf)
 {
@@ -88,7 +162,7 @@ const char *fsFollowNextPart(struct FsHandle *handle, struct FsNode **node,
   {
     path = 0;
   }
-  else if (!strcmp(nextPart, ".") || !strcmp(nextPart, ".."))
+  else if (isReservedName(nextPart))
   {
     /* Path contains forbidden directories */
     path = 0;
