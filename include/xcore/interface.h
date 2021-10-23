@@ -71,11 +71,10 @@ enum IfParameter
    * Data pointer should be set to zero.
    */
   IF_DISABLE,
-  /**
-   * Enable a reception of a new data.
-   * Data pointer should be set to zero.
-   */
+  /** Enable a reception of a new data. Data pointer should be set to zero. */
   IF_ENABLE,
+  /** Flush all cached data. Data pointer should be set to zero. */
+  IF_FLUSH,
   /**
    * Get execution status of the last command. Returns @b E_OK when interface
    * is ready to accept a new command. Data pointer should be set to zero.
@@ -90,7 +89,7 @@ enum IfParameter
   IF_BLOCKING,
   /**
    * Selects zero-copy mode for the interface. Read and write calls
-   * will not block and will immediately return the number of items added. 
+   * will not block and will immediately return the number of items added.
    * User space buffers are unavailable until the transfer is complete.
    * Data pointer should be set to zero.
    */
