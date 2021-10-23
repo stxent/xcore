@@ -349,6 +349,11 @@ static enum Result tfsNodeProxyLength(void *object, enum FsFieldType type,
 
   switch (type)
   {
+    case FS_NODE_CAPACITY:
+      if (length)
+        *length = (FsLength)sizeof(FsCapacity);
+      return E_OK;
+
     case FS_NODE_DATA:
       if (length)
         *length = (FsLength)node->dataLength;
@@ -360,11 +365,6 @@ static enum Result tfsNodeProxyLength(void *object, enum FsFieldType type,
 
       if (length)
         *length = (FsLength)(strlen(node->name) + 1);
-      return E_OK;
-
-    case FS_NODE_SPACE:
-      if (length)
-        *length = (FsLength)node->dataCapacity;
       return E_OK;
 
     default:
@@ -413,6 +413,19 @@ static enum Result tfsNodeProxyRead(void *object, enum FsFieldType type,
 
   switch (type)
   {
+    case FS_NODE_CAPACITY:
+      if (position == 0 && length >= sizeof(FsCapacity))
+      {
+        const FsCapacity capacity = (FsCapacity)node->dataCapacity;
+
+        memcpy(buffer, &capacity, sizeof(capacity));
+        if (read)
+          *read = sizeof(capacity);
+        return E_OK;
+      }
+      else
+        return E_VALUE;
+
     case FS_NODE_DATA:
     {
       if (position <= node->dataLength)
@@ -436,18 +449,18 @@ static enum Result tfsNodeProxyRead(void *object, enum FsFieldType type,
 
       const size_t nameLength = strlen(node->name) + 1;
 
-      if (position)
-        return E_INVALID;
-      if (length < nameLength)
+      if (position == 0 && length >= nameLength)
+      {
+        /* Read error simulation */
+        if (node->name[0] == '\x7F')
+          return E_ERROR;
+
+        strcpy(buffer, node->name);
+        count = nameLength;
+        break;
+      }
+      else
         return E_VALUE;
-
-      /* Read error simulation */
-      if (node->name[0] == '\x7F')
-        return E_ERROR;
-
-      strcpy(buffer, node->name);
-      count = nameLength;
-      break;
     }
 
     default:

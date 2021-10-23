@@ -15,9 +15,12 @@
 #include <xcore/entity.h>
 #include <stdint.h>
 /*----------------------------------------------------------------------------*/
-typedef uint8_t FsAccess;
+typedef uint32_t FsAccess;
+typedef uint64_t FsCapacity;
+typedef uint32_t FsDevice;
+typedef uint64_t FsIdentifier;
 typedef uint32_t FsLength;
-typedef uint64_t FsSpace;
+typedef uint32_t FsOwner;
 
 enum
 {
@@ -29,19 +32,21 @@ enum
 
 enum FsFieldType
 {
-  /** Access rights to the node. */
+  /** Access rights to the node. Field type is \a FsAccess. */
   FS_NODE_ACCESS,
+  /** Space allocated for the node data. Field type is \a FsCapacity. */
+  FS_NODE_CAPACITY,
   /** Node data. */
   FS_NODE_DATA,
-  /** Numeric identifier of the node. */
+  /** Device identifier. Field type is \a FsDevice. */
+  FS_NODE_DEVICE,
+  /** Numeric identifier of the node. Field type is \a FsIdentifier. */
   FS_NODE_ID,
-  /** Symbolic name of the node. */
+  /** Symbolic name of the node. Null-terminated array of \a char. */
   FS_NODE_NAME,
-  /** Owner of the node. */
+  /** Owner of the node. Field type is \a FsOwner. */
   FS_NODE_OWNER,
-  /** Space allocated for the node data. */
-  FS_NODE_SPACE,
-  /** Access time in microseconds. */
+  /** Access time in microseconds. Field type is \a time64_t. */
   FS_NODE_TIME,
 
   /** End of the list. */

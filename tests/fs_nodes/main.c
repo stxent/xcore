@@ -129,6 +129,58 @@ static struct FsHandle *makeTestHandle(void)
   return handle;
 }
 /*----------------------------------------------------------------------------*/
+START_TEST(testNodeCapacity)
+{
+  struct FsHandle * const handle = makeTestHandle();
+  enum Result res;
+
+  /* Prepare data file */
+
+  struct FsNode * const node = fsOpenNode(handle, PATH_HOME_USER_FILE);
+  ck_assert_ptr_nonnull(node);
+
+  for (size_t i = 0; i < MAX_FILE_LENGTH / MAX_BUFFER_LENGTH; ++i)
+  {
+    size_t count;
+    char pattern[MAX_BUFFER_LENGTH];
+
+    memset(pattern, i, MAX_BUFFER_LENGTH);
+
+    count = 0;
+    res = fsNodeWrite(node, FS_NODE_DATA, i * MAX_BUFFER_LENGTH,
+        pattern, MAX_BUFFER_LENGTH, &count);
+    ck_assert_uint_eq(res, E_OK);
+    ck_assert_uint_eq(count, MAX_BUFFER_LENGTH);
+  }
+
+  /* Read capacity length */
+
+  FsLength length;
+
+  res = fsNodeLength(node, FS_NODE_CAPACITY, &length);
+  ck_assert_uint_eq(res, E_OK);
+  ck_assert_uint_eq(length, sizeof(FsCapacity));
+
+  /* Read capacity */
+
+  FsCapacity capacity;
+  size_t count;
+
+  res = fsNodeRead(node, FS_NODE_CAPACITY, 0, &capacity, sizeof(capacity),
+      &count);
+  ck_assert_uint_eq(res, E_OK);
+  ck_assert_uint_eq(capacity, MAX_FILE_LENGTH);
+  ck_assert_uint_eq(count, sizeof(capacity));
+
+  /* Read capacity failure */
+
+  res = fsNodeRead(node, FS_NODE_CAPACITY, 0, &capacity, 0, 0);
+  ck_assert_uint_ne(res, E_OK);
+
+  fsNodeFree(node);
+  freeTestHandle(handle);
+}
+/*----------------------------------------------------------------------------*/
 START_TEST(testNodeLength)
 {
   static const char data[MAX_BUFFER_LENGTH] = {0};
@@ -147,11 +199,6 @@ START_TEST(testNodeLength)
 
   count = 0;
   res = fsNodeLength(node, FS_NODE_DATA, &count);
-  ck_assert_uint_eq(res, E_OK);
-  ck_assert_uint_eq(count, MAX_BUFFER_LENGTH);
-
-  count = 0;
-  res = fsNodeLength(node, FS_NODE_SPACE, &count);
   ck_assert_uint_eq(res, E_OK);
   ck_assert_uint_eq(count, MAX_BUFFER_LENGTH);
 
@@ -500,7 +547,7 @@ START_TEST(testUsedSpaceCalculation)
   struct FsHandle * const handle = makeTestHandle();
   struct FsNode *node;
   enum Result res;
-  FsSpace used;
+  FsCapacity used;
 
   /* Node with full capacity usage */
 
@@ -568,7 +615,7 @@ START_TEST(testUsedSpaceErrors)
   node = fsOpenNode(handle, PATH_HOME_RESERVED);
   ck_assert_ptr_nonnull(node);
 
-  FsSpace used;
+  FsCapacity used;
 
   /* Make node with a reserved name */
   res = fsNodeWrite(node, FS_NODE_NAME, 0, "..", 3, 0);
@@ -606,6 +653,7 @@ int main(void)
   Suite * const suite = suite_create("TestFileSystem");
   TCase * const testcase = tcase_create("Core");
 
+  tcase_add_test(testcase, testNodeCapacity);
   tcase_add_test(testcase, testNodeLength);
   tcase_add_test(testcase, testNodeRenaming);
   tcase_add_test(testcase, testPartExtraction);

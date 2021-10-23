@@ -9,26 +9,29 @@
 #include <stddef.h>
 #include <string.h>
 /*----------------------------------------------------------------------------*/
-static enum Result computeNodeUsage(struct FsNode *, FsSpace *);
+static enum Result computeNodeUsage(struct FsNode *, FsCapacity *);
 static char *copyPathPart(char *, const char *);
 static bool isReservedName(const char *);
 /*----------------------------------------------------------------------------*/
-static enum Result computeNodeUsage(struct FsNode *node, FsSpace *result)
+static enum Result computeNodeUsage(struct FsNode *node, FsCapacity *result)
 {
   struct FsNode *child = fsNodeHead(node);
-  enum Result res = E_OK;
-  FsLength length;
+  FsCapacity capacity;
+  enum Result res;
 
-  if (fsNodeLength(node, FS_NODE_SPACE, &length) == E_OK)
-    *result += (FsSpace)length;
+  res = fsNodeRead(node, FS_NODE_CAPACITY, 0, &capacity, sizeof(capacity), 0);
+  if (res == E_OK)
+    *result += capacity;
+  res = E_OK;
 
   while (child)
   {
+    FsLength nameLength;
     bool reserved = false;
 
-    if (fsNodeLength(child, FS_NODE_NAME, &length) == E_OK)
+    if (fsNodeLength(child, FS_NODE_NAME, &nameLength) == E_OK)
     {
-      if (length >= 2 && length <= 3)
+      if (nameLength >= 2 && nameLength <= 3)
       {
         char name[FS_NAME_LENGTH];
 
@@ -134,13 +137,13 @@ const char *fsExtractName(const char *path)
   return length ? path : 0;
 }
 /*----------------------------------------------------------------------------*/
-FsSpace fsFindUsedSpace(struct FsHandle *handle, struct FsNode *node)
+FsCapacity fsFindUsedSpace(struct FsHandle *handle, struct FsNode *node)
 {
   struct FsNode * const parent = node ? node : fsHandleRoot(handle);
 
   if (parent)
   {
-    FsSpace used = 0;
+    FsCapacity used = 0;
     const enum Result res = computeNodeUsage(parent, &used);
 
     if (!node)
