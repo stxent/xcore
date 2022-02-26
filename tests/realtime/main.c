@@ -38,7 +38,7 @@ START_TEST(testDateTimeToTimestamp)
       .second = 0
   };
   res = rtMakeEpochTime(&timestamp, &dtZeroMonth);
-  ck_assert_uint_ne(res, E_OK);
+  ck_assert_uint_eq(res, E_VALUE);
 
   static const struct RtDateTime dtMonthOverflow = {
       .year = 2000,
@@ -49,7 +49,7 @@ START_TEST(testDateTimeToTimestamp)
       .second = 0
   };
   res = rtMakeEpochTime(&timestamp, &dtMonthOverflow);
-  ck_assert_uint_ne(res, E_OK);
+  ck_assert_uint_eq(res, E_VALUE);
 
   /* Test day errors */
 
@@ -62,7 +62,7 @@ START_TEST(testDateTimeToTimestamp)
       .second = 0
   };
   res = rtMakeEpochTime(&timestamp, &dtZeroDay);
-  ck_assert_uint_ne(res, E_OK);
+  ck_assert_uint_eq(res, E_VALUE);
 
   static const struct RtDateTime dtFebLeapYear = {
       .year = 2000,
@@ -73,7 +73,7 @@ START_TEST(testDateTimeToTimestamp)
       .second = 0
   };
   res = rtMakeEpochTime(&timestamp, &dtFebLeapYear);
-  ck_assert_uint_ne(res, E_OK);
+  ck_assert_uint_eq(res, E_VALUE);
 
   static const struct RtDateTime dtFebYear = {
       .year = 2001,
@@ -84,7 +84,7 @@ START_TEST(testDateTimeToTimestamp)
       .second = 0
   };
   res = rtMakeEpochTime(&timestamp, &dtFebYear);
-  ck_assert_uint_ne(res, E_OK);
+  ck_assert_uint_eq(res, E_VALUE);
 
   /* Test hour, minute and second errors */
 
@@ -97,7 +97,7 @@ START_TEST(testDateTimeToTimestamp)
       .second = 0
   };
   res = rtMakeEpochTime(&timestamp, &dtHourOverflow);
-  ck_assert_uint_ne(res, E_OK);
+  ck_assert_uint_eq(res, E_VALUE);
 
   static const struct RtDateTime dtMinuteOverflow = {
       .year = 2000,
@@ -108,7 +108,7 @@ START_TEST(testDateTimeToTimestamp)
       .second = 0
   };
   res = rtMakeEpochTime(&timestamp, &dtMinuteOverflow);
-  ck_assert_uint_ne(res, E_OK);
+  ck_assert_uint_eq(res, E_VALUE);
 
   static const struct RtDateTime dtSecondOverflow = {
       .year = 2000,
@@ -119,7 +119,7 @@ START_TEST(testDateTimeToTimestamp)
       .second = 60
   };
   res = rtMakeEpochTime(&timestamp, &dtSecondOverflow);
-  ck_assert_uint_ne(res, E_OK);
+  ck_assert_uint_eq(res, E_VALUE);
 }
 END_TEST
 /*----------------------------------------------------------------------------*/

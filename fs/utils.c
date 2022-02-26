@@ -193,11 +193,8 @@ const char *fsFollowNextPart(struct FsHandle *handle, struct FsNode **node,
       const enum Result res = fsNodeRead(child, FS_NODE_NAME, 0,
           nodeName, sizeof(nodeName), 0);
 
-      if (res == E_OK)
-      {
-        if (!strcmp(nextPart, nodeName))
-          break;
-      }
+      if (res == E_OK && !strcmp(nextPart, nodeName))
+        break;
 
       if (res != E_OK || fsNodeNext(child) != E_OK)
       {

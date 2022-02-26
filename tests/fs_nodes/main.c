@@ -34,15 +34,12 @@ static unsigned int mallocHookFails = 0;
 
 void *malloc(size_t size)
 {
-  if (mallocHookFails)
-  {
-    if (--mallocHookFails)
-      return __libc_malloc(size);
-    else
-      return 0;
-  }
-  else
-    return __libc_malloc(size);
+  bool allocate = true;
+
+  if (mallocHookFails && !--mallocHookFails)
+    allocate = false;
+
+  return allocate ? __libc_malloc(size) : 0;
 }
 /*----------------------------------------------------------------------------*/
 static void freeNode(struct FsHandle *handle, const char *path)
@@ -129,6 +126,162 @@ static struct FsHandle *makeTestHandle(void)
   return handle;
 }
 /*----------------------------------------------------------------------------*/
+START_TEST(testAccess)
+{
+  struct FsHandle * const handle = makeTestHandle();
+
+  struct FsNode * const parent = fsOpenBaseNode(handle, PATH_HOME_USER_FILE);
+  ck_assert_ptr_nonnull(parent);
+  struct FsNode * const subnode = fsOpenNode(handle, PATH_HOME_USER_IMAGE);
+  ck_assert_ptr_nonnull(subnode);
+
+  enum Result res;
+  FsAccess access;
+  size_t count;
+
+  /* Try to write incorrect buffer */
+
+  access = FS_ACCESS_READ | FS_ACCESS_WRITE;
+  res = fsNodeWrite(parent, FS_NODE_ACCESS, 0, &access, 1, &count);
+  ck_assert_uint_eq(res, E_VALUE);
+
+  /* Change node access */
+
+  access = 0;
+  res = fsNodeWrite(parent, FS_NODE_ACCESS, 0, &access, sizeof(access), &count);
+  ck_assert_uint_eq(res, E_OK);
+  ck_assert_uint_eq(count, sizeof(access));
+
+  /* Read node access */
+
+  access = FS_ACCESS_READ | FS_ACCESS_WRITE;
+  res = fsNodeRead(parent, FS_NODE_ACCESS, 0, &access, sizeof(access), &count);
+  ck_assert_uint_eq(res, E_OK);
+  ck_assert_uint_eq(count, sizeof(access));
+  ck_assert_uint_eq(access, 0);
+
+  /* Try to open a node inside the forbidden directory */
+
+  struct FsNode * const node = fsOpenNode(handle, PATH_HOME_USER_FILE);
+  ck_assert_ptr_null(node);
+
+  /* Try to create a node inside the forbidden directory */
+
+  const struct FsFieldDescriptor desc[] = {
+      {
+          "test",
+          strlen("test") + 1,
+          FS_NODE_NAME
+      }
+  };
+  res = fsNodeCreate(parent, desc, ARRAY_SIZE(desc));
+  ck_assert_uint_eq(res, E_ACCESS);
+
+  /* Try to remove a node from the forbidden directory */
+
+  res = fsNodeRemove(parent, subnode);
+  ck_assert_uint_eq(res, E_ACCESS);
+
+  /* Restore access */
+
+  access = FS_ACCESS_READ | FS_ACCESS_WRITE;
+  res = fsNodeWrite(parent, FS_NODE_ACCESS, 0, &access, sizeof(access), 0);
+  ck_assert_uint_eq(res, E_OK);
+
+  /* Change subnode access */
+
+  access = FS_ACCESS_READ;
+  res = fsNodeWrite(subnode, FS_NODE_ACCESS, 0, &access, sizeof(access), 0);
+  ck_assert_uint_eq(res, E_OK);
+
+  /* Try to remove a read-only node */
+
+  res = fsNodeRemove(parent, subnode);
+  ck_assert_uint_eq(res, E_ACCESS);
+
+  /* Restore subnode access */
+
+  access = FS_ACCESS_READ | FS_ACCESS_WRITE;
+  res = fsNodeWrite(subnode, FS_NODE_ACCESS, 0, &access, sizeof(access), 0);
+  ck_assert_uint_eq(res, E_OK);
+
+  fsNodeFree(subnode);
+  fsNodeFree(parent);
+  freeTestHandle(handle);
+}
+/*----------------------------------------------------------------------------*/
+START_TEST(testAccessIter)
+{
+  struct FsHandle * const handle = makeTestHandle();
+
+  struct FsNode * const parent = fsOpenBaseNode(handle, PATH_HOME_USER_FILE);
+  ck_assert_ptr_nonnull(parent);
+
+  struct FsNode *node = fsNodeHead(parent);
+  ck_assert_ptr_nonnull(node);
+
+  enum Result res;
+  FsAccess access;
+
+  /* Change node access */
+
+  access = 0;
+  res = fsNodeWrite(parent, FS_NODE_ACCESS, 0, &access, sizeof(access), 0);
+  ck_assert_uint_eq(res, E_OK);
+
+  /* Try to fetch next node */
+
+  res = fsNodeNext(node);
+  ck_assert_uint_eq(res, E_ACCESS);
+
+  /* Restore access */
+
+  access = FS_ACCESS_READ | FS_ACCESS_WRITE;
+  res = fsNodeWrite(parent, FS_NODE_ACCESS, 0, &access, sizeof(access), 0);
+  ck_assert_uint_eq(res, E_OK);
+
+  fsNodeFree(node);
+  fsNodeFree(parent);
+  freeTestHandle(handle);
+}
+/*----------------------------------------------------------------------------*/
+START_TEST(testAccessReadWrite)
+{
+  struct FsHandle * const handle = makeTestHandle();
+
+  struct FsNode * const node = fsOpenNode(handle, PATH_HOME_USER_FILE);
+  ck_assert_ptr_nonnull(node);
+
+  char buffer[MAX_BUFFER_LENGTH] = {0};
+  enum Result res;
+  FsAccess access;
+
+  /* Change node access */
+
+  access = 0;
+  res = fsNodeWrite(node, FS_NODE_ACCESS, 0, &access, sizeof(access), 0);
+  ck_assert_uint_eq(res, E_OK);
+
+  /* Try to write data */
+
+  res = fsNodeWrite(node, FS_NODE_DATA, 0, buffer, sizeof(buffer), 0);
+  ck_assert_uint_eq(res, E_ACCESS);
+
+  /* Try to read data */
+
+  res = fsNodeRead(node, FS_NODE_DATA, 0, buffer, sizeof(buffer), 0);
+  ck_assert_uint_eq(res, E_ACCESS);
+
+  /* Restore access */
+
+  access = FS_ACCESS_READ | FS_ACCESS_WRITE;
+  res = fsNodeWrite(node, FS_NODE_ACCESS, 0, &access, sizeof(access), 0);
+  ck_assert_uint_eq(res, E_OK);
+
+  fsNodeFree(node);
+  freeTestHandle(handle);
+}
+/*----------------------------------------------------------------------------*/
 START_TEST(testNodeCapacity)
 {
   struct FsHandle * const handle = makeTestHandle();
@@ -153,14 +306,6 @@ START_TEST(testNodeCapacity)
     ck_assert_uint_eq(count, MAX_BUFFER_LENGTH);
   }
 
-  /* Read capacity length */
-
-  FsLength length;
-
-  res = fsNodeLength(node, FS_NODE_CAPACITY, &length);
-  ck_assert_uint_eq(res, E_OK);
-  ck_assert_uint_eq(length, sizeof(FsCapacity));
-
   /* Read capacity */
 
   FsCapacity capacity;
@@ -175,7 +320,7 @@ START_TEST(testNodeCapacity)
   /* Read capacity failure */
 
   res = fsNodeRead(node, FS_NODE_CAPACITY, 0, &capacity, 0, 0);
-  ck_assert_uint_ne(res, E_OK);
+  ck_assert_uint_eq(res, E_VALUE);
 
   fsNodeFree(node);
   freeTestHandle(handle);
@@ -198,6 +343,16 @@ START_TEST(testNodeLength)
   ck_assert_uint_eq(res, E_OK);
 
   count = 0;
+  res = fsNodeLength(node, FS_NODE_ACCESS, &count);
+  ck_assert_uint_eq(res, E_OK);
+  ck_assert_uint_eq(count, sizeof(FsAccess));
+
+  count = 0;
+  res = fsNodeLength(node, FS_NODE_CAPACITY, &count);
+  ck_assert_uint_eq(res, E_OK);
+  ck_assert_uint_eq(count, sizeof(FsCapacity));
+
+  count = 0;
   res = fsNodeLength(node, FS_NODE_DATA, &count);
   ck_assert_uint_eq(res, E_OK);
   ck_assert_uint_eq(count, MAX_BUFFER_LENGTH);
@@ -208,7 +363,7 @@ START_TEST(testNodeLength)
   ck_assert_uint_eq(count, strlen(fsExtractName(PATH_HOME_USER_FILE)) + 1);
 
   res = fsNodeLength(node, FS_NODE_ID, &count);
-  ck_assert_uint_ne(res, E_OK);
+  ck_assert_uint_eq(res, E_INVALID);
 
   fsNodeFree(node);
 
@@ -218,7 +373,7 @@ START_TEST(testNodeLength)
   ck_assert_ptr_nonnull(root);
 
   res = fsNodeLength(root, FS_NODE_NAME, &count);
-  ck_assert_uint_ne(res, E_OK);
+  ck_assert_uint_eq(res, E_INVALID);
 
   fsNodeFree(root);
 
@@ -244,15 +399,15 @@ START_TEST(testNodeRenaming)
   /* Renaming failure */
   mallocHookFails = 1;
   res = fsNodeWrite(node, FS_NODE_NAME, 0, "xx", 3, &written);
-  ck_assert_uint_ne(res, E_OK);
+  ck_assert_uint_eq(res, E_MEMORY);
 
   /* Incorrect position */
   res = fsNodeWrite(node, FS_NODE_NAME, 1, "x", 2, &written);
-  ck_assert_uint_ne(res, E_OK);
+  ck_assert_uint_eq(res, E_VALUE);
 
   /* Name length does not match buffer content */
   res = fsNodeWrite(node, FS_NODE_NAME, 0, "x", 3, &written);
-  ck_assert_uint_ne(res, E_OK);
+  ck_assert_uint_eq(res, E_VALUE);
 
   /* Erase name */
   res = fsNodeWrite(node, FS_NODE_NAME, 0, 0, 0, &written);
@@ -275,46 +430,47 @@ START_TEST(testPartExtraction)
   struct FsHandle * const handle = makeTestHandle();
   struct FsNode *node;
   struct FsNode *tmp;
+  const char *path;
 
   /* Empty path */
   node = 0;
-  const char * const res0 = fsFollowNextPart(handle, &node, "", true);
-  ck_assert_ptr_null(res0);
+  path = fsFollowNextPart(handle, &node, "", true);
+  ck_assert_ptr_null(path);
   ck_assert_ptr_null(node);
 
   /* Forbidden strings */
   node = 0;
-  const char * const res1A = fsFollowNextPart(handle, &node, "/..", true);
-  ck_assert_ptr_nonnull(res1A);
+  path = fsFollowNextPart(handle, &node, "/..", true);
+  ck_assert_ptr_nonnull(path);
   ck_assert_ptr_nonnull(node);
   tmp = node;
-  const char * const res1B = fsFollowNextPart(handle, &node, res1A, true);
-  ck_assert_ptr_null(res1B);
+  path = fsFollowNextPart(handle, &node, path, true);
+  ck_assert_ptr_null(path);
   ck_assert_ptr_eq(node, tmp); /* Node must be left untouched */
 
   node = 0;
-  const char * const res2A = fsFollowNextPart(handle, &node, "/.", true);
-  ck_assert_ptr_nonnull(res2A);
+  path = fsFollowNextPart(handle, &node, "/.", true);
+  ck_assert_ptr_nonnull(path);
   ck_assert_ptr_nonnull(node);
   tmp = node;
-  const char * const res2B = fsFollowNextPart(handle, &node, res2A, true);
-  ck_assert_ptr_null(res2B);
+  path = fsFollowNextPart(handle, &node, path, true);
+  ck_assert_ptr_null(path);
   ck_assert_ptr_eq(node, tmp); /* Node must be left untouched */
 
   /* Incorrect call sequence */
   node = 0;
-  const char * const res3 = fsFollowNextPart(handle, &node, "home", true);
-  ck_assert_ptr_null(res3);
+  path = fsFollowNextPart(handle, &node, "home", true);
+  ck_assert_ptr_null(path);
   ck_assert_ptr_null(node);
 
   /* Non-existent node */
   node = 0;
-  const char * const res4A = fsFollowNextPart(handle, &node, "/tmp", true);
-  ck_assert_ptr_nonnull(res4A);
+  path = fsFollowNextPart(handle, &node, "/tmp", true);
+  ck_assert_ptr_nonnull(path);
   ck_assert_ptr_nonnull(node);
   tmp = node;
-  const char * const res4B = fsFollowNextPart(handle, &node, res4A, true);
-  ck_assert_ptr_null(res4B);
+  path = fsFollowNextPart(handle, &node, path, true);
+  ck_assert_ptr_null(path);
   ck_assert_ptr_eq(node, tmp); /* Node must be left untouched */
 
   freeTestHandle(handle);
@@ -327,13 +483,13 @@ START_TEST(testPathFollowing)
 
   struct FsNode * const dirNode = fsOpenBaseNode(handle, PATH_HOME_USER_FILE);
   ck_assert_ptr_nonnull(dirNode);
+
   struct FsNode * const txtNode = fsOpenNode(handle, PATH_HOME_USER_FILE);
   ck_assert_ptr_nonnull(txtNode);
   ck_assert_ptr_ne(dirNode, txtNode);
 
-  fsNodeFree(dirNode);
   fsNodeFree(txtNode);
-
+  fsNodeFree(dirNode);
   freeTestHandle(handle);
 }
 END_TEST
@@ -371,13 +527,12 @@ START_TEST(testReadWrite)
   }
 
   memset(buffer, 0, sizeof(buffer));
-  res = fsNodeWrite(node, FS_TYPE_END, 0,
-      buffer, sizeof(buffer), 0);
-  ck_assert_uint_ne(res, E_OK);
+  res = fsNodeWrite(node, FS_TYPE_END, 0, buffer, sizeof(buffer), 0);
+  ck_assert_uint_eq(res, E_INVALID);
 
   res = fsNodeRead(node, FS_NODE_DATA, MAX_FILE_LENGTH + 1,
       buffer, sizeof(buffer), 0);
-  ck_assert_uint_ne(res, E_OK);
+  ck_assert_uint_eq(res, E_VALUE);
 
   fsNodeFree(node);
 
@@ -387,7 +542,7 @@ START_TEST(testReadWrite)
   ck_assert_ptr_nonnull(root);
 
   res = fsNodeRead(node, FS_NODE_NAME, 0, buffer, MAX_BUFFER_LENGTH, 0);
-  ck_assert_uint_ne(res, E_OK);
+  ck_assert_uint_eq(res, E_INVALID);
 
   fsNodeFree(root);
 
@@ -399,79 +554,89 @@ END_TEST
 START_TEST(testTfsErrors)
 {
   struct FsHandle * const handle = makeTestHandle();
+  struct FsNode *node;
+  struct FsNode *parent;
+  enum Result res;
 
   /* Try to open a child of empty node */
-  struct FsNode * const emptyNode =
-      fsOpenNode(handle, PATH_HOME_USER_FILE);
-  ck_assert_ptr_nonnull(emptyNode);
-  struct FsNode * const emptyNodeChild = fsNodeHead(emptyNode);
-  ck_assert_ptr_null(emptyNodeChild);
-  fsNodeFree(emptyNode);
+
+  parent = fsOpenNode(handle, PATH_HOME_USER_FILE);
+  ck_assert_ptr_nonnull(parent);
+  node = fsNodeHead(parent);
+  ck_assert_ptr_null(node);
+  fsNodeFree(parent);
 
   /* Try to remove nondescendant node */
-  struct FsNode * const nondescNodeA = fsOpenNode(handle, PATH_HOME);
-  ck_assert_ptr_nonnull(nondescNodeA);
-  struct FsNode * const nondescNodeB = fsOpenNode(handle, PATH_BOOT);
-  ck_assert_ptr_nonnull(nondescNodeB);
-  const enum Result nondescRes = fsNodeRemove(nondescNodeA, nondescNodeB);
-  ck_assert_uint_eq(nondescRes, E_ENTRY);
-  fsNodeFree(nondescNodeA);
-  fsNodeFree(nondescNodeB);
 
-  /* Try to read unavailable atttributes */
-  struct FsNode * const attrNode = fsOpenNode(handle, PATH_HOME);
-  ck_assert_ptr_nonnull(attrNode);
+  parent = fsOpenNode(handle, PATH_HOME);
+  ck_assert_ptr_nonnull(parent);
+  node = fsOpenNode(handle, PATH_BOOT);
+  ck_assert_ptr_nonnull(node);
+  res = fsNodeRemove(parent, node);
+  ck_assert_uint_eq(res, E_ENTRY);
+  fsNodeFree(node);
+  fsNodeFree(parent);
+
+  /* Try to read unavailable attributes */
+
+  node = fsOpenNode(handle, PATH_HOME);
+  ck_assert_ptr_nonnull(node);
+
   char buffer[MAX_BUFFER_LENGTH];
   size_t count;
 
-  const enum Result attrNodeNameResA =
-      fsNodeRead(attrNode, FS_NODE_NAME, 0, buffer, sizeof(buffer), &count);
-  ck_assert_uint_eq(attrNodeNameResA, E_OK);
+  res = fsNodeRead(node, FS_NODE_ACCESS, 1, buffer, sizeof(buffer), 0);
+  ck_assert_uint_eq(res, E_VALUE);
+  res = fsNodeRead(node, FS_NODE_TIME, 0, buffer, sizeof(buffer), 0);
+  ck_assert_uint_eq(res, E_INVALID);
+
+  res = fsNodeRead(node, FS_NODE_NAME, 0, buffer, sizeof(buffer), &count);
+  ck_assert_uint_eq(res, E_OK);
   ck_assert_str_eq(buffer, "home");
   ck_assert_uint_eq(count, strlen("home") + 1);
-  const enum Result attrNodeNameResB =
-      fsNodeRead(attrNode, FS_NODE_NAME, 0, buffer, sizeof(buffer), 0);
-  ck_assert_uint_eq(attrNodeNameResB, E_OK);
-  ck_assert_str_eq(buffer, "home");
-  const enum Result attrNodeNameResC =
-      fsNodeRead(attrNode, FS_NODE_NAME, 1, buffer, sizeof(buffer), 0);
-  ck_assert_uint_ne(attrNodeNameResC, E_OK);
-  const enum Result attrNodeNameResD =
-      fsNodeRead(attrNode, FS_NODE_NAME, 0, buffer, 1, 0);
-  ck_assert_uint_ne(attrNodeNameResD, E_OK);
-  const enum Result attrNodeNameResE =
-      fsNodeRead(attrNode, FS_NODE_ACCESS, 0, buffer, sizeof(buffer), 0);
-  ck_assert_uint_ne(attrNodeNameResE, E_OK);
 
-  fsNodeFree(attrNode);
+  res = fsNodeRead(node, FS_NODE_NAME, 0, buffer, sizeof(buffer), 0);
+  ck_assert_uint_eq(res, E_OK);
+  ck_assert_str_eq(buffer, "home");
+
+  res = fsNodeRead(node, FS_NODE_NAME, 1, buffer, sizeof(buffer), 0);
+  ck_assert_uint_eq(res, E_VALUE);
+  res = fsNodeRead(node, FS_NODE_NAME, 0, buffer, 1, 0);
+  ck_assert_uint_eq(res, E_VALUE);
+
+  fsNodeFree(node);
 
   /* Iterate over handle head */
-  struct FsNode * const headNode = fsOpenNode(handle, "/");
-  ck_assert_ptr_nonnull(headNode);
-  const enum Result headNodeRes = fsNodeNext(headNode);
-  ck_assert_uint_eq(headNodeRes, E_ENTRY);
-  fsNodeFree(headNode);
+
+  parent = fsOpenNode(handle, "/");
+  ck_assert_ptr_nonnull(parent);
+  res = fsNodeNext(parent);
+  ck_assert_uint_eq(res, E_ENTRY);
+  fsNodeFree(parent);
 
   /* Iterate to the end of directory */
-  struct FsNode * const endNode = fsOpenNode(handle, "/");
-  ck_assert_ptr_nonnull(headNode);
-  struct FsNode * const endNodeChild = fsNodeHead(endNode);
-  ck_assert_ptr_nonnull(endNodeChild);
-  const enum Result endNode2Res = fsNodeNext(endNodeChild);
-  ck_assert_uint_eq(endNode2Res, E_OK);
-  const enum Result endNode3Res = fsNodeNext(endNodeChild);
-  ck_assert_uint_eq(endNode3Res, E_OK);
-  const enum Result endNode4Res = fsNodeNext(endNodeChild);
-  ck_assert_uint_eq(endNode4Res, E_ENTRY);
-  fsNodeFree(endNode);
-  fsNodeFree(endNodeChild);
+
+  parent = fsOpenNode(handle, "/");
+  ck_assert_ptr_nonnull(parent);
+  node = fsNodeHead(parent);
+  ck_assert_ptr_nonnull(node);
+  res = fsNodeNext(node);
+  ck_assert_uint_eq(res, E_OK);
+  res = fsNodeNext(node);
+  ck_assert_uint_eq(res, E_OK);
+  res = fsNodeNext(node);
+  ck_assert_uint_eq(res, E_ENTRY);
+  fsNodeFree(node);
+  fsNodeFree(parent);
 
   /* Sync handle */
+
   fsHandleSync(handle);
 
   /* Create incorrect nodes */
-  struct FsNode * const incorrectNodeParent = fsOpenNode(handle, PATH_HOME);
-  ck_assert_ptr_nonnull(incorrectNodeParent);
+
+  parent = fsOpenNode(handle, PATH_HOME);
+  ck_assert_ptr_nonnull(parent);
 
   const struct FsFieldDescriptor incorrectNodeDesc[] = {
       {
@@ -481,15 +646,13 @@ START_TEST(testTfsErrors)
       }
   };
 
-  const enum Result incorrectNodeResA = fsNodeCreate(incorrectNodeParent,
-      incorrectNodeDesc, 0);
-  ck_assert_uint_ne(incorrectNodeResA, E_OK);
+  res = fsNodeCreate(parent, incorrectNodeDesc, 0);
+  ck_assert_uint_eq(res, E_VALUE);
 
-  const enum Result incorrectNodeResB = fsNodeCreate(incorrectNodeParent,
-      incorrectNodeDesc, ARRAY_SIZE(incorrectNodeDesc));
-  ck_assert_uint_ne(incorrectNodeResB, E_OK);
+  res = fsNodeCreate(parent, incorrectNodeDesc, ARRAY_SIZE(incorrectNodeDesc));
+  ck_assert_uint_eq(res, E_VALUE);
 
-  fsNodeFree(incorrectNodeParent);
+  fsNodeFree(parent);
 
   freeTestHandle(handle);
 }
@@ -500,9 +663,8 @@ START_TEST(testTfsMemoryErrors)
   static const char data[MAX_BUFFER_LENGTH] = {0};
 
   struct FsHandle * const handle = makeTestHandle();
-  struct FsNode * const incorrectNodeParent = fsOpenNode(handle, PATH_HOME);
-  ck_assert_ptr_nonnull(incorrectNodeParent);
-  enum Result res;
+  struct FsNode * const parent = fsOpenNode(handle, PATH_HOME);
+  ck_assert_ptr_nonnull(parent);
 
   const struct FsFieldDescriptor incorrectNodeDesc[] = {
       {
@@ -511,30 +673,30 @@ START_TEST(testTfsMemoryErrors)
           FS_NODE_NAME
       }
   };
+  enum Result res;
 
   mallocHookFails = 1;
-  res = fsNodeCreate(incorrectNodeParent, incorrectNodeDesc, 0);
-  ck_assert_uint_ne(res, E_OK);
+  res = fsNodeCreate(parent, incorrectNodeDesc, 0);
+  ck_assert_uint_eq(res, E_VALUE);
 
   mallocHookFails = 2;
-  res = fsNodeCreate(incorrectNodeParent, incorrectNodeDesc,
+  res = fsNodeCreate(parent, incorrectNodeDesc,
       ARRAY_SIZE(incorrectNodeDesc));
-  ck_assert_uint_ne(res, E_OK);
+  ck_assert_uint_eq(res, E_MEMORY);
 
   mallocHookFails = 3;
-  res = fsNodeCreate(incorrectNodeParent, incorrectNodeDesc,
+  res = fsNodeCreate(parent, incorrectNodeDesc,
       ARRAY_SIZE(incorrectNodeDesc));
-  ck_assert_uint_ne(res, E_OK);
+  ck_assert_uint_eq(res, E_MEMORY);
 
-  struct FsNode * const txtNode =
-      fsOpenNode(handle, PATH_HOME_USER_FILE);
-  ck_assert_ptr_nonnull(txtNode);
+  struct FsNode * const node = fsOpenNode(handle, PATH_HOME_USER_FILE);
+  ck_assert_ptr_nonnull(node);
   mallocHookFails = 1;
-  res = fsNodeWrite(txtNode, FS_NODE_DATA, 0, data, MAX_BUFFER_LENGTH, 0);
-  ck_assert_uint_ne(res, E_OK);
-  fsNodeFree(txtNode);
+  res = fsNodeWrite(node, FS_NODE_DATA, 0, data, MAX_BUFFER_LENGTH, 0);
+  ck_assert_uint_eq(res, E_MEMORY);
+  fsNodeFree(node);
 
-  fsNodeFree(incorrectNodeParent);
+  fsNodeFree(parent);
   freeTestHandle(handle);
 }
 END_TEST
@@ -653,6 +815,9 @@ int main(void)
   Suite * const suite = suite_create("TestFileSystem");
   TCase * const testcase = tcase_create("Core");
 
+  tcase_add_test(testcase, testAccess);
+  tcase_add_test(testcase, testAccessIter);
+  tcase_add_test(testcase, testAccessReadWrite);
   tcase_add_test(testcase, testNodeCapacity);
   tcase_add_test(testcase, testNodeLength);
   tcase_add_test(testcase, testNodeRenaming);
