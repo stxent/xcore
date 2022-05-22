@@ -1,16 +1,16 @@
 /*
- * xcore/core/cortex/armv7m/memory.h
- * Copyright (C) 2018 xent
+ * xcore/core/cortex/armv7em/atomic.h
+ * Copyright (C) 2022 xent
  * Project is distributed under the terms of the MIT License
  */
 
-#ifndef XCORE_CORE_CORTEX_MEMORY_H_
+#ifndef XCORE_CORE_CORTEX_ATOMIC_H_
 #error This header should not be included directly
 #endif
 
-#ifndef XCORE_CORE_CORTEX_ARMV7M_MEMORY_H_
-#define XCORE_CORE_CORTEX_ARMV7M_MEMORY_H_
+#ifndef XCORE_CORE_CORTEX_ARMV7EM_ATOMIC_H_
+#define XCORE_CORE_CORTEX_ARMV7EM_ATOMIC_H_
 /*----------------------------------------------------------------------------*/
-#include "../armv6m/memory.h"
+#include "../armv7m/atomic.h"
 /*----------------------------------------------------------------------------*/
-#endif /* XCORE_CORE_CORTEX_ARMV7M_MEMORY_H_ */
+#endif /* XCORE_CORE_CORTEX_ARMV7EM_ATOMIC_H_ */

@@ -4,7 +4,7 @@
  * Project is distributed under the terms of the MIT License
  */
 
-#include <xcore/core/cortex/asm.h>
+#include <xcore/asm.h>
 /*----------------------------------------------------------------------------*/
 uint32_t __getMainStackPointer(void)
 {

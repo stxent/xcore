@@ -4,6 +4,10 @@
  * Project is distributed under the terms of the MIT License
  */
 
+#ifndef XCORE_ACCEL_H_
+#error This header should not be included directly
+#endif
+
 #ifndef XCORE_CORE_X86_ACCEL_H_
 #define XCORE_CORE_X86_ACCEL_H_
 /*----------------------------------------------------------------------------*/

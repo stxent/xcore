@@ -4,11 +4,14 @@
  * Project is distributed under the terms of the MIT License
  */
 
+#ifndef XCORE_CORE_CORTEX_MEMORY_H_
+#error This header should not be included directly
+#endif
+
 #ifndef XCORE_CORE_CORTEX_ARMV6M_MEMORY_H_
 #define XCORE_CORE_CORTEX_ARMV6M_MEMORY_H_
 /*----------------------------------------------------------------------------*/
 #include <xcore/asm.h>
-#include <stdbool.h>
 /*----------------------------------------------------------------------------*/
 BEGIN_DECLS
 
@@ -74,22 +77,6 @@ static inline uint16_t fromLittleEndian16(uint16_t value)
 {
   return value;
 }
-
-/**
- * This function implements an atomic compare and swap operation.
- * This compares the contents of @b pointer with the contents of @b expected.
- * If equal, the operation is a read-modify-write operation that writes
- * a desired value into @b pointer and @b true is returned. Otherwise,
- * the current contents of @b pointer are written into @b expected
- * and @b false is returned.
- * @param pointer Pointer to the contents to be modified.
- * @param expected Pointer to the expected value.
- * @param desired Desired value.
- * @return @b true if a desired value is written into @b pointer
- * and @false otherwise.
- */
-bool compareExchangePointer(volatile void *pointer, void *expected,
-    void *desired);
 
 END_DECLS
 /*----------------------------------------------------------------------------*/
