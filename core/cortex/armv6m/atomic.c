@@ -7,8 +7,7 @@
 #include <xcore/asm.h>
 #include <xcore/atomic.h>
 /*----------------------------------------------------------------------------*/
-unsigned long atomicFetchAddUL(volatile unsigned long *pointer,
-    unsigned long value)
+unsigned long atomicFetchAddUL(unsigned long *pointer, unsigned long value)
 {
   const uint32_t state = __interruptsGetState();
   __interruptsDisable();
@@ -20,8 +19,7 @@ unsigned long atomicFetchAddUL(volatile unsigned long *pointer,
   return result;
 }
 /*----------------------------------------------------------------------------*/
-unsigned int atomicFetchAddU(volatile unsigned int *pointer,
-    unsigned int value)
+unsigned int atomicFetchAddU(unsigned int *pointer, unsigned int value)
 {
   const uint32_t state = __interruptsGetState();
   __interruptsDisable();
@@ -33,8 +31,7 @@ unsigned int atomicFetchAddU(volatile unsigned int *pointer,
   return result;
 }
 /*----------------------------------------------------------------------------*/
-unsigned short atomicFetchAddUS(volatile unsigned short *pointer,
-    unsigned short value)
+unsigned short atomicFetchAddUS(unsigned short *pointer, unsigned short value)
 {
   const uint32_t state = __interruptsGetState();
   __interruptsDisable();
@@ -46,8 +43,7 @@ unsigned short atomicFetchAddUS(volatile unsigned short *pointer,
   return result;
 }
 /*----------------------------------------------------------------------------*/
-unsigned char atomicFetchAddUC(volatile unsigned char *pointer,
-    unsigned char value)
+unsigned char atomicFetchAddUC(unsigned char *pointer, unsigned char value)
 {
   const uint32_t state = __interruptsGetState();
   __interruptsDisable();
@@ -59,8 +55,7 @@ unsigned char atomicFetchAddUC(volatile unsigned char *pointer,
   return result;
 }
 /*----------------------------------------------------------------------------*/
-unsigned long atomicFetchAndUL(volatile unsigned long *pointer,
-    unsigned long value)
+unsigned long atomicFetchAndUL(unsigned long *pointer, unsigned long value)
 {
   const uint32_t state = __interruptsGetState();
   __interruptsDisable();
@@ -72,8 +67,7 @@ unsigned long atomicFetchAndUL(volatile unsigned long *pointer,
   return result;
 }
 /*----------------------------------------------------------------------------*/
-unsigned int atomicFetchAndU(volatile unsigned int *pointer,
-    unsigned int value)
+unsigned int atomicFetchAndU(unsigned int *pointer, unsigned int value)
 {
   const uint32_t state = __interruptsGetState();
   __interruptsDisable();
@@ -85,8 +79,7 @@ unsigned int atomicFetchAndU(volatile unsigned int *pointer,
   return result;
 }
 /*----------------------------------------------------------------------------*/
-unsigned short atomicFetchAndUS(volatile unsigned short *pointer,
-    unsigned short value)
+unsigned short atomicFetchAndUS(unsigned short *pointer, unsigned short value)
 {
   const uint32_t state = __interruptsGetState();
   __interruptsDisable();
@@ -98,8 +91,7 @@ unsigned short atomicFetchAndUS(volatile unsigned short *pointer,
   return result;
 }
 /*----------------------------------------------------------------------------*/
-unsigned char atomicFetchAndUC(volatile unsigned char *pointer,
-    unsigned char value)
+unsigned char atomicFetchAndUC(unsigned char *pointer, unsigned char value)
 {
   const uint32_t state = __interruptsGetState();
   __interruptsDisable();
@@ -111,8 +103,7 @@ unsigned char atomicFetchAndUC(volatile unsigned char *pointer,
   return result;
 }
 /*----------------------------------------------------------------------------*/
-unsigned long atomicFetchOrUL(volatile unsigned long *pointer,
-    unsigned long value)
+unsigned long atomicFetchOrUL(unsigned long *pointer, unsigned long value)
 {
   const uint32_t state = __interruptsGetState();
   __interruptsDisable();
@@ -124,8 +115,7 @@ unsigned long atomicFetchOrUL(volatile unsigned long *pointer,
   return result;
 }
 /*----------------------------------------------------------------------------*/
-unsigned int atomicFetchOrU(volatile unsigned int *pointer,
-    unsigned int value)
+unsigned int atomicFetchOrU(unsigned int *pointer, unsigned int value)
 {
   const uint32_t state = __interruptsGetState();
   __interruptsDisable();
@@ -137,8 +127,7 @@ unsigned int atomicFetchOrU(volatile unsigned int *pointer,
   return result;
 }
 /*----------------------------------------------------------------------------*/
-unsigned short atomicFetchOrUS(volatile unsigned short *pointer,
-    unsigned short value)
+unsigned short atomicFetchOrUS(unsigned short *pointer, unsigned short value)
 {
   const uint32_t state = __interruptsGetState();
   __interruptsDisable();
@@ -150,8 +139,7 @@ unsigned short atomicFetchOrUS(volatile unsigned short *pointer,
   return result;
 }
 /*----------------------------------------------------------------------------*/
-unsigned char atomicFetchOrUC(volatile unsigned char *pointer,
-    unsigned char value)
+unsigned char atomicFetchOrUC(unsigned char *pointer, unsigned char value)
 {
   const uint32_t state = __interruptsGetState();
   __interruptsDisable();
@@ -163,8 +151,7 @@ unsigned char atomicFetchOrUC(volatile unsigned char *pointer,
   return result;
 }
 /*----------------------------------------------------------------------------*/
-unsigned long atomicFetchSubUL(volatile unsigned long *pointer,
-    unsigned long value)
+unsigned long atomicFetchSubUL(unsigned long *pointer, unsigned long value)
 {
   const uint32_t state = __interruptsGetState();
   __interruptsDisable();
@@ -176,8 +163,7 @@ unsigned long atomicFetchSubUL(volatile unsigned long *pointer,
   return result;
 }
 /*----------------------------------------------------------------------------*/
-unsigned int atomicFetchSubU(volatile unsigned int *pointer,
-    unsigned int value)
+unsigned int atomicFetchSubU(unsigned int *pointer, unsigned int value)
 {
   const uint32_t state = __interruptsGetState();
   __interruptsDisable();
@@ -189,8 +175,7 @@ unsigned int atomicFetchSubU(volatile unsigned int *pointer,
   return result;
 }
 /*----------------------------------------------------------------------------*/
-unsigned short atomicFetchSubUS(volatile unsigned short *pointer,
-    unsigned short value)
+unsigned short atomicFetchSubUS(unsigned short *pointer, unsigned short value)
 {
   const uint32_t state = __interruptsGetState();
   __interruptsDisable();
@@ -202,8 +187,7 @@ unsigned short atomicFetchSubUS(volatile unsigned short *pointer,
   return result;
 }
 /*----------------------------------------------------------------------------*/
-unsigned char atomicFetchSubUC(volatile unsigned char *pointer,
-    unsigned char value)
+unsigned char atomicFetchSubUC(unsigned char *pointer, unsigned char value)
 {
   const uint32_t state = __interruptsGetState();
   __interruptsDisable();
@@ -215,8 +199,27 @@ unsigned char atomicFetchSubUC(volatile unsigned char *pointer,
   return result;
 }
 /*----------------------------------------------------------------------------*/
-bool compareExchangePointer(volatile void *pointer, void *expected,
-    void *desired)
+unsigned long atomicLoadUL(/*volatile*/const unsigned long *pointer)
+{
+  return *pointer;
+}
+/*----------------------------------------------------------------------------*/
+unsigned int atomicLoadU(/*volatile*/const unsigned int *pointer)
+{
+  return *pointer;
+}
+/*----------------------------------------------------------------------------*/
+unsigned short atomicLoadUS(const unsigned short *pointer)
+{
+  return *pointer;
+}
+/*----------------------------------------------------------------------------*/
+unsigned char atomicLoadUC(const unsigned char *pointer)
+{
+  return *pointer;
+}
+/*----------------------------------------------------------------------------*/
+bool compareExchangePointer(void *pointer, void *expected, void *desired)
 {
   const uint32_t state = __interruptsGetState();
   __interruptsDisable();

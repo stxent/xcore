@@ -16,131 +16,157 @@
 /*----------------------------------------------------------------------------*/
 BEGIN_DECLS
 
-static inline unsigned long long atomicFetchAddULL(
-    volatile unsigned long long *pointer, unsigned long long value)
+static inline unsigned long long atomicFetchAddULL(unsigned long long *pointer,
+    unsigned long long value)
 {
   return __atomic_fetch_add(pointer, value, __ATOMIC_SEQ_CST);
 }
 
-static inline unsigned long atomicFetchAddUL(volatile unsigned long *pointer,
+static inline unsigned long atomicFetchAddUL(unsigned long *pointer,
     unsigned long value)
 {
   return __atomic_fetch_add(pointer, value, __ATOMIC_SEQ_CST);
 }
 
-static inline unsigned int atomicFetchAddU(volatile unsigned int *pointer,
+static inline unsigned int atomicFetchAddU(unsigned int *pointer,
     unsigned int value)
 {
   return __atomic_fetch_add(pointer, value, __ATOMIC_SEQ_CST);
 }
 
-static inline unsigned short atomicFetchAddUS(volatile unsigned short *pointer,
+static inline unsigned short atomicFetchAddUS(unsigned short *pointer,
     unsigned short value)
 {
   return __atomic_fetch_add(pointer, value, __ATOMIC_SEQ_CST);
 }
 
-static inline unsigned char atomicFetchAddUC(volatile unsigned char *pointer,
+static inline unsigned char atomicFetchAddUC(unsigned char *pointer,
     unsigned char value)
 {
   return __atomic_fetch_add(pointer, value, __ATOMIC_SEQ_CST);
 }
 
-static inline unsigned long long atomicFetchAndULL(
-    volatile unsigned long long *pointer, unsigned long long value)
+static inline unsigned long long atomicFetchAndULL(unsigned long long *pointer,
+    unsigned long long value)
 {
   return __atomic_fetch_and(pointer, value, __ATOMIC_SEQ_CST);
 }
 
-static inline unsigned long atomicFetchAndUL(volatile unsigned long *pointer,
+static inline unsigned long atomicFetchAndUL(unsigned long *pointer,
     unsigned long value)
 {
   return __atomic_fetch_and(pointer, value, __ATOMIC_SEQ_CST);
 }
 
-static inline unsigned int atomicFetchAndU(volatile unsigned int *pointer,
+static inline unsigned int atomicFetchAndU(unsigned int *pointer,
     unsigned int value)
 {
   return __atomic_fetch_and(pointer, value, __ATOMIC_SEQ_CST);
 }
 
-static inline unsigned short atomicFetchAndUS(volatile unsigned short *pointer,
+static inline unsigned short atomicFetchAndUS(unsigned short *pointer,
     unsigned short value)
 {
   return __atomic_fetch_and(pointer, value, __ATOMIC_SEQ_CST);
 }
 
-static inline unsigned char atomicFetchAndUC(volatile unsigned char *pointer,
+static inline unsigned char atomicFetchAndUC(unsigned char *pointer,
     unsigned char value)
 {
   return __atomic_fetch_and(pointer, value, __ATOMIC_SEQ_CST);
 }
 
-static inline unsigned long long atomicFetchOrULL(
-    volatile unsigned long long *pointer, unsigned long long value)
+static inline unsigned long long atomicFetchOrULL(unsigned long long *pointer,
+    unsigned long long value)
 {
   return __atomic_fetch_or(pointer, value, __ATOMIC_SEQ_CST);
 }
 
-static inline unsigned long atomicFetchOrUL(volatile unsigned long *pointer,
+static inline unsigned long atomicFetchOrUL(unsigned long *pointer,
     unsigned long value)
 {
   return __atomic_fetch_or(pointer, value, __ATOMIC_SEQ_CST);
 }
 
-static inline unsigned int atomicFetchOrU(volatile unsigned int *pointer,
+static inline unsigned int atomicFetchOrU(unsigned int *pointer,
     unsigned int value)
 {
   return __atomic_fetch_or(pointer, value, __ATOMIC_SEQ_CST);
 }
 
-static inline unsigned short atomicFetchOrUS(volatile unsigned short *pointer,
+static inline unsigned short atomicFetchOrUS(unsigned short *pointer,
     unsigned short value)
 {
   return __atomic_fetch_or(pointer, value, __ATOMIC_SEQ_CST);
 }
 
-static inline unsigned char atomicFetchOrUC(volatile unsigned char *pointer,
+static inline unsigned char atomicFetchOrUC(unsigned char *pointer,
     unsigned char value)
 {
   return __atomic_fetch_or(pointer, value, __ATOMIC_SEQ_CST);
 }
 
-static inline unsigned long long atomicFetchSubULL(
-    volatile unsigned long long *pointer, unsigned long long value)
+static inline unsigned long long atomicFetchSubULL(unsigned long long *pointer,
+    unsigned long long value)
 {
   return __atomic_fetch_sub(pointer, value, __ATOMIC_SEQ_CST);
 }
 
-static inline unsigned long atomicFetchSubUL(volatile unsigned long *pointer,
+static inline unsigned long atomicFetchSubUL(unsigned long *pointer,
     unsigned long value)
 {
   return __atomic_fetch_sub(pointer, value, __ATOMIC_SEQ_CST);
 }
 
-static inline unsigned int atomicFetchSubU(volatile unsigned int *pointer,
+static inline unsigned int atomicFetchSubU(unsigned int *pointer,
     unsigned int value)
 {
   return __atomic_fetch_sub(pointer, value, __ATOMIC_SEQ_CST);
 }
 
-static inline unsigned short atomicFetchSubUS(volatile unsigned short *pointer,
+static inline unsigned short atomicFetchSubUS(unsigned short *pointer,
     unsigned short value)
 {
   return __atomic_fetch_sub(pointer, value, __ATOMIC_SEQ_CST);
 }
 
-static inline unsigned char atomicFetchSubUC(volatile unsigned char *pointer,
+static inline unsigned char atomicFetchSubUC(unsigned char *pointer,
     unsigned char value)
 {
   return __atomic_fetch_sub(pointer, value, __ATOMIC_SEQ_CST);
 }
 
-static inline bool compareExchangePointer(volatile void *pointer,
-    void *expected, void *desired)
+static inline unsigned long long atomicLoadULL(
+    const unsigned long long *pointer)
 {
-  return __atomic_compare_exchange((void * volatile *)pointer,
-      (void **)expected, &desired, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
+  return __atomic_load_n(pointer, __ATOMIC_SEQ_CST);
+}
+
+static inline unsigned long atomicLoadUL(const unsigned long *pointer)
+{
+  return __atomic_load_n(pointer, __ATOMIC_SEQ_CST);
+}
+
+static inline unsigned int atomicLoadU(const unsigned int *pointer)
+{
+  return __atomic_load_n(pointer, __ATOMIC_SEQ_CST);
+}
+
+static inline unsigned short atomicLoadUS(const unsigned short *pointer)
+{
+  return __atomic_load_n(pointer, __ATOMIC_SEQ_CST);
+}
+
+static inline unsigned char atomicLoadUC(const unsigned char *pointer)
+{
+  return __atomic_load_n(pointer, __ATOMIC_SEQ_CST);
+}
+
+static inline bool compareExchangePointer(void *pointer, void *expected,
+    void *desired)
+{
+  return __atomic_compare_exchange((void **)pointer, (void **)expected,
+      &desired, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
 }
 
 END_DECLS
@@ -176,5 +202,18 @@ END_DECLS
     unsigned short *: atomicFetchSubUS, \
     unsigned char *: atomicFetchSubUC \
 )((pointer), (value))
+
+#define atomicLoad(pointer) _Generic((pointer), \
+    const unsigned long long *: atomicLoadULL, \
+    unsigned long long *: atomicLoadULL, \
+    const unsigned long *: atomicLoadUL, \
+    unsigned long *: atomicLoadUL, \
+    const unsigned int *: atomicLoadU, \
+    unsigned int *: atomicLoadU, \
+    const unsigned short *: atomicLoadUS, \
+    unsigned short *: atomicLoadUS, \
+    const unsigned char *: atomicLoadUC, \
+    unsigned char *: atomicLoadUC \
+)(pointer)
 /*----------------------------------------------------------------------------*/
 #endif /* XCORE_CORE_GENERIC_ATOMIC_H_ */

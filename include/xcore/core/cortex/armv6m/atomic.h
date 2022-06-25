@@ -16,25 +16,30 @@
 /*----------------------------------------------------------------------------*/
 BEGIN_DECLS
 
-unsigned long atomicFetchAddUL(volatile unsigned long *, unsigned long);
-unsigned int atomicFetchAddU(volatile unsigned int *, unsigned int);
-unsigned short atomicFetchAddUS(volatile unsigned short *, unsigned short);
-unsigned char atomicFetchAddUC(volatile unsigned char *, unsigned char);
+unsigned long atomicFetchAddUL(unsigned long *, unsigned long);
+unsigned int atomicFetchAddU(unsigned int *, unsigned int);
+unsigned short atomicFetchAddUS(unsigned short *, unsigned short);
+unsigned char atomicFetchAddUC(unsigned char *, unsigned char);
 
-unsigned long atomicFetchAndUL(volatile unsigned long *, unsigned long);
-unsigned int atomicFetchAndU(volatile unsigned int *, unsigned int);
-unsigned short atomicFetchAndUS(volatile unsigned short *, unsigned short);
-unsigned char atomicFetchAndUC(volatile unsigned char *, unsigned char);
+unsigned long atomicFetchAndUL(unsigned long *, unsigned long);
+unsigned int atomicFetchAndU(unsigned int *, unsigned int);
+unsigned short atomicFetchAndUS(unsigned short *, unsigned short);
+unsigned char atomicFetchAndUC(unsigned char *, unsigned char);
 
-unsigned long atomicFetchOrUL(volatile unsigned long *, unsigned long);
-unsigned int atomicFetchOrU(volatile unsigned int *, unsigned int);
-unsigned short atomicFetchOrUS(volatile unsigned short *, unsigned short);
-unsigned char atomicFetchOrUC(volatile unsigned char *, unsigned char);
+unsigned long atomicFetchOrUL(unsigned long *, unsigned long);
+unsigned int atomicFetchOrU(unsigned int *, unsigned int);
+unsigned short atomicFetchOrUS(unsigned short *, unsigned short);
+unsigned char atomicFetchOrUC(unsigned char *, unsigned char);
 
-unsigned long atomicFetchSubUL(volatile unsigned long *, unsigned long);
-unsigned int atomicFetchSubU(volatile unsigned int *, unsigned int);
-unsigned short atomicFetchSubUS(volatile unsigned short *, unsigned short);
-unsigned char atomicFetchSubUC(volatile unsigned char *, unsigned char);
+unsigned long atomicFetchSubUL(unsigned long *, unsigned long);
+unsigned int atomicFetchSubU(unsigned int *, unsigned int);
+unsigned short atomicFetchSubUS(unsigned short *, unsigned short);
+unsigned char atomicFetchSubUC(unsigned char *, unsigned char);
+
+unsigned long atomicLoadUL(const unsigned long *);
+unsigned int atomicLoadU(const unsigned int *);
+unsigned short atomicLoadUS(const unsigned short *);
+unsigned char atomicLoadUC(const unsigned char *);
 
 /**
  * This function implements an atomic compare and swap operation.
@@ -49,7 +54,7 @@ unsigned char atomicFetchSubUC(volatile unsigned char *, unsigned char);
  * @return @b true if a desired value is written into @b pointer
  * and @false otherwise.
  */
-bool compareExchangePointer(volatile void *, void *, void *);
+bool compareExchangePointer(void *, void *, void *);
 
 END_DECLS
 /*----------------------------------------------------------------------------*/
@@ -80,5 +85,16 @@ END_DECLS
     unsigned short *: atomicFetchSubUS, \
     unsigned char *: atomicFetchSubUC \
 )((pointer), (value))
+
+#define atomicLoad(pointer) _Generic((pointer), \
+    const unsigned long *: atomicLoadUL, \
+    unsigned long *: atomicLoadUL, \
+    const unsigned int *: atomicLoadU, \
+    unsigned int *: atomicLoadU, \
+    const unsigned short *: atomicLoadUS, \
+    unsigned short *: atomicLoadUS, \
+    const unsigned char *: atomicLoadUC, \
+    unsigned char *: atomicLoadUC \
+)(pointer)
 /*----------------------------------------------------------------------------*/
 #endif /* XCORE_CORE_CORTEX_ARMV6M_ATOMIC_H_ */
