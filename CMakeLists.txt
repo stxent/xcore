@@ -18,7 +18,7 @@ set(CMAKE_C_EXTENSIONS OFF)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${FLAGS_DEFAULT} ${FLAGS_CPU}")
 set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
 
-if(${USE_LTO})
+if(USE_LTO)
     set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
     if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
         set(CMAKE_C_COMPILE_OPTIONS_IPO -flto -ffat-lto-objects)
@@ -41,7 +41,7 @@ foreach(ENTRY ${DIRECTORY_LIST})
                 $<INSTALL_INTERFACE:include>
         )
 
-        if(${BUILD_TESTING})
+        if(BUILD_TESTING)
             target_compile_options(xcore_${ENTRY} PRIVATE --coverage)
         endif()
 
@@ -59,7 +59,7 @@ endforeach()
 add_library(${PROJECT_NAME} ${LIBRARY_OBJECTS})
 target_link_libraries(${PROJECT_NAME} PUBLIC ${LIBRARY_TARGETS})
 
-if(${BUILD_TESTING})
+if(BUILD_TESTING)
     enable_testing()
     add_subdirectory(tests)
 endif()
