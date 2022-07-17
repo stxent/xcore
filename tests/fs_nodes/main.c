@@ -58,7 +58,7 @@ static void freeNode(struct FsHandle *handle, const char *path)
 /*----------------------------------------------------------------------------*/
 static void freeTestHandle(struct FsHandle *handle)
 {
-  /* Level 3 inside "/home/user directory" */
+  /* Level 3 inside "/home/user directory", intentionally reordered */
   freeNode(handle, PATH_HOME_USER_FILE);
   freeNode(handle, PATH_HOME_USER_IMAGE);
 
@@ -479,16 +479,35 @@ END_TEST
 /*----------------------------------------------------------------------------*/
 START_TEST(testPathFollowing)
 {
+  const char * const name = fsExtractName(PATH_HOME_USER_IMAGE);
   struct FsHandle * const handle = makeTestHandle();
+  enum Result res;
 
-  struct FsNode * const dirNode = fsOpenBaseNode(handle, PATH_HOME_USER_FILE);
+  struct FsNode * const dirNode = fsOpenBaseNode(handle, PATH_HOME_USER_IMAGE);
   ck_assert_ptr_nonnull(dirNode);
+
+  /*
+   * Virtual directory has a LIFO structure. "FILE" node should be created
+   * before "IMAGE" node to be placed in the end of the list.
+   */
+  struct FsNode * const imgNode = fsOpenNode(handle, PATH_HOME_USER_IMAGE);
+  ck_assert_ptr_nonnull(imgNode);
+  ck_assert_ptr_ne(dirNode, imgNode);
+
+  /* Simulate name reading failure */
+  res = fsNodeWrite(imgNode, FS_NODE_NAME, 0, "\x7F", 2, 0);
+  ck_assert_uint_eq(res, E_OK);
 
   struct FsNode * const txtNode = fsOpenNode(handle, PATH_HOME_USER_FILE);
   ck_assert_ptr_nonnull(txtNode);
   ck_assert_ptr_ne(dirNode, txtNode);
-
   fsNodeFree(txtNode);
+
+  /* Restore original node name and free node */
+  res = fsNodeWrite(imgNode, FS_NODE_NAME, 0, name, strlen(name) + 1, 0);
+  ck_assert_uint_eq(res, E_OK);
+  fsNodeFree(imgNode);
+
   fsNodeFree(dirNode);
   freeTestHandle(handle);
 }

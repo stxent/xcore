@@ -190,13 +190,18 @@ const char *fsFollowNextPart(struct FsHandle *handle, struct FsNode **node,
     while (child)
     {
       char nodeName[FS_NAME_LENGTH];
-      const enum Result res = fsNodeRead(child, FS_NODE_NAME, 0,
-          nodeName, sizeof(nodeName), 0);
+      enum Result res;
+
+      res = fsNodeRead(child, FS_NODE_NAME, 0, nodeName, sizeof(nodeName), 0);
 
       if (res == E_OK && !strcmp(nextPart, nodeName))
+      {
         break;
+      }
 
-      if (res != E_OK || fsNodeNext(child) != E_OK)
+      res = fsNodeNext(child);
+
+      if (res != E_OK)
       {
         fsNodeFree(child);
         child = 0;
