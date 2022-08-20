@@ -12,10 +12,9 @@ option(USE_LTO "Enable Link Time Optimization." OFF)
 set(FS_NAME_LENGTH 64 CACHE STRING "Maximum length of filesystem entry name in bytes.")
 
 # Default compiler flags
-set(FLAGS_DEFAULT "-fdata-sections -ffunction-sections -Wall -Wextra -Wshadow -pedantic")
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_EXTENSIONS OFF)
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${FLAGS_DEFAULT} ${FLAGS_CPU}")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${FLAGS_CPU}")
 set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
 
 if(USE_LTO)

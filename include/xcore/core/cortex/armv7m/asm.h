@@ -62,7 +62,7 @@ static inline uint32_t __strex(uint32_t value, volatile uint32_t *address)
 
   __asm__ volatile (
       "STREX %[result], %[value], [%[address]]"
-      : [result] "=r" (result)
+      : [result] "=&r" (result)
       : [address] "r" (address), [value] "r" (value)
   );
   return result;
@@ -86,7 +86,7 @@ static inline uint32_t __strexh(uint16_t value, volatile uint16_t *address)
 
   __asm__ volatile (
       "STREXH %[result], %[value], [%[address]]"
-      : [result] "=r" (result)
+      : [result] "=&r" (result)
       : [address] "r" (address), [value] "r" (value)
   );
   return result;
