@@ -1,10 +1,10 @@
 # Copyright (C) 2017 xent
 # Project is distributed under the terms of the MIT License
 
-project(xcore C)
 cmake_minimum_required(VERSION 3.13)
 cmake_policy(SET CMP0054 NEW)
 cmake_policy(SET CMP0069 NEW)
+project(xcore C)
 
 option(BITWISE_CRC "Enable bitwise implementations of CRC." OFF)
 option(BUILD_TESTING "Enable testing support." OFF)
