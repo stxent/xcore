@@ -11,7 +11,7 @@
 #ifndef XCORE_CORE_CORTEX_ARMV7M_ASM_H_
 #define XCORE_CORE_CORTEX_ARMV7M_ASM_H_
 /*----------------------------------------------------------------------------*/
-#include "../armv6m/asm.h"
+#include "../armv6m/asm_base.h"
 /*----------------------------------------------------------------------------*/
 BEGIN_DECLS
 
@@ -139,6 +139,42 @@ static inline uint32_t __rbit(uint32_t value)
 
   __asm__ volatile (
       "RBIT %[result], %[value]"
+      : [result] "=r" (result)
+      : [value] "r" (value)
+  );
+  return result;
+}
+
+static inline uint32_t __rev(uint32_t value)
+{
+  uint32_t result;
+
+  __asm__ volatile (
+      "REV %[result], %[value]"
+      : [result] "=r" (result)
+      : [value] "r" (value)
+  );
+  return result;
+}
+
+static inline uint32_t __rev16(uint32_t value)
+{
+  uint32_t result;
+
+  __asm__ volatile (
+      "REV16 %[result], %[value]"
+      : [result] "=r" (result)
+      : [value] "r" (value)
+  );
+  return result;
+}
+
+static inline uint32_t __revsh(uint32_t value)
+{
+  uint32_t result;
+
+  __asm__ volatile (
+      "REVSH %[result], %[value]"
       : [result] "=r" (result)
       : [value] "r" (value)
   );
