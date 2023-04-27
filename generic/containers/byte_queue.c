@@ -12,7 +12,7 @@ bool byteQueueInit(struct ByteQueue *queue, size_t capacity)
 {
   queue->data = malloc(capacity);
 
-  if (queue->data)
+  if (queue->data != NULL)
   {
     queue->capacity = capacity;
     byteQueueClear(queue);
@@ -40,7 +40,7 @@ void byteQueueDeinitArena(struct ByteQueue *queue __attribute__((unused)))
 /*----------------------------------------------------------------------------*/
 size_t byteQueuePopArray(struct ByteQueue *queue, void *buffer, size_t length)
 {
-  assert(buffer);
+  assert(buffer != NULL);
 
   if (!queue->size)
     return 0;
@@ -90,7 +90,7 @@ size_t byteQueuePopArray(struct ByteQueue *queue, void *buffer, size_t length)
 size_t byteQueuePushArray(struct ByteQueue *queue, const void *buffer,
     size_t length)
 {
-  assert(buffer);
+  assert(buffer != NULL);
 
   if (queue->capacity == queue->size)
     return 0;

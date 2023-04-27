@@ -66,7 +66,7 @@ static inline struct ListNode *listNext(const struct ListNode *node)
 
 static inline bool listEmpty(const struct List *list)
 {
-  return list->head == 0;
+  return list->head == NULL;
 }
 
 END_DECLS

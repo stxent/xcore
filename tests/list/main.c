@@ -48,7 +48,7 @@ static void checkElements(struct List *list, int base, int step)
   struct ListNode *node = listFront(list);
   int i = 0;
 
-  while (node)
+  while (node != NULL)
   {
     const TestStruct referenceElement = createElement(base + i * step);
 
@@ -188,10 +188,10 @@ START_TEST(testEraseNode)
 
   /* Remove even elements */
   node = listFront(&list);
-  while (node)
+  while (node != NULL)
   {
     node = listEraseNode(&list, node);
-    if (node)
+    if (node != NULL)
       node = listNext(node);
   }
   ck_assert_uint_eq(listSize(&list), MAX_SIZE / 2);

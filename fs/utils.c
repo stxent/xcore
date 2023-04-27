@@ -19,12 +19,13 @@ static enum Result computeNodeUsage(struct FsNode *node, FsCapacity *result)
   FsCapacity capacity;
   enum Result res;
 
-  res = fsNodeRead(node, FS_NODE_CAPACITY, 0, &capacity, sizeof(capacity), 0);
+  res = fsNodeRead(node, FS_NODE_CAPACITY, 0, &capacity, sizeof(capacity),
+      NULL);
   if (res == E_OK)
     *result += capacity;
   res = E_OK;
 
-  while (child)
+  while (child != NULL)
   {
     FsLength nameLength;
     bool reserved = false;
@@ -35,7 +36,7 @@ static enum Result computeNodeUsage(struct FsNode *node, FsCapacity *result)
       {
         char name[FS_NAME_LENGTH];
 
-        res = fsNodeRead(child, FS_NODE_NAME, 0, name, sizeof(name), 0);
+        res = fsNodeRead(child, FS_NODE_NAME, 0, name, sizeof(name), NULL);
         if (res != E_OK)
           break;
 
@@ -59,7 +60,7 @@ static enum Result computeNodeUsage(struct FsNode *node, FsCapacity *result)
     }
   }
 
-  if (child)
+  if (child != NULL)
     fsNodeFree(child);
 
   return res;
@@ -98,8 +99,8 @@ static bool isReservedName(const char *name)
 /*----------------------------------------------------------------------------*/
 bool fsExtractBaseName(char *buffer, const char *path)
 {
-  assert(buffer);
-  assert(path);
+  assert(buffer != NULL);
+  assert(path != NULL);
 
   size_t length = 0;
 
@@ -124,7 +125,7 @@ bool fsExtractBaseName(char *buffer, const char *path)
 /*----------------------------------------------------------------------------*/
 const char *fsExtractName(const char *path)
 {
-  assert(path);
+  assert(path != NULL);
 
   size_t length = 0;
 
@@ -141,12 +142,12 @@ FsCapacity fsFindUsedSpace(struct FsHandle *handle, struct FsNode *node)
 {
   struct FsNode * const parent = node ? node : fsHandleRoot(handle);
 
-  if (parent)
+  if (parent != NULL)
   {
     FsCapacity used = 0;
     const enum Result res = computeNodeUsage(parent, &used);
 
-    if (!node)
+    if (node == NULL)
       fsNodeFree(parent);
 
     return res == E_OK ? used : 0;
@@ -163,14 +164,14 @@ const char *fsFollowNextPart(struct FsHandle *handle, struct FsNode **node,
 
   if (!strlen(nextPart))
   {
-    path = 0;
+    path = NULL;
   }
   else if (isReservedName(nextPart))
   {
     /* Path contains forbidden directories */
-    path = 0;
+    path = NULL;
   }
-  else if (*node == 0)
+  else if (*node == NULL)
   {
     if (nextPart[0] == '/')
     {
@@ -179,7 +180,7 @@ const char *fsFollowNextPart(struct FsHandle *handle, struct FsNode **node,
     else
     {
       /* Relative path is used but the previous state is not available */
-      path = 0;
+      path = NULL;
     }
   }
   else if (leaf || strlen(path))
@@ -187,12 +188,13 @@ const char *fsFollowNextPart(struct FsHandle *handle, struct FsNode **node,
     struct FsNode *child = fsNodeHead(*node);
     fsNodeFree(*node);
 
-    while (child)
+    while (child != NULL)
     {
       char nodeName[FS_NAME_LENGTH];
       enum Result res;
 
-      res = fsNodeRead(child, FS_NODE_NAME, 0, nodeName, sizeof(nodeName), 0);
+      res = fsNodeRead(child, FS_NODE_NAME, 0, nodeName, sizeof(nodeName),
+          NULL);
 
       if (res == E_OK && !strcmp(nextPart, nodeName))
       {
@@ -204,16 +206,16 @@ const char *fsFollowNextPart(struct FsHandle *handle, struct FsNode **node,
       if (res != E_OK)
       {
         fsNodeFree(child);
-        child = 0;
+        child = NULL;
         break;
       }
     }
 
     /* Check whether the node is found */
-    if (child != 0)
+    if (child != NULL)
       *node = child;
     else
-      path = 0;
+      path = NULL;
   }
 
   return path;
@@ -222,18 +224,18 @@ const char *fsFollowNextPart(struct FsHandle *handle, struct FsNode **node,
 struct FsNode *fsFollowPath(struct FsHandle *handle, const char *path,
     bool leaf)
 {
-  struct FsNode *node = 0;
+  struct FsNode *node = NULL;
 
-  while (path && *path)
+  while (path != NULL && *path)
     path = fsFollowNextPart(handle, &node, path, leaf);
 
-  return path != 0 ? node : 0;
+  return path != NULL ? node : NULL;
 }
 /*----------------------------------------------------------------------------*/
 const char *fsGetChunk(char *dst, const char *src)
 {
-  assert(dst);
-  assert(src);
+  assert(dst != NULL);
+  assert(src != NULL);
 
   /* Output buffer length should be greater or equal to maximum name length */
   size_t counter = 0;
@@ -272,9 +274,9 @@ const char *fsGetChunk(char *dst, const char *src)
 /*----------------------------------------------------------------------------*/
 void fsJoinPaths(char *buffer, const char *prefix, const char *suffix)
 {
-  assert(buffer);
-  assert(prefix);
-  assert(suffix);
+  assert(buffer != NULL);
+  assert(prefix != NULL);
+  assert(suffix != NULL);
 
   const char * const begin = buffer;
 
@@ -308,7 +310,7 @@ bool fsStripName(char *buffer)
 {
   const char * const position = fsExtractName(buffer);
 
-  if (position)
+  if (position != NULL)
   {
     size_t offset = position - buffer;
 

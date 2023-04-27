@@ -30,7 +30,7 @@ static enum Result testClassInit(void *objectBase __attribute__((unused)),
 /*----------------------------------------------------------------------------*/
 START_TEST(testAbortGeneration)
 {
-  struct TestObject * const object = init(IncorrectEntity, 0);
+  struct TestObject * const object = init(IncorrectEntity, NULL);
   ck_assert_ptr_nonnull(object);
   deinit(object);
 }

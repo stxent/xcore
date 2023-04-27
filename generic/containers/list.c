@@ -22,7 +22,7 @@ static size_t countListNodes(const struct ListNode *current)
 {
   size_t result = 0;
 
-  while (current)
+  while (current != NULL)
   {
     ++result;
     current = current->next;
@@ -41,7 +41,7 @@ static void freeListChain(struct ListNode *current)
 {
   struct ListNode *next;
 
-  while (current)
+  while (current != NULL)
   {
     next = current->next;
     free(current);
@@ -51,7 +51,7 @@ static void freeListChain(struct ListNode *current)
 /*----------------------------------------------------------------------------*/
 void listInit(struct List *list, size_t width)
 {
-  list->head = 0;
+  list->head = NULL;
   list->width = width;
 }
 /*----------------------------------------------------------------------------*/
@@ -62,10 +62,10 @@ void listDeinit(struct List *list)
 /*----------------------------------------------------------------------------*/
 void listClear(struct List *list)
 {
-  if (list->head)
+  if (list->head != NULL)
   {
     freeListChain(list->head);
-    list->head = 0;
+    list->head = NULL;
   }
 }
 /*----------------------------------------------------------------------------*/
@@ -80,7 +80,7 @@ void listEraseIf(struct List *list, void *argument,
 {
   struct ListNode **node = &list->head;
 
-  while (*node)
+  while (*node != NULL)
   {
     if (predicate((*node)->data, argument))
     {
@@ -102,7 +102,7 @@ struct ListNode *listEraseNode(struct List *list, struct ListNode *node)
   while (*current != node)
     current = &(*current)->next;
 
-  assert(current);
+  assert(current != NULL);
 
   *current = next;
   free(node);
@@ -121,14 +121,14 @@ struct ListNode *listFindIf(struct List *list, void *argument,
 {
   struct ListNode *node = list->head;
 
-  while (node)
+  while (node != NULL)
   {
     if (predicate(node->data, argument))
       return node;
     node = node->next;
   }
 
-  return 0;
+  return NULL;
 }
 /*----------------------------------------------------------------------------*/
 bool listInsert(struct List *list, struct ListNode *previous,
@@ -137,11 +137,11 @@ bool listInsert(struct List *list, struct ListNode *previous,
   struct ListNode * const node =
       malloc(offsetof(struct ListNode, data) + list->width);
 
-  if (node)
+  if (node != NULL)
   {
     memcpy(node->data, element, list->width);
 
-    if (!previous)
+    if (previous == NULL)
     {
       node->next = list->head;
       list->head = node;
@@ -163,16 +163,16 @@ bool listPushBack(struct List *list, const void *element)
   struct ListNode * const node =
       malloc(offsetof(struct ListNode, data) + list->width);
 
-  if (node)
+  if (node != NULL)
   {
     memcpy(node->data, element, list->width);
-    node->next = 0;
+    node->next = NULL;
 
-    if (list->head)
+    if (list->head != NULL)
     {
       struct ListNode *current = list->head;
 
-      while (current->next)
+      while (current->next != NULL)
         current = current->next;
 
       current->next = node;
@@ -191,7 +191,7 @@ bool listPushFront(struct List *list, const void *element)
   struct ListNode * const node =
       malloc(offsetof(struct ListNode, data) + list->width);
 
-  if (node)
+  if (node != NULL)
   {
     memcpy(node->data, element, list->width);
 

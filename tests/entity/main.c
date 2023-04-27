@@ -42,8 +42,8 @@ const struct EntityClass * const InconstructibleEntity =
 const struct EntityClass * const UninitializedEntity =
     &(const struct EntityClass){
     .size = sizeof(struct TestObject),
-    .init = 0,
-    .deinit = 0
+    .init = NULL,
+    .deinit = NULL
 };
 /*----------------------------------------------------------------------------*/
 extern void *__libc_malloc(size_t);
@@ -98,7 +98,7 @@ START_TEST(testObjectCreation)
   deinit(correctObject);
 
   /* Create an object of class without constructor and destructor */
-  struct TestObject * const plainObject = init(UninitializedEntity, 0);
+  struct TestObject * const plainObject = init(UninitializedEntity, NULL);
   ck_assert_ptr_nonnull(plainObject);
   deinit(plainObject);
 

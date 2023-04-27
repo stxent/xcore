@@ -14,19 +14,19 @@ void *init(const void *descriptor, const void *arguments)
 {
   const struct EntityClass * const base = descriptor;
 
-  assert(base != 0);
+  assert(base != NULL);
   assert(base->size != 0);
 
   struct Entity *entity = malloc(base->size);
 
-  if (entity)
+  if (entity != NULL)
   {
     entity->descriptor = base;
 
-    if (base->init && base->init(entity, arguments) != E_OK)
+    if (base->init != NULL && base->init(entity, arguments) != E_OK)
     {
       free(entity);
-      entity = 0;
+      entity = NULL;
     }
   }
 
@@ -37,9 +37,9 @@ void deinit(void *entity)
 {
   const struct EntityClass * const base = CLASS(entity);
 
-  assert(base != 0);
+  assert(base != NULL);
 
-  if (base->deinit)
+  if (base->deinit != NULL)
     base->deinit(entity);
 
   free(entity);

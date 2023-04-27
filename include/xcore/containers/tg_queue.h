@@ -87,7 +87,7 @@
     { \
       queue->data = malloc(capacity * sizeof(type)); \
       \
-      if (queue->data) \
+      if (queue->data != NULL) \
       { \
         queue->capacity = capacity; \
         prefix##QueueClear(queue); \

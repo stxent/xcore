@@ -50,7 +50,7 @@ static void checkElements(TestList *list, int base, int step)
   TestListNode *node = testListFront(list);
   int i = 0;
 
-  while (node)
+  while (node != NULL)
   {
     const TestStruct referenceElement = createElement(base + i * step);
     const TestStruct element = *testListData(node);
@@ -188,10 +188,10 @@ START_TEST(testEraseNode)
 
   /* Remove even elements */
   node = testListFront(&list);
-  while (node)
+  while (node != NULL)
   {
     node = testListEraseNode(&list, node);
-    if (node)
+    if (node != NULL)
       node = testListNext(node);
   }
   ck_assert_uint_eq(testListSize(&list), MAX_SIZE / 2);

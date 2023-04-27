@@ -107,7 +107,7 @@ static void makeNode(struct FsHandle *handle, const char *path)
 /*----------------------------------------------------------------------------*/
 static struct FsHandle *makeTestHandle(void)
 {
-  struct FsHandle * const handle = init(TfsHandle, 0);
+  struct FsHandle * const handle = init(TfsHandle, NULL);
 
   /* Level 1 inside "/" */
   makeNode(handle, PATH_BOOT);
@@ -185,13 +185,15 @@ START_TEST(testAccess)
   /* Restore access */
 
   access = FS_ACCESS_READ | FS_ACCESS_WRITE;
-  res = fsNodeWrite(parent, FS_NODE_ACCESS, 0, &access, sizeof(access), 0);
+  res = fsNodeWrite(parent, FS_NODE_ACCESS, 0, &access, sizeof(access),
+      NULL);
   ck_assert_uint_eq(res, E_OK);
 
   /* Change subnode access */
 
   access = FS_ACCESS_READ;
-  res = fsNodeWrite(subnode, FS_NODE_ACCESS, 0, &access, sizeof(access), 0);
+  res = fsNodeWrite(subnode, FS_NODE_ACCESS, 0, &access, sizeof(access),
+      NULL);
   ck_assert_uint_eq(res, E_OK);
 
   /* Try to remove a read-only node */
@@ -202,7 +204,8 @@ START_TEST(testAccess)
   /* Restore subnode access */
 
   access = FS_ACCESS_READ | FS_ACCESS_WRITE;
-  res = fsNodeWrite(subnode, FS_NODE_ACCESS, 0, &access, sizeof(access), 0);
+  res = fsNodeWrite(subnode, FS_NODE_ACCESS, 0, &access, sizeof(access),
+      NULL);
   ck_assert_uint_eq(res, E_OK);
 
   fsNodeFree(subnode);
@@ -226,7 +229,8 @@ START_TEST(testAccessIter)
   /* Change node access */
 
   access = 0;
-  res = fsNodeWrite(parent, FS_NODE_ACCESS, 0, &access, sizeof(access), 0);
+  res = fsNodeWrite(parent, FS_NODE_ACCESS, 0, &access, sizeof(access),
+      NULL);
   ck_assert_uint_eq(res, E_OK);
 
   /* Try to fetch next node */
@@ -237,7 +241,8 @@ START_TEST(testAccessIter)
   /* Restore access */
 
   access = FS_ACCESS_READ | FS_ACCESS_WRITE;
-  res = fsNodeWrite(parent, FS_NODE_ACCESS, 0, &access, sizeof(access), 0);
+  res = fsNodeWrite(parent, FS_NODE_ACCESS, 0, &access, sizeof(access),
+      NULL);
   ck_assert_uint_eq(res, E_OK);
 
   fsNodeFree(node);
@@ -259,23 +264,23 @@ START_TEST(testAccessReadWrite)
   /* Change node access */
 
   access = 0;
-  res = fsNodeWrite(node, FS_NODE_ACCESS, 0, &access, sizeof(access), 0);
+  res = fsNodeWrite(node, FS_NODE_ACCESS, 0, &access, sizeof(access), NULL);
   ck_assert_uint_eq(res, E_OK);
 
   /* Try to write data */
 
-  res = fsNodeWrite(node, FS_NODE_DATA, 0, buffer, sizeof(buffer), 0);
+  res = fsNodeWrite(node, FS_NODE_DATA, 0, buffer, sizeof(buffer), NULL);
   ck_assert_uint_eq(res, E_ACCESS);
 
   /* Try to read data */
 
-  res = fsNodeRead(node, FS_NODE_DATA, 0, buffer, sizeof(buffer), 0);
+  res = fsNodeRead(node, FS_NODE_DATA, 0, buffer, sizeof(buffer), NULL);
   ck_assert_uint_eq(res, E_ACCESS);
 
   /* Restore access */
 
   access = FS_ACCESS_READ | FS_ACCESS_WRITE;
-  res = fsNodeWrite(node, FS_NODE_ACCESS, 0, &access, sizeof(access), 0);
+  res = fsNodeWrite(node, FS_NODE_ACCESS, 0, &access, sizeof(access), NULL);
   ck_assert_uint_eq(res, E_OK);
 
   fsNodeFree(node);
@@ -319,7 +324,7 @@ START_TEST(testNodeCapacity)
 
   /* Read capacity failure */
 
-  res = fsNodeRead(node, FS_NODE_CAPACITY, 0, &capacity, 0, 0);
+  res = fsNodeRead(node, FS_NODE_CAPACITY, 0, &capacity, 0, NULL);
   ck_assert_uint_eq(res, E_VALUE);
 
   fsNodeFree(node);
@@ -339,7 +344,7 @@ START_TEST(testNodeLength)
   struct FsNode * const node = fsOpenNode(handle, PATH_HOME_USER_FILE);
   ck_assert_ptr_nonnull(node);
 
-  res = fsNodeWrite(node, FS_NODE_DATA, 0, data, MAX_BUFFER_LENGTH, 0);
+  res = fsNodeWrite(node, FS_NODE_DATA, 0, data, MAX_BUFFER_LENGTH, NULL);
   ck_assert_uint_eq(res, E_OK);
 
   count = 0;
@@ -410,7 +415,7 @@ START_TEST(testNodeRenaming)
   ck_assert_uint_eq(res, E_VALUE);
 
   /* Erase name */
-  res = fsNodeWrite(node, FS_NODE_NAME, 0, 0, 0, &written);
+  res = fsNodeWrite(node, FS_NODE_NAME, 0, NULL, 0, &written);
   ck_assert_uint_eq(res, E_OK);
   ck_assert_uint_eq(written, 0);
 
@@ -433,13 +438,13 @@ START_TEST(testPartExtraction)
   const char *path;
 
   /* Empty path */
-  node = 0;
+  node = NULL;
   path = fsFollowNextPart(handle, &node, "", true);
   ck_assert_ptr_null(path);
   ck_assert_ptr_null(node);
 
   /* Forbidden strings */
-  node = 0;
+  node = NULL;
   path = fsFollowNextPart(handle, &node, "/..", true);
   ck_assert_ptr_nonnull(path);
   ck_assert_ptr_nonnull(node);
@@ -448,7 +453,7 @@ START_TEST(testPartExtraction)
   ck_assert_ptr_null(path);
   ck_assert_ptr_eq(node, tmp); /* Node must be left untouched */
 
-  node = 0;
+  node = NULL;
   path = fsFollowNextPart(handle, &node, "/.", true);
   ck_assert_ptr_nonnull(path);
   ck_assert_ptr_nonnull(node);
@@ -458,13 +463,13 @@ START_TEST(testPartExtraction)
   ck_assert_ptr_eq(node, tmp); /* Node must be left untouched */
 
   /* Incorrect call sequence */
-  node = 0;
+  node = NULL;
   path = fsFollowNextPart(handle, &node, "home", true);
   ck_assert_ptr_null(path);
   ck_assert_ptr_null(node);
 
   /* Non-existent node */
-  node = 0;
+  node = NULL;
   path = fsFollowNextPart(handle, &node, "/tmp", true);
   ck_assert_ptr_nonnull(path);
   ck_assert_ptr_nonnull(node);
@@ -495,7 +500,7 @@ START_TEST(testPathFollowing)
   ck_assert_ptr_ne(dirNode, imgNode);
 
   /* Simulate name reading failure */
-  res = fsNodeWrite(imgNode, FS_NODE_NAME, 0, "\x7F", 2, 0);
+  res = fsNodeWrite(imgNode, FS_NODE_NAME, 0, "\x7F", 2, NULL);
   ck_assert_uint_eq(res, E_OK);
 
   struct FsNode * const txtNode = fsOpenNode(handle, PATH_HOME_USER_FILE);
@@ -504,7 +509,7 @@ START_TEST(testPathFollowing)
   fsNodeFree(txtNode);
 
   /* Restore original node name and free node */
-  res = fsNodeWrite(imgNode, FS_NODE_NAME, 0, name, strlen(name) + 1, 0);
+  res = fsNodeWrite(imgNode, FS_NODE_NAME, 0, name, strlen(name) + 1, NULL);
   ck_assert_uint_eq(res, E_OK);
   fsNodeFree(imgNode);
 
@@ -546,11 +551,11 @@ START_TEST(testReadWrite)
   }
 
   memset(buffer, 0, sizeof(buffer));
-  res = fsNodeWrite(node, FS_TYPE_END, 0, buffer, sizeof(buffer), 0);
+  res = fsNodeWrite(node, FS_TYPE_END, 0, buffer, sizeof(buffer), NULL);
   ck_assert_uint_eq(res, E_INVALID);
 
   res = fsNodeRead(node, FS_NODE_DATA, MAX_FILE_LENGTH + 1,
-      buffer, sizeof(buffer), 0);
+      buffer, sizeof(buffer), NULL);
   ck_assert_uint_eq(res, E_VALUE);
 
   fsNodeFree(node);
@@ -560,7 +565,7 @@ START_TEST(testReadWrite)
   struct FsNode * const root = fsOpenNode(handle, "/");
   ck_assert_ptr_nonnull(root);
 
-  res = fsNodeRead(node, FS_NODE_NAME, 0, buffer, MAX_BUFFER_LENGTH, 0);
+  res = fsNodeRead(node, FS_NODE_NAME, 0, buffer, MAX_BUFFER_LENGTH, NULL);
   ck_assert_uint_eq(res, E_INVALID);
 
   fsNodeFree(root);
@@ -604,9 +609,9 @@ START_TEST(testTfsErrors)
   char buffer[MAX_BUFFER_LENGTH];
   size_t count;
 
-  res = fsNodeRead(node, FS_NODE_ACCESS, 1, buffer, sizeof(buffer), 0);
+  res = fsNodeRead(node, FS_NODE_ACCESS, 1, buffer, sizeof(buffer), NULL);
   ck_assert_uint_eq(res, E_VALUE);
-  res = fsNodeRead(node, FS_NODE_TIME, 0, buffer, sizeof(buffer), 0);
+  res = fsNodeRead(node, FS_NODE_TIME, 0, buffer, sizeof(buffer), NULL);
   ck_assert_uint_eq(res, E_INVALID);
 
   res = fsNodeRead(node, FS_NODE_NAME, 0, buffer, sizeof(buffer), &count);
@@ -614,13 +619,13 @@ START_TEST(testTfsErrors)
   ck_assert_str_eq(buffer, "home");
   ck_assert_uint_eq(count, strlen("home") + 1);
 
-  res = fsNodeRead(node, FS_NODE_NAME, 0, buffer, sizeof(buffer), 0);
+  res = fsNodeRead(node, FS_NODE_NAME, 0, buffer, sizeof(buffer), NULL);
   ck_assert_uint_eq(res, E_OK);
   ck_assert_str_eq(buffer, "home");
 
-  res = fsNodeRead(node, FS_NODE_NAME, 1, buffer, sizeof(buffer), 0);
+  res = fsNodeRead(node, FS_NODE_NAME, 1, buffer, sizeof(buffer), NULL);
   ck_assert_uint_eq(res, E_VALUE);
-  res = fsNodeRead(node, FS_NODE_NAME, 0, buffer, 1, 0);
+  res = fsNodeRead(node, FS_NODE_NAME, 0, buffer, 1, NULL);
   ck_assert_uint_eq(res, E_VALUE);
 
   fsNodeFree(node);
@@ -711,7 +716,7 @@ START_TEST(testTfsMemoryErrors)
   struct FsNode * const node = fsOpenNode(handle, PATH_HOME_USER_FILE);
   ck_assert_ptr_nonnull(node);
   mallocHookFails = 1;
-  res = fsNodeWrite(node, FS_NODE_DATA, 0, data, MAX_BUFFER_LENGTH, 0);
+  res = fsNodeWrite(node, FS_NODE_DATA, 0, data, MAX_BUFFER_LENGTH, NULL);
   ck_assert_uint_eq(res, E_MEMORY);
   fsNodeFree(node);
 
@@ -738,13 +743,13 @@ START_TEST(testUsedSpaceCalculation)
   for (size_t i = 0; i < MAX_FILE_SIZE / MAX_BUFFER_LENGTH; ++i)
   {
     res = fsNodeWrite(node, FS_NODE_DATA, (FsLength)(i * MAX_BUFFER_LENGTH),
-        data, MAX_BUFFER_LENGTH, 0);
+        data, MAX_BUFFER_LENGTH, NULL);
     ck_assert_uint_eq(res, E_OK);
   }
 
   fsNodeFree(node);
 
-  used = fsFindUsedSpace(handle, 0);
+  used = fsFindUsedSpace(handle, NULL);
   ck_assert_uint_eq(used, MAX_FILE_SIZE);
 
   /* Node with partial capacity usage */
@@ -755,13 +760,13 @@ START_TEST(testUsedSpaceCalculation)
   for (size_t i = 0; i < (MAX_FILE_SIZE * 3) / (MAX_BUFFER_LENGTH * 4); ++i)
   {
     res = fsNodeWrite(node, FS_NODE_DATA, (FsLength)(i * MAX_BUFFER_LENGTH),
-        data, MAX_BUFFER_LENGTH, 0);
+        data, MAX_BUFFER_LENGTH, NULL);
     ck_assert_uint_eq(res, E_OK);
   }
 
   fsNodeFree(node);
 
-  used = fsFindUsedSpace(handle, 0);
+  used = fsFindUsedSpace(handle, NULL);
   ck_assert_uint_eq(used, MAX_FILE_SIZE);
 
   freeTestHandle(handle);
@@ -785,7 +790,7 @@ START_TEST(testUsedSpaceErrors)
   for (size_t i = 0; i < MAX_FILE_SIZE / MAX_BUFFER_LENGTH; ++i)
   {
     res = fsNodeWrite(node, FS_NODE_DATA, (FsLength)(i * MAX_BUFFER_LENGTH),
-        data, MAX_BUFFER_LENGTH, 0);
+        data, MAX_BUFFER_LENGTH, NULL);
     ck_assert_uint_eq(res, E_OK);
   }
 
@@ -799,30 +804,30 @@ START_TEST(testUsedSpaceErrors)
   FsCapacity used;
 
   /* Make node with a reserved name */
-  res = fsNodeWrite(node, FS_NODE_NAME, 0, "..", 3, 0);
+  res = fsNodeWrite(node, FS_NODE_NAME, 0, "..", 3, NULL);
   ck_assert_uint_eq(res, E_OK);
-  used = fsFindUsedSpace(handle, 0);
+  used = fsFindUsedSpace(handle, NULL);
   ck_assert_uint_eq(used, MAX_FILE_SIZE);
 
   /* Test head allocation failure */
   mallocHookFails = 1;
-  used = fsFindUsedSpace(handle, 0);
+  used = fsFindUsedSpace(handle, NULL);
   ck_assert_uint_eq(used, 0);
 
   /* Test incorrect name skipping */
-  res = fsNodeWrite(node, FS_NODE_NAME, 0, 0, 0, 0);
+  res = fsNodeWrite(node, FS_NODE_NAME, 0, NULL, 0, NULL);
   ck_assert_uint_eq(res, E_OK);
-  used = fsFindUsedSpace(handle, 0);
+  used = fsFindUsedSpace(handle, NULL);
   ck_assert_uint_eq(used, MAX_FILE_SIZE);
 
   /* Test incorrect name reading */
-  res = fsNodeWrite(node, FS_NODE_NAME, 0, "\x7F", 2, 0);
+  res = fsNodeWrite(node, FS_NODE_NAME, 0, "\x7F", 2, NULL);
   ck_assert_uint_eq(res, E_OK);
-  used = fsFindUsedSpace(handle, 0);
+  used = fsFindUsedSpace(handle, NULL);
   ck_assert_uint_eq(used, 0);
 
   /* Restore original node name */
-  fsNodeWrite(node, FS_NODE_NAME, 0, "xx", 3, 0);
+  fsNodeWrite(node, FS_NODE_NAME, 0, "xx", 3, NULL);
   fsNodeFree(node);
 
   freeTestHandle(handle);
