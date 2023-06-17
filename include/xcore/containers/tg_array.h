@@ -110,9 +110,22 @@
       } \
     } \
     \
+    static inline void prefix##ArrayInitArena(name##Array *array, \
+        size_t capacity, void *arena) \
+    { \
+      array->data = arena; \
+      array->capacity = capacity; \
+      array->size = 0; \
+    } \
+    \
     static inline void prefix##ArrayDeinit(name##Array *array) \
     { \
       free(array->data); \
+    } \
+    \
+    static inline void prefix##ArrayDeinitArena(name##Array *array \
+        __attribute__((unused))) \
+    { \
     }
 /*----------------------------------------------------------------------------*/
 #endif /* XCORE_CONTAINERS_TG_ARRAY_H_ */

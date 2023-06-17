@@ -153,6 +153,28 @@ START_TEST(testEmptyContainer)
 }
 END_TEST
 /*----------------------------------------------------------------------------*/
+START_TEST(testPushPopArenaSequence)
+{
+  TestArray array;
+  TestStruct arena[MAX_CAPACITY];
+
+  /* Array initialization */
+  testArrayInitArena(&array, MAX_CAPACITY, arena);
+
+  /* Push elements */
+  fillArray(&array, 0, MAX_CAPACITY);
+  ck_assert_uint_eq(testArraySize(&array), MAX_CAPACITY);
+
+  checkElements(&array, 0, false);
+
+  /* Pop elements */
+  popElements(&array);
+  ck_assert_uint_eq(testArraySize(&array), 0);
+
+  testArrayDeinitArena(&array);
+}
+END_TEST
+/*----------------------------------------------------------------------------*/
 START_TEST(testPushPopSequence)
 {
   TestArray array;
@@ -233,6 +255,7 @@ int main(void)
   tcase_add_test(testcase, testRandomAccess);
   tcase_add_test(testcase, testElementErasure);
   tcase_add_test(testcase, testElementInsertion);
+  tcase_add_test(testcase, testPushPopArenaSequence);
   tcase_add_test(testcase, testPushPopSequence);
   tcase_add_test(testcase, testMemoryFailure);
   suite_add_tcase(suite, testcase);

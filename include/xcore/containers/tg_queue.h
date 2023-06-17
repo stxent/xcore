@@ -99,9 +99,22 @@
       } \
     } \
     \
+    static inline void prefix##QueueInitArena(name##Queue *queue, \
+        size_t capacity, void *arena) \
+    { \
+      queue->data = arena; \
+      queue->capacity = capacity; \
+      prefix##QueueClear(queue); \
+    } \
+    \
     static inline void prefix##QueueDeinit(name##Queue *queue) \
     { \
       free(queue->data); \
+    } \
+    \
+    static inline void prefix##QueueDeinitArena(name##Queue *queue \
+        __attribute__((unused))) \
+    { \
     }
 /*----------------------------------------------------------------------------*/
 #endif /* XCORE_CONTAINERS_TG_QUEUE_H_ */

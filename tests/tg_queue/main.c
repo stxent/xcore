@@ -120,6 +120,25 @@ START_TEST(testPointerReset)
 }
 END_TEST
 /*----------------------------------------------------------------------------*/
+START_TEST(testPushPopArenaSequence)
+{
+  TestQueue queue;
+  TestStruct arena[MAX_CAPACITY];
+
+  /* Queue initialization */
+  testQueueInitArena(&queue, MAX_CAPACITY, arena);
+
+  /* Fill queue */
+  for (int iter = 1; iter < MAX_CAPACITY * 2; ++iter)
+  {
+    const int count = -abs(iter - MAX_CAPACITY) + MAX_CAPACITY;
+    runPushPop(&queue, count);
+  }
+
+  testQueueDeinitArena(&queue);
+}
+END_TEST
+/*----------------------------------------------------------------------------*/
 START_TEST(testPushPopSequence)
 {
   TestQueue queue;
@@ -196,6 +215,7 @@ int main(void)
 
   tcase_add_test(testcase, testEmptyContainer);
   tcase_add_test(testcase, testPointerReset);
+  tcase_add_test(testcase, testPushPopArenaSequence);
   tcase_add_test(testcase, testPushPopSequence);
   tcase_add_test(testcase, testRandomAccess);
   tcase_add_test(testcase, testMemoryFailure);
