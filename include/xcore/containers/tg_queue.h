@@ -53,10 +53,24 @@
       return queue->size == queue->capacity; \
     } \
     \
+    static inline type prefix##QueueBack(const name##Queue *queue) \
+    { \
+      assert(queue->size > 0); \
+      return queue->data[(queue->tail ? queue->tail : queue->capacity) - 1]; \
+    } \
+    \
     static inline type prefix##QueueFront(const name##Queue *queue) \
     { \
       assert(queue->size > 0); \
       return queue->data[queue->head]; \
+    } \
+    \
+    static inline void prefix##QueuePopBack(name##Queue *queue) \
+    { \
+      assert(queue->size > 0); \
+      \
+      queue->tail = (queue->tail ? queue->tail : queue->capacity) - 1; \
+      --queue->size; \
     } \
     \
     static inline void prefix##QueuePopFront(name##Queue *queue) \
@@ -76,7 +90,16 @@
       if (++queue->tail == queue->capacity) \
         queue->tail = 0; \
       ++queue->size; \
-    }\
+    } \
+    \
+    static inline void prefix##QueuePushFront(name##Queue *queue, type element) \
+    { \
+      assert(queue->size < queue->capacity); \
+      \
+      queue->head = (queue->head ? queue->head : queue->capacity) - 1; \
+      queue->data[queue->head] = element; \
+      ++queue->size; \
+    } \
     \
     static inline size_t prefix##QueueSize(const name##Queue *queue) \
     { \

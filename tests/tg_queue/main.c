@@ -69,6 +69,31 @@ static void runPushPop(TestQueue *queue, int count)
   ck_assert(testQueueFull(queue) == false);
 }
 /*----------------------------------------------------------------------------*/
+static void runPushPopReverse(TestQueue *queue, int count)
+{
+  /* Fill the queue with push back function */
+  for (int i = 0; i < count; ++i)
+    testQueuePushFront(queue, createElement(i));
+
+  ck_assert_uint_eq(testQueueSize(queue), count);
+  ck_assert(testQueueEmpty(queue) == (count == 0));
+  ck_assert(testQueueFull(queue) == (count == MAX_CAPACITY));
+
+  /* Pop elements from the queue while checking their values */
+  for (int i = 0; i < count; ++i)
+  {
+    const TestStruct refElement = createElement(i);
+    const TestStruct element = testQueueBack(queue);
+    testQueuePopBack(queue);
+
+    ck_assert(compareElements(&element, &refElement) == true);
+  }
+
+  ck_assert_uint_eq(testQueueSize(queue), 0);
+  ck_assert(testQueueEmpty(queue) == true);
+  ck_assert(testQueueFull(queue) == false);
+}
+/*----------------------------------------------------------------------------*/
 START_TEST(testEmptyContainer)
 {
   TestQueue queue;
@@ -158,6 +183,25 @@ START_TEST(testPushPopSequence)
 }
 END_TEST
 /*----------------------------------------------------------------------------*/
+START_TEST(testPushPopReverseSequence)
+{
+  TestQueue queue;
+
+  /* Queue initialization */
+  const bool result = testQueueInit(&queue, MAX_CAPACITY);
+  ck_assert(result == true);
+
+  /* Fill queue */
+  for (int iter = 1; iter < MAX_CAPACITY * 2; ++iter)
+  {
+    const int count = -abs(iter - MAX_CAPACITY) + MAX_CAPACITY;
+    runPushPopReverse(&queue, count);
+  }
+
+  testQueueDeinit(&queue);
+}
+END_TEST
+/*----------------------------------------------------------------------------*/
 START_TEST(testRandomAccess)
 {
   TestQueue queue;
@@ -217,6 +261,7 @@ int main(void)
   tcase_add_test(testcase, testPointerReset);
   tcase_add_test(testcase, testPushPopArenaSequence);
   tcase_add_test(testcase, testPushPopSequence);
+  tcase_add_test(testcase, testPushPopReverseSequence);
   tcase_add_test(testcase, testRandomAccess);
   tcase_add_test(testcase, testMemoryFailure);
   suite_add_tcase(suite, testcase);

@@ -32,9 +32,12 @@ BEGIN_DECLS
 bool queueInit(struct Queue *, size_t, size_t);
 void queueDeinit(struct Queue *);
 void *queueAt(struct Queue *, size_t);
+void queueBack(const struct Queue *, void *);
 void queueFront(const struct Queue *, void *);
+void queuePopBack(struct Queue *);
 void queuePopFront(struct Queue *);
 void queuePushBack(struct Queue *, const void *);
+void queuePushFront(struct Queue *, const void *);
 
 END_DECLS
 /*----------------------------------------------------------------------------*/
