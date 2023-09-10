@@ -18,46 +18,47 @@
 enum IfParameter
 {
   /**
-   * Number of elements available in the receive queue.
+   * Number of elements available in a receive queue. Depending on an interface
+   * type these may be messages, frames, bytes or other elements.
    * Parameter type is \a size_t.
    */
   IF_RX_AVAILABLE,
-  /** Free space in the receive queue. Parameter type is \a size_t. */
+  /** Free space in a receive queue. Parameter type is \a size_t. */
   IF_RX_PENDING,
   /**
-   * Maximum number of elements in the receive queue.
+   * Highest number of elements in a receive queue.
    * Parameter type is \a size_t.
    */
   IF_RX_WATERMARK,
+  /** Free space in a transmit queue. Parameter type is \a size_t. */
+  IF_TX_AVAILABLE,
   /**
-   * Number of pending elements in the transmit queue.
+   * Number of pending elements in a transmit queue.
    * Parameter type is \a size_t.
    */
-  IF_TX_AVAILABLE,
-  /** Free space in the transmit queue. Parameter type is \a size_t. */
   IF_TX_PENDING,
   /**
-   * Maximum number of elements in the transmit queue.
+   * Highest number of elements in a transmit queue.
    * Parameter type is \a size_t.
    */
   IF_TX_WATERMARK,
 
   /**
-   * Unique identifier of the device, 32-bit value.
+   * Unique identifier of a device, 32-bit value.
    * Parameter type is \a uint32_t.
    */
   IF_ADDRESS,
   /**
-   * Unique identifier of the device, 64-bit value.
+   * Unique identifier of a device, 64-bit value.
    * Parameter type is \a uint64_t.
    */
   IF_ADDRESS_64,
   /** Data rate. Parameter type is \a uint32_t. */
   IF_RATE,
 
-  /** Position in the 32-bit address space. Parameter type is \a uint32_t. */
+  /** Position in a 32-bit address space. Parameter type is \a uint32_t. */
   IF_POSITION,
-  /** Position in the 64-bit address space. Parameter type is \a uint64_t. */
+  /** Position in a 64-bit address space. Parameter type is \a uint64_t. */
   IF_POSITION_64,
   /** Volume size, 32-bit value. Parameter type is \a uint32_t. */
   IF_SIZE,
@@ -67,7 +68,7 @@ enum IfParameter
   IF_WIDTH,
 
   /**
-   * Stop the interface from reading a new data.
+   * Stop an interface from reading a new data.
    * Data pointer should be set to zero.
    */
   IF_DISABLE,

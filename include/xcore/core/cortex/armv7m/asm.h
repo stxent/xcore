@@ -92,7 +92,7 @@ static inline uint32_t __strexh(uint16_t value, volatile uint16_t *address)
   return result;
 }
 
-static inline uint32_t __interruptsGetBasePriority(void)
+static inline uint32_t __mrs_basepri(void)
 {
   uint32_t priority;
 
@@ -103,7 +103,18 @@ static inline uint32_t __interruptsGetBasePriority(void)
   return priority;
 }
 
-static inline void __interruptsSetBasePriority(uint32_t priority)
+// static inline uint32_t __interruptsGetBasePriority(void)
+// {
+//   uint32_t priority;
+
+//   __asm__ volatile (
+//       "MRS %[priority], BASEPRI"
+//       : [priority] "=r" (priority)
+//   );
+//   return priority;
+// }
+
+static inline void __msr_basepri_max(uint32_t priority)
 {
   __asm__ volatile (
       "MSR BASEPRI_MAX, %[priority]"
@@ -112,7 +123,16 @@ static inline void __interruptsSetBasePriority(uint32_t priority)
   );
 }
 
-static inline void __interruptsResetBasePriority(uint32_t priority)
+// static inline void __interruptsSetBasePriority(uint32_t priority)
+// {
+//   __asm__ volatile (
+//       "MSR BASEPRI_MAX, %[priority]"
+//       :
+//       : [priority] "r" (priority)
+//   );
+// }
+
+static inline void __msr_basepri(uint32_t priority)
 {
   __asm__ volatile (
       "MSR BASEPRI, %[priority]"
@@ -120,6 +140,15 @@ static inline void __interruptsResetBasePriority(uint32_t priority)
       : [priority] "r" (priority)
   );
 }
+
+// static inline void __interruptsResetBasePriority(uint32_t priority)
+// {
+//   __asm__ volatile (
+//       "MSR BASEPRI, %[priority]"
+//       :
+//       : [priority] "r" (priority)
+//   );
+// }
 
 static inline uint32_t __clz(uint32_t value)
 {

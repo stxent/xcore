@@ -263,8 +263,8 @@ int main(void)
   SRunner * const runner = srunner_create(suite);
 
   srunner_run_all(runner, CK_NORMAL);
-  const int numberFailed = srunner_ntests_failed(runner);
+  const int failed = srunner_ntests_failed(runner);
   srunner_free(runner);
 
-  return numberFailed == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
+  return failed > 0 ? EXIT_FAILURE : EXIT_SUCCESS;
 }

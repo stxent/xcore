@@ -9,193 +9,193 @@
 /*----------------------------------------------------------------------------*/
 unsigned long atomicFetchAddUL(unsigned long *pointer, unsigned long value)
 {
-  const uint32_t state = __interruptsGetState();
-  __interruptsDisable();
+  const uint32_t state = __mrs_primask();
+  __cpsid();
 
   const unsigned long result = *pointer;
   *pointer = result + value;
 
-  __interruptsSetState(state);
+  __msr_primask(state);
   return result;
 }
 /*----------------------------------------------------------------------------*/
 unsigned int atomicFetchAddU(unsigned int *pointer, unsigned int value)
 {
-  const uint32_t state = __interruptsGetState();
-  __interruptsDisable();
+  const uint32_t state = __mrs_primask();
+  __cpsid();
 
   const unsigned int result = *pointer;
   *pointer = result + value;
 
-  __interruptsSetState(state);
+  __msr_primask(state);
   return result;
 }
 /*----------------------------------------------------------------------------*/
 unsigned short atomicFetchAddUS(unsigned short *pointer, unsigned short value)
 {
-  const uint32_t state = __interruptsGetState();
-  __interruptsDisable();
+  const uint32_t state = __mrs_primask();
+  __cpsid();
 
   const unsigned short result = *pointer;
   *pointer = result + value;
 
-  __interruptsSetState(state);
+  __msr_primask(state);
   return result;
 }
 /*----------------------------------------------------------------------------*/
 unsigned char atomicFetchAddUC(unsigned char *pointer, unsigned char value)
 {
-  const uint32_t state = __interruptsGetState();
-  __interruptsDisable();
+  const uint32_t state = __mrs_primask();
+  __cpsid();
 
   const unsigned char result = *pointer;
   *pointer = result + value;
 
-  __interruptsSetState(state);
+  __msr_primask(state);
   return result;
 }
 /*----------------------------------------------------------------------------*/
 unsigned long atomicFetchAndUL(unsigned long *pointer, unsigned long value)
 {
-  const uint32_t state = __interruptsGetState();
-  __interruptsDisable();
+  const uint32_t state = __mrs_primask();
+  __cpsid();
 
   const unsigned long result = *pointer;
   *pointer = result & value;
 
-  __interruptsSetState(state);
+  __msr_primask(state);
   return result;
 }
 /*----------------------------------------------------------------------------*/
 unsigned int atomicFetchAndU(unsigned int *pointer, unsigned int value)
 {
-  const uint32_t state = __interruptsGetState();
-  __interruptsDisable();
+  const uint32_t state = __mrs_primask();
+  __cpsid();
 
   const unsigned int result = *pointer;
   *pointer = result & value;
 
-  __interruptsSetState(state);
+  __msr_primask(state);
   return result;
 }
 /*----------------------------------------------------------------------------*/
 unsigned short atomicFetchAndUS(unsigned short *pointer, unsigned short value)
 {
-  const uint32_t state = __interruptsGetState();
-  __interruptsDisable();
+  const uint32_t state = __mrs_primask();
+  __cpsid();
 
   const unsigned short result = *pointer;
   *pointer = result & value;
 
-  __interruptsSetState(state);
+  __msr_primask(state);
   return result;
 }
 /*----------------------------------------------------------------------------*/
 unsigned char atomicFetchAndUC(unsigned char *pointer, unsigned char value)
 {
-  const uint32_t state = __interruptsGetState();
-  __interruptsDisable();
+  const uint32_t state = __mrs_primask();
+  __cpsid();
 
   const unsigned char result = *pointer;
   *pointer = result & value;
 
-  __interruptsSetState(state);
+  __msr_primask(state);
   return result;
 }
 /*----------------------------------------------------------------------------*/
 unsigned long atomicFetchOrUL(unsigned long *pointer, unsigned long value)
 {
-  const uint32_t state = __interruptsGetState();
-  __interruptsDisable();
+  const uint32_t state = __mrs_primask();
+  __cpsid();
 
   const unsigned long result = *pointer;
   *pointer = result | value;
 
-  __interruptsSetState(state);
+  __msr_primask(state);
   return result;
 }
 /*----------------------------------------------------------------------------*/
 unsigned int atomicFetchOrU(unsigned int *pointer, unsigned int value)
 {
-  const uint32_t state = __interruptsGetState();
-  __interruptsDisable();
+  const uint32_t state = __mrs_primask();
+  __cpsid();
 
   const unsigned int result = *pointer;
   *pointer = result | value;
 
-  __interruptsSetState(state);
+  __msr_primask(state);
   return result;
 }
 /*----------------------------------------------------------------------------*/
 unsigned short atomicFetchOrUS(unsigned short *pointer, unsigned short value)
 {
-  const uint32_t state = __interruptsGetState();
-  __interruptsDisable();
+  const uint32_t state = __mrs_primask();
+  __cpsid();
 
   const unsigned short result = *pointer;
   *pointer = result | value;
 
-  __interruptsSetState(state);
+  __msr_primask(state);
   return result;
 }
 /*----------------------------------------------------------------------------*/
 unsigned char atomicFetchOrUC(unsigned char *pointer, unsigned char value)
 {
-  const uint32_t state = __interruptsGetState();
-  __interruptsDisable();
+  const uint32_t state = __mrs_primask();
+  __cpsid();
 
   const unsigned char result = *pointer;
   *pointer = result | value;
 
-  __interruptsSetState(state);
+  __msr_primask(state);
   return result;
 }
 /*----------------------------------------------------------------------------*/
 unsigned long atomicFetchSubUL(unsigned long *pointer, unsigned long value)
 {
-  const uint32_t state = __interruptsGetState();
-  __interruptsDisable();
+  const uint32_t state = __mrs_primask();
+  __cpsid();
 
   const unsigned long result = *pointer;
   *pointer = result - value;
 
-  __interruptsSetState(state);
+  __msr_primask(state);
   return result;
 }
 /*----------------------------------------------------------------------------*/
 unsigned int atomicFetchSubU(unsigned int *pointer, unsigned int value)
 {
-  const uint32_t state = __interruptsGetState();
-  __interruptsDisable();
+  const uint32_t state = __mrs_primask();
+  __cpsid();
 
   const unsigned int result = *pointer;
   *pointer = result - value;
 
-  __interruptsSetState(state);
+  __msr_primask(state);
   return result;
 }
 /*----------------------------------------------------------------------------*/
 unsigned short atomicFetchSubUS(unsigned short *pointer, unsigned short value)
 {
-  const uint32_t state = __interruptsGetState();
-  __interruptsDisable();
+  const uint32_t state = __mrs_primask();
+  __cpsid();
 
   const unsigned short result = *pointer;
   *pointer = result - value;
 
-  __interruptsSetState(state);
+  __msr_primask(state);
   return result;
 }
 /*----------------------------------------------------------------------------*/
 unsigned char atomicFetchSubUC(unsigned char *pointer, unsigned char value)
 {
-  const uint32_t state = __interruptsGetState();
-  __interruptsDisable();
+  const uint32_t state = __mrs_primask();
+  __cpsid();
 
   const unsigned char result = *pointer;
   *pointer = result - value;
 
-  __interruptsSetState(state);
+  __msr_primask(state);
   return result;
 }
 /*----------------------------------------------------------------------------*/
@@ -221,8 +221,8 @@ unsigned char atomicLoadUC(const unsigned char *pointer)
 /*----------------------------------------------------------------------------*/
 bool compareExchangePointer(void *pointer, void *expected, void *desired)
 {
-  const uint32_t state = __interruptsGetState();
-  __interruptsDisable();
+  const uint32_t state = __mrs_primask();
+  __cpsid();
 
   bool result;
 
@@ -237,6 +237,6 @@ bool compareExchangePointer(void *pointer, void *expected, void *desired)
     result = false;
   }
 
-  __interruptsSetState(state);
+  __msr_primask(state);
   return result;
 }
