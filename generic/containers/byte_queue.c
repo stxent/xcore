@@ -136,3 +136,67 @@ size_t byteQueuePushArray(struct ByteQueue *queue, const void *buffer,
   queue->size += bytesWritten;
   return bytesWritten;
 }
+/*----------------------------------------------------------------------------*/
+void byteQueueAbandon(struct ByteQueue *queue, size_t size)
+{
+  assert(queue->size >= size);
+
+  queue->head += size;
+  if (queue->head >= queue->capacity)
+    queue->head -= queue->capacity;
+  queue->size -= size;
+}
+/*----------------------------------------------------------------------------*/
+void byteQueueAdvance(struct ByteQueue *queue, size_t size)
+{
+  assert(queue->size + size <= queue->capacity);
+
+  queue->tail += size;
+  if (queue->tail >= queue->capacity)
+    queue->tail -= queue->capacity;
+  queue->size += size;
+}
+/*----------------------------------------------------------------------------*/
+void byteQueueDeferredPop(struct ByteQueue *queue, const uint8_t **buffer,
+    size_t *size, size_t offset)
+{
+  assert(queue->size >= offset);
+
+  size_t head = queue->head + offset;
+  if (head >= queue->capacity)
+    head -= queue->capacity;
+
+  *buffer = &queue->data[head];
+
+  if (queue->size > 0)
+  {
+    if (head < queue->tail)
+      *size = queue->size;
+    else
+      *size = queue->capacity - head;
+  }
+  else
+    *size = 0;
+}
+/*----------------------------------------------------------------------------*/
+void byteQueueDeferredPush(struct ByteQueue *queue, uint8_t **buffer,
+    size_t *size, size_t offset)
+{
+  assert(queue->size + offset <= queue->capacity);
+
+  size_t tail = queue->tail + offset;
+  if (tail >= queue->capacity)
+    tail -= queue->capacity;
+
+  *buffer = &queue->data[tail];
+
+  if (queue->size < queue->capacity)
+  {
+    if (queue->head > tail)
+      *size = queue->capacity - (queue->size + offset);
+    else
+      *size = queue->capacity - tail;
+  }
+  else
+    *size = 0;
+}

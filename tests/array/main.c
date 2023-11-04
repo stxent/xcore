@@ -200,7 +200,7 @@ START_TEST(testRandomAccess)
   ck_assert(arrayFull(&array) == true);
   checkElements(&array, 0, false);
 
-  /* Reverse and check elements */
+  /* Reverse the array and check its elements */
   for (int forward = 0; forward < MAX_CAPACITY / 2; ++forward)
   {
     TestStruct * const src = arrayAt(&array, forward);

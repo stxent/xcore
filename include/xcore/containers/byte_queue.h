@@ -35,9 +35,27 @@ void byteQueueDeinitArena(struct ByteQueue *);
 size_t byteQueuePopArray(struct ByteQueue *, void *, size_t);
 size_t byteQueuePushArray(struct ByteQueue *, const void *, size_t);
 
+/* Deferred push and pop functions */
+void byteQueueAbandon(struct ByteQueue *, size_t);
+void byteQueueAdvance(struct ByteQueue *, size_t);
+void byteQueueDeferredPop(struct ByteQueue *, const uint8_t **, size_t *,
+    size_t);
+void byteQueueDeferredPush(struct ByteQueue *, uint8_t **, size_t *, size_t);
+
 END_DECLS
 /*----------------------------------------------------------------------------*/
 BEGIN_DECLS
+
+static inline uint8_t byteQueueAt(const struct ByteQueue *queue, size_t offset)
+{
+  assert(queue->size > offset);
+
+  size_t head = queue->head + offset;
+  if (head >= queue->capacity)
+    head -= queue->capacity;
+
+  return queue->data[head];
+}
 
 static inline size_t byteQueueCapacity(const struct ByteQueue *queue)
 {
