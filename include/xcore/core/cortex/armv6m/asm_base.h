@@ -51,16 +51,6 @@ static inline void __isb(void)
   __asm__ volatile ("ISB");
 }
 
-// static inline void __interruptsDisable(void)
-// {
-//   __asm__ volatile ("CPSID i");
-// }
-
-// static inline void __interruptsEnable(void)
-// {
-//   __asm__ volatile ("CPSIE i");
-// }
-
 static inline uint32_t __mrs_primask(void)
 {
   uint32_t state;
@@ -72,17 +62,6 @@ static inline uint32_t __mrs_primask(void)
   return state;
 }
 
-// static inline uint32_t __interruptsGetState(void)
-// {
-//   uint32_t state;
-
-//   __asm__ volatile (
-//       "MRS %[state], PRIMASK"
-//       : [state] "=r" (state)
-//   );
-//   return state;
-// }
-
 static inline void __msr_primask(uint32_t state)
 {
   __asm__ volatile (
@@ -91,15 +70,6 @@ static inline void __msr_primask(uint32_t state)
       : [state] "r" (state)
   );
 }
-
-// static inline void __interruptsSetState(uint32_t state)
-// {
-//   __asm__ volatile (
-//       "MSR PRIMASK, %[state]"
-//       :
-//       : [state] "r" (state)
-//   );
-// }
 
 static inline void __nop(void)
 {
