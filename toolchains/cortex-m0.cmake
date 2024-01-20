@@ -10,7 +10,7 @@ set(CMAKE_C_COMPILER "arm-none-eabi-gcc")
 set(CMAKE_CXX_COMPILER "arm-none-eabi-g++")
 set(CMAKE_SIZE "arm-none-eabi-size")
 
-set(FLAGS_CPU "-mthumb -nostartfiles -mcpu=cortex-m0")
+set(FLAGS_CPU "-nostartfiles -mthumb -mcpu=cortex-m0")
 
 # Disable linking stage because cross-compiling toolchain cannot link without custom linker script
 set(CMAKE_TRY_COMPILE_TARGET_TYPE "STATIC_LIBRARY")
