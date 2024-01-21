@@ -8,9 +8,11 @@
 #include <check.h>
 #include <stdlib.h>
 /*----------------------------------------------------------------------------*/
-#define MAX_CAPACITY 51
+#define DATA_ALIGNMENT  32
+#define MAX_CAPACITY    51
 /*----------------------------------------------------------------------------*/
 extern void *__libc_malloc(size_t);
+extern void *__libc_memalign(size_t, size_t);
 
 static bool mallocHookActive = false;
 
@@ -19,7 +21,15 @@ void *malloc(size_t size)
   if (!mallocHookActive)
     return __libc_malloc(size);
   else
-    return 0;
+    return NULL;
+}
+
+void *memalign(size_t alignment, size_t bytes)
+{
+  if (!mallocHookActive)
+    return __libc_memalign(alignment, bytes);
+  else
+    return NULL;
 }
 /*----------------------------------------------------------------------------*/
 static void checkElements(const uint8_t *buffer, size_t base, size_t count)
@@ -358,6 +368,33 @@ START_TEST(testMultiByteInterface)
 }
 END_TEST
 /*----------------------------------------------------------------------------*/
+START_TEST(testPushPopAlignedSequence)
+{
+  struct ByteQueue queue;
+  uint8_t arena[MAX_CAPACITY];
+
+  /* Queue initialization */
+  const bool result = byteQueueInitAligned(&queue, MAX_CAPACITY,
+      DATA_ALIGNMENT);
+  ck_assert(result == true);
+
+  for (size_t i = 0; i < 7; ++i)
+  {
+    for (size_t j = 0; j < MAX_CAPACITY / 3; ++j)
+    {
+      const uint8_t id = (uint8_t)(i * MAX_CAPACITY / 3 + j);
+
+      byteQueuePushBack(&queue, id);
+      ck_assert_uint_eq(byteQueueFront(&queue), id);
+      byteQueuePopFront(&queue);
+    }
+  }
+
+  ck_assert_uint_eq(byteQueueSize(&queue), 0);
+  byteQueueDeinit(&queue);
+}
+END_TEST
+/*----------------------------------------------------------------------------*/
 START_TEST(testPushPopArenaSequence)
 {
   struct ByteQueue queue;
@@ -491,9 +528,16 @@ END_TEST
 START_TEST(testMemoryFailure)
 {
   struct ByteQueue queue;
+  bool result;
 
   mallocHookActive = true;
-  const bool result = byteQueueInit(&queue, MAX_CAPACITY);
+  result = byteQueueInit(&queue, MAX_CAPACITY);
+  mallocHookActive = false;
+
+  ck_assert(result == false);
+
+  mallocHookActive = true;
+  result = byteQueueInitAligned(&queue, MAX_CAPACITY, DATA_ALIGNMENT);
   mallocHookActive = false;
 
   ck_assert(result == false);
@@ -509,6 +553,7 @@ int main(void)
   tcase_add_test(testcase, testDeferredInterface);
   tcase_add_test(testcase, testDeferredPushPopSequence);
   tcase_add_test(testcase, testMultiByteInterface);
+  tcase_add_test(testcase, testPushPopAlignedSequence);
   tcase_add_test(testcase, testPushPopArenaSequence);
   tcase_add_test(testcase, testPushPopSequence);
   tcase_add_test(testcase, testRandomAccess);

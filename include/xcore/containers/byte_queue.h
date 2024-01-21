@@ -29,6 +29,7 @@ struct ByteQueue
 BEGIN_DECLS
 
 bool byteQueueInit(struct ByteQueue *, size_t);
+bool byteQueueInitAligned(struct ByteQueue *, size_t, size_t);
 void byteQueueInitArena(struct ByteQueue *, size_t, void *);
 void byteQueueDeinit(struct ByteQueue *);
 void byteQueueDeinitArena(struct ByteQueue *);

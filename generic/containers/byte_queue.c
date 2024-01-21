@@ -5,12 +5,30 @@
  */
 
 #include <xcore/containers/byte_queue.h>
+#include <malloc.h>
 #include <stdlib.h>
 #include <string.h>
 /*----------------------------------------------------------------------------*/
 bool byteQueueInit(struct ByteQueue *queue, size_t capacity)
 {
   queue->data = malloc(capacity);
+
+  if (queue->data != NULL)
+  {
+    queue->capacity = capacity;
+    byteQueueClear(queue);
+    return true;
+  }
+  else
+    return false;
+}
+/*----------------------------------------------------------------------------*/
+bool byteQueueInitAligned(struct ByteQueue *queue, size_t capacity,
+    size_t alignment)
+{
+  const size_t alignedCapacity = capacity + (alignment - capacity % alignment);
+
+  queue->data = memalign(alignment, alignedCapacity);
 
   if (queue->data != NULL)
   {
