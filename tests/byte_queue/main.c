@@ -371,7 +371,6 @@ END_TEST
 START_TEST(testPushPopAlignedSequence)
 {
   struct ByteQueue queue;
-  uint8_t arena[MAX_CAPACITY];
 
   /* Queue initialization */
   const bool result = byteQueueInitAligned(&queue, MAX_CAPACITY,
