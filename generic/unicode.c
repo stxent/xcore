@@ -135,15 +135,15 @@ size_t uFromUtf16(char *destination, const char16_t *source, size_t maxLength)
       case 4:
         *--end = (value | 0x80) & 0xBF;
         value >>= 6;
-        /* Falls through */
+        [[fallthrough]];
       case 3:
         *--end = (value | 0x80) & 0xBF;
         value >>= 6;
-        /* Falls through */
+        [[fallthrough]];
       case 2:
         *--end = (value | 0x80) & 0xBF;
         value >>= 6;
-        /* Falls through */
+        [[fallthrough]];
       case 1:
         *--end = value | startMark[width - 1];
         break;

@@ -52,7 +52,7 @@ void byteQueueDeinit(struct ByteQueue *queue)
   free(queue->data);
 }
 /*----------------------------------------------------------------------------*/
-void byteQueueDeinitArena(struct ByteQueue *queue __attribute__((unused)))
+void byteQueueDeinitArena([[maybe_unused]] struct ByteQueue *queue)
 {
 }
 /*----------------------------------------------------------------------------*/

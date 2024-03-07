@@ -41,12 +41,14 @@ END_DECLS
       struct TgListNode *head; \
     } name##List; \
     \
-    static inline bool prefix##ListDefaultComparator(const void *a, void *b) \
+    [[maybe_unused]] static inline bool prefix##ListDefaultComparator( \
+        const void *a, void *b) \
     { \
       return memcmp(a, b, sizeof(type)) == 0; \
     } \
     \
-    static inline void prefix##ListClear(name##List *list) \
+    [[maybe_unused]] static inline void prefix##ListClear( \
+        name##List *list) \
     { \
       if (list->head != NULL) \
       { \
@@ -55,54 +57,60 @@ END_DECLS
       } \
     } \
     \
-    static inline type *prefix##ListData(name##ListNode *node) \
+    [[maybe_unused]] static inline type *prefix##ListData( \
+        name##ListNode *node) \
     { \
       return &node->data; \
     } \
     \
-    static inline bool prefix##ListEmpty(const name##List *list) \
+    [[maybe_unused]] static inline bool prefix##ListEmpty( \
+        const name##List *list) \
     { \
       return list->head == NULL; \
     } \
     \
-    static inline void prefix##ListErase(name##List *list, type element) \
+    [[maybe_unused]] static inline void prefix##ListErase( \
+        name##List *list, type element) \
     { \
       tgListEraseIf(&list->head, &element, prefix##ListDefaultComparator); \
     } \
     \
-    static inline void prefix##ListEraseIf(name##List *list, \
-        void *argument, bool (*predicate)(const void *, void *)) \
+    [[maybe_unused]] static inline void prefix##ListEraseIf( \
+        name##List *list, void *argument, \
+        bool (*predicate)(const void *, void *)) \
     { \
       tgListEraseIf(&list->head, argument, predicate); \
     } \
     \
-    static inline name##ListNode *prefix##ListEraseNode(name##List *list, \
-        name##ListNode *node) \
+    [[maybe_unused]] static inline name##ListNode *prefix##ListEraseNode( \
+        name##List *list, name##ListNode *node) \
     { \
       return (name##ListNode *)tgListEraseNode(&list->head, \
           (struct TgListNode *)node); \
     } \
     \
-    static inline name##ListNode *prefix##ListFind(name##List *list, \
-        type element) \
+    [[maybe_unused]] static inline name##ListNode *prefix##ListFind( \
+        name##List *list, type element) \
     { \
       return (name##ListNode *)tgListFindIf(list->head, &element, \
           prefix##ListDefaultComparator); \
     } \
     \
-    static inline name##ListNode *prefix##ListFindIf(name##List *list, \
-        void *argument, bool (*predicate)(const void *, void *)) \
+    [[maybe_unused]] static inline name##ListNode *prefix##ListFindIf( \
+        name##List *list, void *argument, \
+        bool (*predicate)(const void *, void *)) \
     { \
       return (name##ListNode *)tgListFindIf(list->head, argument, predicate); \
     } \
     \
-    static inline name##ListNode *prefix##ListFront(name##List *list) \
+    [[maybe_unused]] static inline name##ListNode *prefix##ListFront( \
+        name##List *list) \
     { \
       return (name##ListNode *)list->head; \
     } \
     \
-    static inline bool prefix##ListInsert(name##List *list, \
-        name##ListNode *previous, type element) \
+    [[maybe_unused]] static inline bool prefix##ListInsert( \
+        name##List *list, name##ListNode *previous, type element) \
     { \
       name##ListNode * const node = malloc(sizeof(name##ListNode)); \
       \
@@ -127,12 +135,14 @@ END_DECLS
         return false; \
     } \
     \
-    static inline name##ListNode *prefix##ListNext(name##ListNode *node) \
+    [[maybe_unused]] static inline name##ListNode *prefix##ListNext( \
+        name##ListNode *node) \
     { \
       return (name##ListNode *)node->next; \
     } \
     \
-    static inline bool prefix##ListPushBack(name##List *list, type element) \
+    [[maybe_unused]] static inline bool prefix##ListPushBack( \
+        name##List *list, type element) \
     { \
       name##ListNode * const node = malloc(sizeof(name##ListNode)); \
       \
@@ -148,7 +158,8 @@ END_DECLS
         return false; \
     } \
     \
-    static inline bool prefix##ListPushFront(name##List *list, type element) \
+    [[maybe_unused]] static inline bool prefix##ListPushFront( \
+        name##List *list, type element) \
     { \
       name##ListNode * const node = malloc(sizeof(name##ListNode)); \
       \
@@ -164,17 +175,20 @@ END_DECLS
         return false; \
     } \
     \
-    static inline size_t prefix##ListSize(const name##List *list) \
+    [[maybe_unused]] static inline size_t prefix##ListSize( \
+        const name##List *list) \
     { \
       return tgListCountNodes(list->head); \
     } \
     \
-    static inline void prefix##ListInit(name##List *list) \
+    [[maybe_unused]] static inline void prefix##ListInit( \
+        name##List *list) \
     { \
       list->head = NULL; \
     } \
     \
-    static inline void prefix##ListDeinit(name##List *list) \
+    [[maybe_unused]] static inline void prefix##ListDeinit( \
+        name##List *list) \
     { \
       tgListFreeChain(list->head); \
     }

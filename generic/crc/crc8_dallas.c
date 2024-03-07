@@ -6,7 +6,7 @@
 
 #include <xcore/crc/crc8_dallas.h>
 /*----------------------------------------------------------------------------*/
-uint8_t crc8DallasUpdate(uint8_t, const void *, size_t) __attribute__((weak));
+[[gnu::weak]] uint8_t crc8DallasUpdate(uint8_t, const void *, size_t);
 /*----------------------------------------------------------------------------*/
 #ifndef CONFIG_FLAG_BITWISE_CRC
 static const uint8_t crcTable[256] = {

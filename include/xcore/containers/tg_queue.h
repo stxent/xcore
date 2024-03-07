@@ -22,7 +22,8 @@
       size_t tail; \
     } name##Queue; \
     \
-    static inline type *prefix##QueueAt(name##Queue *queue, size_t index) \
+    [[maybe_unused]] static inline type *prefix##QueueAt( \
+        name##Queue *queue, size_t index) \
     { \
       assert(queue->size > index); \
       \
@@ -33,39 +34,46 @@
       return queue->data + index; \
     } \
     \
-    static inline size_t prefix##QueueCapacity(const name##Queue *queue) \
+    [[maybe_unused]] static inline size_t prefix##QueueCapacity( \
+        const name##Queue *queue) \
     { \
       return queue->capacity; \
     } \
     \
-    static inline void prefix##QueueClear(name##Queue *queue) \
+    [[maybe_unused]] static inline void prefix##QueueClear( \
+        name##Queue *queue) \
     { \
       queue->head = queue->tail = queue->size = 0; \
     } \
     \
-    static inline bool prefix##QueueEmpty(const name##Queue *queue) \
+    [[maybe_unused]] static inline bool prefix##QueueEmpty( \
+        const name##Queue *queue) \
     { \
       return queue->size == 0; \
     } \
     \
-    static inline bool prefix##QueueFull(const name##Queue *queue) \
+    [[maybe_unused]] static inline bool prefix##QueueFull( \
+        const name##Queue *queue) \
     { \
       return queue->size == queue->capacity; \
     } \
     \
-    static inline type prefix##QueueBack(const name##Queue *queue) \
+    [[maybe_unused]] static inline type prefix##QueueBack( \
+        const name##Queue *queue) \
     { \
       assert(queue->size > 0); \
       return queue->data[(queue->tail ? queue->tail : queue->capacity) - 1]; \
     } \
     \
-    static inline type prefix##QueueFront(const name##Queue *queue) \
+    [[maybe_unused]] static inline type prefix##QueueFront( \
+        const name##Queue *queue) \
     { \
       assert(queue->size > 0); \
       return queue->data[queue->head]; \
     } \
     \
-    static inline void prefix##QueuePopBack(name##Queue *queue) \
+    [[maybe_unused]] static inline void prefix##QueuePopBack( \
+        name##Queue *queue) \
     { \
       assert(queue->size > 0); \
       \
@@ -73,7 +81,8 @@
       --queue->size; \
     } \
     \
-    static inline void prefix##QueuePopFront(name##Queue *queue) \
+    [[maybe_unused]] static inline void prefix##QueuePopFront( \
+        name##Queue *queue) \
     { \
       assert(queue->size > 0); \
       \
@@ -82,7 +91,8 @@
       --queue->size; \
     } \
     \
-    static inline void prefix##QueuePushBack(name##Queue *queue, type element) \
+    [[maybe_unused]] static inline void prefix##QueuePushBack( \
+        name##Queue *queue, type element) \
     { \
       assert(queue->size < queue->capacity); \
       \
@@ -92,7 +102,8 @@
       ++queue->size; \
     } \
     \
-    static inline void prefix##QueuePushFront(name##Queue *queue, type element) \
+    [[maybe_unused]] static inline void prefix##QueuePushFront( \
+        name##Queue *queue, type element) \
     { \
       assert(queue->size < queue->capacity); \
       \
@@ -101,12 +112,14 @@
       ++queue->size; \
     } \
     \
-    static inline size_t prefix##QueueSize(const name##Queue *queue) \
+    [[maybe_unused]] static inline size_t prefix##QueueSize( \
+        const name##Queue *queue) \
     { \
       return queue->size; \
     } \
     \
-    static inline bool prefix##QueueInit(name##Queue *queue, size_t capacity) \
+    [[maybe_unused]] static inline bool prefix##QueueInit( \
+        name##Queue *queue, size_t capacity) \
     { \
       queue->data = malloc(capacity * sizeof(type)); \
       \
@@ -122,21 +135,22 @@
       } \
     } \
     \
-    static inline void prefix##QueueInitArena(name##Queue *queue, \
-        size_t capacity, void *arena) \
+    [[maybe_unused]] static inline void prefix##QueueInitArena( \
+        name##Queue *queue, size_t capacity, void *arena) \
     { \
       queue->data = arena; \
       queue->capacity = capacity; \
       prefix##QueueClear(queue); \
     } \
     \
-    static inline void prefix##QueueDeinit(name##Queue *queue) \
+    [[maybe_unused]] static inline void prefix##QueueDeinit( \
+        name##Queue *queue) \
     { \
       free(queue->data); \
     } \
     \
-    static inline void prefix##QueueDeinitArena(name##Queue *queue \
-        __attribute__((unused))) \
+    [[maybe_unused]] static inline void prefix##QueueDeinitArena( \
+        [[maybe_unused]] name##Queue *queue) \
     { \
     }
 /*----------------------------------------------------------------------------*/

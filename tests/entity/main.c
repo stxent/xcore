@@ -72,8 +72,8 @@ static enum Result testClassInit(void *objectBase, const void *configBase)
   return E_OK;
 }
 /*----------------------------------------------------------------------------*/
-static enum Result testClassFailedInit(void *objectBase __attribute__((unused)),
-    const void *configBase __attribute__((unused)))
+static enum Result testClassFailedInit([[maybe_unused]] void *objectBase,
+    [[maybe_unused]] const void *configBase)
 {
   return E_ERROR;
 }

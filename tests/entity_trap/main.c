@@ -21,8 +21,8 @@ const struct EntityClass * const IncorrectEntity = &(const struct EntityClass){
     .deinit = deletedDestructorTrap
 };
 /*----------------------------------------------------------------------------*/
-static enum Result testClassInit(void *objectBase __attribute__((unused)),
-    const void *configBase __attribute__((unused)))
+static enum Result testClassInit([[maybe_unused]] void *objectBase,
+    [[maybe_unused]] const void *configBase)
 {
   ck_assert_ptr_nonnull(objectBase);
   return E_OK;

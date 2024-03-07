@@ -10,12 +10,12 @@
 /*----------------------------------------------------------------------------*/
 #define MAX_CAPACITY 17
 /*----------------------------------------------------------------------------*/
-typedef struct
+typedef struct [[gnu::packed]]
 {
   int64_t x;
   int32_t y;
   int8_t z;
-} __attribute__((packed)) TestStruct;
+} TestStruct;
 
 DEFINE_ARRAY(TestStruct, Test, test)
 /*----------------------------------------------------------------------------*/

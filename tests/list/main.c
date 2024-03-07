@@ -10,12 +10,12 @@
 /*----------------------------------------------------------------------------*/
 #define MAX_SIZE 17
 /*----------------------------------------------------------------------------*/
-typedef struct
+typedef struct [[gnu::packed]]
 {
   int64_t x;
   int32_t y;
   int8_t z;
-} __attribute__((packed)) TestStruct;
+} TestStruct;
 /*----------------------------------------------------------------------------*/
 extern void *__libc_malloc(size_t);
 
@@ -63,14 +63,14 @@ static void checkElements(struct List *list, int base, int step)
 }
 /*----------------------------------------------------------------------------*/
 static bool evenElementFinder(const void *aObject,
-    void *bObject __attribute__((unused)))
+    [[maybe_unused]] void *bObject)
 {
   const TestStruct * const a = aObject;
   return (a->z % 2) == 0;
 }
 /*----------------------------------------------------------------------------*/
 static bool oddElementFinder(const void *aObject,
-    void *bObject __attribute__((unused)))
+    [[maybe_unused]] void *bObject)
 {
   const TestStruct * const a = aObject;
   return (a->z % 2) != 0;

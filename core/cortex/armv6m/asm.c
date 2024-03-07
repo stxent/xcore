@@ -32,7 +32,7 @@ uint32_t __getProcessStackPointer(void)
   return address;
 }
 /*----------------------------------------------------------------------------*/
-void __setMainStackPointer(uint32_t address)
+void __setMainStackPointer([[maybe_unused]] uint32_t address)
 {
   __asm__ volatile (
       "MSR MSP, %[address]\n"
@@ -42,7 +42,7 @@ void __setMainStackPointer(uint32_t address)
   );
 }
 /*----------------------------------------------------------------------------*/
-void __setProcessStackPointer(uint32_t address)
+void __setProcessStackPointer([[maybe_unused]] uint32_t address)
 {
   __asm__ volatile (
       "MSR PSP, %[address]\n"

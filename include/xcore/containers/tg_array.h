@@ -21,34 +21,40 @@
       size_t size; \
     } name##Array; \
     \
-    static inline type *prefix##ArrayAt(name##Array *array, size_t index) \
+    [[maybe_unused]] static inline type *prefix##ArrayAt( \
+        name##Array *array, size_t index) \
     { \
       assert(array->size > index); \
       return array->data + index; \
     } \
     \
-    static inline type prefix##ArrayBack(const name##Array *array) \
+    [[maybe_unused]] static inline type prefix##ArrayBack( \
+        const name##Array *array) \
     { \
       assert(array->size > 0); \
       return array->data[array->size - 1]; \
     } \
     \
-    static inline size_t prefix##ArrayCapacity(const name##Array *array) \
+    [[maybe_unused]] static inline size_t prefix##ArrayCapacity( \
+        const name##Array *array) \
     { \
       return array->capacity; \
     } \
     \
-    static inline void prefix##ArrayClear(name##Array *array) \
+    [[maybe_unused]] static inline void prefix##ArrayClear( \
+        name##Array *array) \
     { \
       array->size = 0; \
     } \
     \
-    static inline bool prefix##ArrayEmpty(const name##Array *array) \
+    [[maybe_unused]] static inline bool prefix##ArrayEmpty( \
+        const name##Array *array) \
     { \
       return array->size == 0; \
     } \
     \
-    static inline void prefix##ArrayErase(name##Array *array, size_t index) \
+    [[maybe_unused]] static inline void prefix##ArrayErase( \
+        name##Array *array, size_t index) \
     { \
       assert(index < array->size);\
       \
@@ -57,13 +63,14 @@
           (array->size - index) * sizeof(type)); \
     } \
     \
-    static inline bool prefix##ArrayFull(const name##Array *array) \
+    [[maybe_unused]] static inline bool prefix##ArrayFull( \
+        const name##Array *array) \
     { \
       return array->size == array->capacity; \
     } \
     \
-    static inline void prefix##ArrayInsert(name##Array *array, size_t before, \
-        type element) \
+    [[maybe_unused]] static inline void prefix##ArrayInsert( \
+        name##Array *array, size_t before, type element) \
     { \
       assert(before <= array->size); \
       assert(array->size < array->capacity); \
@@ -75,13 +82,15 @@
       ++array->size; \
     } \
     \
-    static inline void prefix##ArrayPopBack(name##Array *array) \
+    [[maybe_unused]] static inline void prefix##ArrayPopBack( \
+        name##Array *array) \
     { \
       assert(array->size > 0); \
       --array->size; \
     } \
     \
-    static inline void prefix##ArrayPushBack(name##Array *array, type element) \
+    [[maybe_unused]] static inline void prefix##ArrayPushBack( \
+        name##Array *array, type element) \
     { \
       assert(array->size < array->capacity); \
       \
@@ -89,12 +98,14 @@
       ++array->size; \
     }\
     \
-    static inline size_t prefix##ArraySize(const name##Array *array) \
+    [[maybe_unused]] static inline size_t prefix##ArraySize( \
+        const name##Array *array) \
     { \
       return array->size; \
     } \
     \
-    static inline bool prefix##ArrayInit(name##Array *array, size_t capacity) \
+    [[maybe_unused]] static inline bool prefix##ArrayInit( \
+        name##Array *array, size_t capacity) \
     { \
       array->data = malloc(capacity * sizeof(type)); \
       \
@@ -110,21 +121,22 @@
       } \
     } \
     \
-    static inline void prefix##ArrayInitArena(name##Array *array, \
-        size_t capacity, void *arena) \
+    [[maybe_unused]] static inline void prefix##ArrayInitArena( \
+        name##Array *array, size_t capacity, void *arena) \
     { \
       array->data = arena; \
       array->capacity = capacity; \
       array->size = 0; \
     } \
     \
-    static inline void prefix##ArrayDeinit(name##Array *array) \
+    [[maybe_unused]] static inline void prefix##ArrayDeinit( \
+        name##Array *array) \
     { \
       free(array->data); \
     } \
     \
-    static inline void prefix##ArrayDeinitArena(name##Array *array \
-        __attribute__((unused))) \
+    [[maybe_unused]] static inline void prefix##ArrayDeinitArena( \
+        [[maybe_unused]] name##Array *array) \
     { \
     }
 /*----------------------------------------------------------------------------*/

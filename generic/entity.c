@@ -8,7 +8,7 @@
 #include <assert.h>
 #include <stdlib.h>
 /*----------------------------------------------------------------------------*/
-void deletedDestructorTrap(void *) __attribute__((weak));
+[[gnu::weak]] void deletedDestructorTrap(void *);
 /*----------------------------------------------------------------------------*/
 void *init(const void *descriptor, const void *arguments)
 {

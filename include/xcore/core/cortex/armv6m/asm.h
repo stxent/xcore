@@ -55,10 +55,10 @@ END_DECLS
 /*----------------------------------------------------------------------------*/
 BEGIN_DECLS
 
-uint32_t __getMainStackPointer(void) __attribute__((naked));
-uint32_t __getProcessStackPointer(void) __attribute__((naked));
-void __setMainStackPointer(uint32_t) __attribute__((naked));
-void __setProcessStackPointer(uint32_t) __attribute__((naked));
+[[gnu::naked]] uint32_t __getMainStackPointer(void);
+[[gnu::naked]] uint32_t __getProcessStackPointer(void);
+[[gnu::naked]] void __setMainStackPointer(uint32_t);
+[[gnu::naked]] void __setProcessStackPointer(uint32_t);
 
 END_DECLS
 /*----------------------------------------------------------------------------*/

@@ -187,7 +187,7 @@ static enum Result writeDataBuffer(struct TfsNode *node, FsLength position,
 }
 /*----------------------------------------------------------------------------*/
 static enum Result tfsHandleInit(void *object,
-    const void *configBase __attribute__((unused)))
+    [[maybe_unused]] const void *configBase)
 {
   struct TfsHandle * const handle = object;
 
@@ -218,7 +218,7 @@ static void *tfsHandleRoot(void *object)
   return init(TfsNodeProxy, &config);
 }
 /*----------------------------------------------------------------------------*/
-static enum Result tfsHandleSync(void *object __attribute__((unused)))
+static enum Result tfsHandleSync([[maybe_unused]] void *object)
 {
   return E_OK;
 }
@@ -267,7 +267,7 @@ static enum Result tfsNodeProxyInit(void *object, const void *configBase)
   return E_OK;
 }
 /*----------------------------------------------------------------------------*/
-static void tfsNodeProxyDeinit(void *object __attribute__((unused)))
+static void tfsNodeProxyDeinit([[maybe_unused]] void *object)
 {
 }
 /*----------------------------------------------------------------------------*/

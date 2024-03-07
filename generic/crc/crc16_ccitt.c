@@ -6,7 +6,7 @@
 
 #include <xcore/crc/crc16_ccitt.h>
 /*----------------------------------------------------------------------------*/
-uint16_t crc16CCITTUpdate(uint16_t, const void *, size_t) __attribute__((weak));
+[[gnu::weak]] uint16_t crc16CCITTUpdate(uint16_t, const void *, size_t);
 /*----------------------------------------------------------------------------*/
 #ifndef CONFIG_FLAG_BITWISE_CRC
 /* CRC-16-CCITT table, polynomial 0x1021 */

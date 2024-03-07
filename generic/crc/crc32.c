@@ -6,7 +6,7 @@
 
 #include <xcore/crc/crc32.h>
 /*----------------------------------------------------------------------------*/
-uint32_t crc32Update(uint32_t, const void *, size_t) __attribute__((weak));
+[[gnu::weak]] uint32_t crc32Update(uint32_t, const void *, size_t);
 /*----------------------------------------------------------------------------*/
 #ifndef CONFIG_FLAG_BITWISE_CRC
 static const uint32_t crcTable[256] = {
