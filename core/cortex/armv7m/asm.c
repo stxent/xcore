@@ -8,46 +8,32 @@
 /*----------------------------------------------------------------------------*/
 uint32_t __getMainStackPointer(void)
 {
-  uint32_t address;
-
   __asm__ volatile (
-      "MRS %[address], MSP\n"
-      "MOV r0, %[address]\n"
+      "MRS r0, MSP\n"
       "BX LR\n"
-      : [address] "=r" (address)
   );
-  return address;
 }
 /*----------------------------------------------------------------------------*/
 uint32_t __getProcessStackPointer(void)
 {
-  uint32_t address;
-
   __asm__ volatile (
-      "MRS %[address], PSP\n"
-      "MOV r0, %[address]\n"
+      "MRS r0, PSP\n"
       "BX LR\n"
-      : [address] "=r" (address)
   );
-  return address;
 }
 /*----------------------------------------------------------------------------*/
 void __setMainStackPointer([[maybe_unused]] uint32_t address)
 {
   __asm__ volatile (
-      "MSR MSP, %[address]\n"
+      "MSR MSP, r0\n"
       "BX LR\n"
-      :
-      : [address] "r" (address)
   );
 }
 /*----------------------------------------------------------------------------*/
 void __setProcessStackPointer([[maybe_unused]] uint32_t address)
 {
   __asm__ volatile (
-      "MSR PSP, %[address]\n"
+      "MSR PSP, r0\n"
       "BX LR\n"
-      :
-      : [address] "r" (address)
   );
 }
