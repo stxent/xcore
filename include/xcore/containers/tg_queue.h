@@ -150,7 +150,7 @@
     } \
     \
     [[maybe_unused]] static inline void prefix##QueueDeinitArena( \
-        [[maybe_unused]] name##Queue *queue) \
+        name##Queue *) \
     { \
     }
 /*----------------------------------------------------------------------------*/

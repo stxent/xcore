@@ -72,8 +72,7 @@ static enum Result testClassInit(void *objectBase, const void *configBase)
   return E_OK;
 }
 /*----------------------------------------------------------------------------*/
-static enum Result testClassFailedInit([[maybe_unused]] void *objectBase,
-    [[maybe_unused]] const void *configBase)
+static enum Result testClassFailedInit(void *, const void *)
 {
   return E_ERROR;
 }

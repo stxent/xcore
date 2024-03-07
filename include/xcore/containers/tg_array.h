@@ -136,7 +136,7 @@
     } \
     \
     [[maybe_unused]] static inline void prefix##ArrayDeinitArena( \
-        [[maybe_unused]] name##Array *array) \
+        name##Array *) \
     { \
     }
 /*----------------------------------------------------------------------------*/

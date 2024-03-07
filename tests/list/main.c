@@ -62,15 +62,13 @@ static void checkElements(struct List *list, int base, int step)
   }
 }
 /*----------------------------------------------------------------------------*/
-static bool evenElementFinder(const void *aObject,
-    [[maybe_unused]] void *bObject)
+static bool evenElementFinder(const void *aObject, void *)
 {
   const TestStruct * const a = aObject;
   return (a->z % 2) == 0;
 }
 /*----------------------------------------------------------------------------*/
-static bool oddElementFinder(const void *aObject,
-    [[maybe_unused]] void *bObject)
+static bool oddElementFinder(const void *aObject, void *)
 {
   const TestStruct * const a = aObject;
   return (a->z % 2) != 0;

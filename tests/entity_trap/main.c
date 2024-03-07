@@ -22,7 +22,7 @@ const struct EntityClass * const IncorrectEntity = &(const struct EntityClass){
 };
 /*----------------------------------------------------------------------------*/
 static enum Result testClassInit([[maybe_unused]] void *objectBase,
-    [[maybe_unused]] const void *configBase)
+    const void *)
 {
   ck_assert_ptr_nonnull(objectBase);
   return E_OK;
