@@ -20,6 +20,11 @@ static inline uint32_t countLeadingZeros32(uint32_t value)
   return __clz(value);
 }
 
+static inline void invokeDebugger(void)
+{
+  __bkpt();
+}
+
 static inline uint32_t reverseBits32(uint32_t value)
 {
   return __rbit(value);

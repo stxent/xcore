@@ -16,6 +16,11 @@
 /*----------------------------------------------------------------------------*/
 BEGIN_DECLS
 
+static inline void __bkpt(void)
+{
+  __asm__ volatile ("BKPT #0");
+}
+
 static inline void __cpsid(void)
 {
   __asm__ volatile ("CPSID i");

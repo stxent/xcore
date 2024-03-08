@@ -19,6 +19,10 @@ static inline uint32_t countLeadingZeros32(uint32_t value)
   return __builtin_clz(value);
 }
 
+static inline void invokeDebugger(void)
+{
+}
+
 static inline uint32_t reverseBits32(uint32_t value)
 {
   /* Swap odd and even bits */

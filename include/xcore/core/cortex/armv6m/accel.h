@@ -41,6 +41,11 @@ static inline uint32_t countLeadingZeros32(uint32_t value)
   return table[value >> result] - result;
 }
 
+static inline void invokeDebugger(void)
+{
+  __bkpt();
+}
+
 static inline uint32_t reverseBits32(uint32_t value)
 {
   /* Swap odd and even bits */
