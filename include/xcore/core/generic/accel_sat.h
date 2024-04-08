@@ -1,15 +1,15 @@
 /*
- * xcore/core/generic/saturated.h
+ * xcore/core/generic/accel_sat.h
  * Copyright (C) 2024 xent
  * Project is distributed under the terms of the MIT License
  */
 
-#ifndef XCORE_SATURATED_H_
+#ifndef XCORE_ACCEL_H_
 #error This header should not be included directly
 #endif
 
-#ifndef XCORE_CORE_GENERIC_SATURATED_H_
-#define XCORE_CORE_GENERIC_SATURATED_H_
+#ifndef XCORE_CORE_GENERIC_ACCEL_SAT_H_
+#define XCORE_CORE_GENERIC_ACCEL_SAT_H_
 /*----------------------------------------------------------------------------*/
 #include <xcore/helpers.h>
 #include <limits.h>
@@ -256,4 +256,4 @@ END_DECLS
     unsigned char: saturatedSubUC \
 )((valueA), (valueB))
 /*----------------------------------------------------------------------------*/
-#endif /* XCORE_CORE_GENERIC_ATOMIC_H_ */
+#endif /* XCORE_CORE_GENERIC_ACCEL_SAT_H_ */

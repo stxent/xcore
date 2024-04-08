@@ -11,25 +11,7 @@
 #ifndef XCORE_CORE_CORTEX_ARMV7M_ACCEL_H_
 #define XCORE_CORE_CORTEX_ARMV7M_ACCEL_H_
 /*----------------------------------------------------------------------------*/
-#include <xcore/asm.h>
-/*----------------------------------------------------------------------------*/
-BEGIN_DECLS
-
-static inline uint32_t countLeadingZeros32(uint32_t value)
-{
-  return __clz(value);
-}
-
-static inline void invokeDebugger(void)
-{
-  __bkpt();
-}
-
-static inline uint32_t reverseBits32(uint32_t value)
-{
-  return __rbit(value);
-}
-
-END_DECLS
+#include "accel_base.h"
+#include "../../generic/accel_sat.h"
 /*----------------------------------------------------------------------------*/
 #endif /* XCORE_CORE_CORTEX_ARMV7M_ACCEL_H_ */

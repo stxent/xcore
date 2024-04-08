@@ -11,6 +11,7 @@
 #ifndef XCORE_CORE_X86_ACCEL_H_
 #define XCORE_CORE_X86_ACCEL_H_
 /*----------------------------------------------------------------------------*/
+#include "../generic/accel_sat.h"
 #include <stdint.h>
 /*----------------------------------------------------------------------------*/
 static inline uint32_t countLeadingZeros32(uint32_t value)

@@ -11,6 +11,7 @@
 #ifndef XCORE_CORE_CORTEX_ARMV7EM_ACCEL_H_
 #define XCORE_CORE_CORTEX_ARMV7EM_ACCEL_H_
 /*----------------------------------------------------------------------------*/
-#include "../armv7m/accel.h"
+#include "../armv7m/accel_base.h"
+#include "accel_sat.h"
 /*----------------------------------------------------------------------------*/
 #endif /* XCORE_CORE_CORTEX_ARMV7EM_ACCEL_H_ */
