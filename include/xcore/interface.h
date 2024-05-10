@@ -20,25 +20,31 @@ enum IfParameter
   /**
    * Number of elements available in a receive queue. Depending on an interface
    * type these may be messages, frames, bytes or other elements.
-   * Parameter type is \a size_t.
+   * Read-only parameter. Parameter type is \a size_t.
    */
   IF_RX_AVAILABLE,
-  /** Free space in a receive queue. Parameter type is \a size_t. */
+  /**
+   * Free space in a receive queue. Read-only parameter.
+   * Parameter type is \a size_t.
+   */
   IF_RX_PENDING,
   /**
-   * Highest number of elements in a receive queue.
+   * Highest number of elements in a receive queue. Read-only parameter.
    * Parameter type is \a size_t.
    */
   IF_RX_WATERMARK,
-  /** Free space in a transmit queue. Parameter type is \a size_t. */
+  /**
+   * Free space in a transmit queue. Read-only parameter.
+   * Parameter type is \a size_t.
+   */
   IF_TX_AVAILABLE,
   /**
-   * Number of pending elements in a transmit queue.
+   * Number of pending elements in a transmit queue. Read-only parameter.
    * Parameter type is \a size_t.
    */
   IF_TX_PENDING,
   /**
-   * Highest number of elements in a transmit queue.
+   * Highest number of elements in a transmit queue. Read-only parameter.
    * Parameter type is \a size_t.
    */
   IF_TX_WATERMARK,
@@ -60,48 +66,67 @@ enum IfParameter
   IF_POSITION,
   /** Position in a 64-bit address space. Parameter type is \a uint64_t. */
   IF_POSITION_64,
-  /** Volume size, 32-bit value. Parameter type is \a uint32_t. */
+  /**
+   * Volume size, 32-bit value. Read-only parameter.
+   * Parameter type is \a uint32_t.
+   */
   IF_SIZE,
-  /** Volume size, 64-bit value. Parameter type is \a uint64_t. */
+  /**
+   * Volume size, 64-bit value. Read-only parameter.
+   * Parameter type is \a uint64_t.
+   */
   IF_SIZE_64,
-  /** Size of a data word in bits. Parameter type is \a uint32_t. */
+  /**
+   * Size of a data word in bits. Read-only parameter.
+   * Parameter type is \a size_t.
+   */
   IF_WIDTH,
 
   /**
-   * Stop an interface from reading a new data.
-   * Data pointer should be set to zero.
+   * Stop an interface from reading a new data. Write-only parameter.
+   * Null pointer should be used as a data pointer.
    */
   IF_DISABLE,
-  /** Enable a reception of a new data. Data pointer should be set to zero. */
+  /**
+   * Enable a reception of a new data. Write-only parameter.
+   * Null pointer should be used as a data pointer.
+   */
   IF_ENABLE,
-  /** Flush all cached data. Data pointer should be set to zero. */
+  /**
+   * Flush all cached data. Write-only parameter.
+   * Null pointer should be used as a data pointer.
+   */
   IF_FLUSH,
   /**
    * Get execution status of the last command. Returns @b E_OK when interface
-   * is ready to accept a new command. Data pointer should be set to zero.
+   * is ready to accept a new command. Read-only parameter.
+   * Null pointer should be used as a data pointer.
    */
   IF_STATUS,
 
   /**
    * Selects blocking mode for the interface. Read and write calls are blocked
-   * until all data has been received or transmitted.
-   * Data pointer should be set to zero.
+   * until all data has been received or transmitted. Write-only parameter.
+   * Null pointer should be used as a data pointer.
    */
   IF_BLOCKING,
   /**
    * Selects zero-copy mode for the interface. Read and write calls
    * will not block and will immediately return the number of items added.
    * User space buffers are unavailable until the transfer is complete.
-   * Data pointer should be set to zero.
+   * Write-only parameter. Null pointer should be used as a data pointer.
    */
   IF_ZEROCOPY,
 
   /**
    * Acquire the interface. Returns @b E_OK on success or @b E_BUSY.
-   * Data pointer should be set to zero.
+   * Write-only parameter. Null pointer should be used as a data pointer.
    */
   IF_ACQUIRE,
-  /** Release the interface. Data pointer should be set to zero. */
+  /**
+   * Release the interface. Write-only parameter, when supported
+   * always returns @b E_OK. Null pointer should be used as a data pointer.
+   */
   IF_RELEASE,
 
   /** End of the list. */
