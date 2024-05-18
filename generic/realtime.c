@@ -13,10 +13,10 @@
 #define OFFSET_YEARS      2
 #define OFFSET_SECONDS    (OFFSET_YEARS * 365 * SECONDS_PER_DAY)
 /*----------------------------------------------------------------------------*/
-static const uint8_t MONTH_LENGTHS[] = {
+static const uint8_t monthLengthMap[] = {
     31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
 };
-static const uint16_t YEAR_LENGTHS[] = {
+static const uint16_t yearLengthMap[] = {
     366, 365, 365, 365
 };
 /*----------------------------------------------------------------------------*/
@@ -40,12 +40,12 @@ enum Result rtMakeEpochTime(time64_t *result,
 
   if (leapYear && month == 1)
   {
-    if (datetime->day > MONTH_LENGTHS[month] + 1)
+    if (datetime->day > monthLengthMap[month] + 1)
       return E_VALUE;
   }
   else
   {
-    if (datetime->day > MONTH_LENGTHS[month])
+    if (datetime->day > monthLengthMap[month])
       return E_VALUE;
   }
 
@@ -58,7 +58,7 @@ enum Result rtMakeEpochTime(time64_t *result,
 
   /* Sum the days from January to the current month */
   while (month)
-    seconds += MONTH_LENGTHS[--month] * SECONDS_PER_DAY;
+    seconds += monthLengthMap[--month] * SECONDS_PER_DAY;
 
   /* Add the number of days from each year with leap years */
   seconds += ((datetime->year - START_YEAR) * 365
@@ -103,9 +103,9 @@ void rtMakeTime(struct RtDateTime *datetime, time64_t timestamp)
     years = leapCycles * 4 + OFFSET_YEARS;
     days -= years * 365 + leapCycles;
 
-    for (uint8_t number = 0; days >= YEAR_LENGTHS[number]; ++number)
+    for (uint8_t number = 0; days >= yearLengthMap[number]; ++number)
     {
-      days -= YEAR_LENGTHS[number];
+      days -= yearLengthMap[number];
       ++years;
     }
   }
@@ -121,8 +121,8 @@ void rtMakeTime(struct RtDateTime *datetime, time64_t timestamp)
   uint8_t month = 0;
 
   days -= offset;
-  while (days >= MONTH_LENGTHS[month])
-    days -= MONTH_LENGTHS[month++];
+  while (days >= monthLengthMap[month])
+    days -= monthLengthMap[month++];
 
   if (month == 1)
     days += offset;

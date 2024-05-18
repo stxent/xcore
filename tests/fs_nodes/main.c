@@ -12,16 +12,16 @@
 #define MAX_BUFFER_LENGTH 128
 #define MAX_FILE_LENGTH   1024
 /*----------------------------------------------------------------------------*/
-static const char PATH_BOOT[] = "/boot";
-static const char PATH_HOME[] = "/home";
-static const char PATH_SYS[] = "/sys";
+static const char pathBoot[] = "/boot";
+static const char pathHome[] = "/home";
+static const char pathSys[] = "/sys";
 
-static const char PATH_HOME_ROOT[] = "/home/root";
-static const char PATH_HOME_USER[] = "/home/user";
-static const char PATH_HOME_RESERVED[] = "/home/xx";
+static const char pathHomeRoot[] = "/home/root";
+static const char pathHomeUser[] = "/home/user";
+static const char pathHomeReserved[] = "/home/xx";
 
-static const char PATH_HOME_USER_FILE[] = "/home/user/file.txt";
-static const char PATH_HOME_USER_IMAGE[] = "/home/user/image.bmp";
+static const char pathHomeUserFile[] = "/home/user/file.txt";
+static const char pathHomeUserImage[] = "/home/user/image.bmp";
 /*----------------------------------------------------------------------------*/
 static void freeNode(struct FsHandle *, const char *);
 static void freeTestHandle(struct FsHandle *);
@@ -59,18 +59,18 @@ static void freeNode(struct FsHandle *handle, const char *path)
 static void freeTestHandle(struct FsHandle *handle)
 {
   /* Level 3 inside "/home/user directory", intentionally reordered */
-  freeNode(handle, PATH_HOME_USER_FILE);
-  freeNode(handle, PATH_HOME_USER_IMAGE);
+  freeNode(handle, pathHomeUserFile);
+  freeNode(handle, pathHomeUserImage);
 
   /* Level 2 inside "/home" */
-  freeNode(handle, PATH_HOME_RESERVED);
-  freeNode(handle, PATH_HOME_ROOT);
-  freeNode(handle, PATH_HOME_USER);
+  freeNode(handle, pathHomeReserved);
+  freeNode(handle, pathHomeRoot);
+  freeNode(handle, pathHomeUser);
 
   /* Level 1 inside "/" */
-  freeNode(handle, PATH_SYS);
-  freeNode(handle, PATH_HOME);
-  freeNode(handle, PATH_BOOT);
+  freeNode(handle, pathSys);
+  freeNode(handle, pathHome);
+  freeNode(handle, pathBoot);
 
   deinit(handle);
 }
@@ -110,18 +110,18 @@ static struct FsHandle *makeTestHandle(void)
   struct FsHandle * const handle = init(TfsHandle, NULL);
 
   /* Level 1 inside "/" */
-  makeNode(handle, PATH_BOOT);
-  makeNode(handle, PATH_HOME);
-  makeNode(handle, PATH_SYS);
+  makeNode(handle, pathBoot);
+  makeNode(handle, pathHome);
+  makeNode(handle, pathSys);
 
   /* Level 2 inside "/home" */
-  makeNode(handle, PATH_HOME_ROOT);
-  makeNode(handle, PATH_HOME_USER);
-  makeNode(handle, PATH_HOME_RESERVED);
+  makeNode(handle, pathHomeRoot);
+  makeNode(handle, pathHomeUser);
+  makeNode(handle, pathHomeReserved);
 
   /* Level 3 inside "/home/user directory" */
-  makeNode(handle, PATH_HOME_USER_FILE);
-  makeNode(handle, PATH_HOME_USER_IMAGE);
+  makeNode(handle, pathHomeUserFile);
+  makeNode(handle, pathHomeUserImage);
 
   return handle;
 }
@@ -130,9 +130,9 @@ START_TEST(testAccess)
 {
   struct FsHandle * const handle = makeTestHandle();
 
-  struct FsNode * const parent = fsOpenBaseNode(handle, PATH_HOME_USER_FILE);
+  struct FsNode * const parent = fsOpenBaseNode(handle, pathHomeUserFile);
   ck_assert_ptr_nonnull(parent);
-  struct FsNode * const subnode = fsOpenNode(handle, PATH_HOME_USER_IMAGE);
+  struct FsNode * const subnode = fsOpenNode(handle, pathHomeUserImage);
   ck_assert_ptr_nonnull(subnode);
 
   enum Result res;
@@ -162,7 +162,7 @@ START_TEST(testAccess)
 
   /* Try to open a node inside the forbidden directory */
 
-  struct FsNode * const node = fsOpenNode(handle, PATH_HOME_USER_FILE);
+  struct FsNode * const node = fsOpenNode(handle, pathHomeUserFile);
   ck_assert_ptr_null(node);
 
   /* Try to create a node inside the forbidden directory */
@@ -217,7 +217,7 @@ START_TEST(testAccessIter)
 {
   struct FsHandle * const handle = makeTestHandle();
 
-  struct FsNode * const parent = fsOpenBaseNode(handle, PATH_HOME_USER_FILE);
+  struct FsNode * const parent = fsOpenBaseNode(handle, pathHomeUserFile);
   ck_assert_ptr_nonnull(parent);
 
   struct FsNode *node = fsNodeHead(parent);
@@ -254,7 +254,7 @@ START_TEST(testAccessReadWrite)
 {
   struct FsHandle * const handle = makeTestHandle();
 
-  struct FsNode * const node = fsOpenNode(handle, PATH_HOME_USER_FILE);
+  struct FsNode * const node = fsOpenNode(handle, pathHomeUserFile);
   ck_assert_ptr_nonnull(node);
 
   char buffer[MAX_BUFFER_LENGTH] = {0};
@@ -294,7 +294,7 @@ START_TEST(testNodeCapacity)
 
   /* Prepare data file */
 
-  struct FsNode * const node = fsOpenNode(handle, PATH_HOME_USER_FILE);
+  struct FsNode * const node = fsOpenNode(handle, pathHomeUserFile);
   ck_assert_ptr_nonnull(node);
 
   for (size_t i = 0; i < MAX_FILE_LENGTH / MAX_BUFFER_LENGTH; ++i)
@@ -341,7 +341,7 @@ START_TEST(testNodeLength)
 
   /* Standard file */
 
-  struct FsNode * const node = fsOpenNode(handle, PATH_HOME_USER_FILE);
+  struct FsNode * const node = fsOpenNode(handle, pathHomeUserFile);
   ck_assert_ptr_nonnull(node);
 
   res = fsNodeWrite(node, FS_NODE_DATA, 0, data, MAX_BUFFER_LENGTH, NULL);
@@ -365,7 +365,7 @@ START_TEST(testNodeLength)
   count = 0;
   res = fsNodeLength(node, FS_NODE_NAME, &count);
   ck_assert_uint_eq(res, E_OK);
-  ck_assert_uint_eq(count, strlen(fsExtractName(PATH_HOME_USER_FILE)) + 1);
+  ck_assert_uint_eq(count, strlen(fsExtractName(pathHomeUserFile)) + 1);
 
   res = fsNodeLength(node, FS_NODE_ID, &count);
   ck_assert_uint_eq(res, E_INVALID);
@@ -390,7 +390,7 @@ END_TEST
 START_TEST(testNodeRenaming)
 {
   struct FsHandle * const handle = makeTestHandle();
-  struct FsNode * const node = fsOpenNode(handle, PATH_HOME_RESERVED);
+  struct FsNode * const node = fsOpenNode(handle, pathHomeReserved);
   ck_assert_ptr_nonnull(node);
 
   size_t written;
@@ -484,18 +484,18 @@ END_TEST
 /*----------------------------------------------------------------------------*/
 START_TEST(testPathFollowing)
 {
-  const char * const name = fsExtractName(PATH_HOME_USER_IMAGE);
+  const char * const name = fsExtractName(pathHomeUserImage);
   struct FsHandle * const handle = makeTestHandle();
   enum Result res;
 
-  struct FsNode * const dirNode = fsOpenBaseNode(handle, PATH_HOME_USER_IMAGE);
+  struct FsNode * const dirNode = fsOpenBaseNode(handle, pathHomeUserImage);
   ck_assert_ptr_nonnull(dirNode);
 
   /*
    * Virtual directory has a LIFO structure. "FILE" node should be created
    * before "IMAGE" node to be placed in the end of the list.
    */
-  struct FsNode * const imgNode = fsOpenNode(handle, PATH_HOME_USER_IMAGE);
+  struct FsNode * const imgNode = fsOpenNode(handle, pathHomeUserImage);
   ck_assert_ptr_nonnull(imgNode);
   ck_assert_ptr_ne(dirNode, imgNode);
 
@@ -503,7 +503,7 @@ START_TEST(testPathFollowing)
   res = fsNodeWrite(imgNode, FS_NODE_NAME, 0, "\x7F", 2, NULL);
   ck_assert_uint_eq(res, E_OK);
 
-  struct FsNode * const txtNode = fsOpenNode(handle, PATH_HOME_USER_FILE);
+  struct FsNode * const txtNode = fsOpenNode(handle, pathHomeUserFile);
   ck_assert_ptr_nonnull(txtNode);
   ck_assert_ptr_ne(dirNode, txtNode);
   fsNodeFree(txtNode);
@@ -526,7 +526,7 @@ START_TEST(testReadWrite)
 
   /* Standard file */
 
-  struct FsNode * const node = fsOpenNode(handle, PATH_HOME_USER_FILE);
+  struct FsNode * const node = fsOpenNode(handle, pathHomeUserFile);
   ck_assert_ptr_nonnull(node);
 
   for (size_t i = 0; i < MAX_FILE_LENGTH / MAX_BUFFER_LENGTH; ++i)
@@ -584,7 +584,7 @@ START_TEST(testTfsErrors)
 
   /* Try to open a child of empty node */
 
-  parent = fsOpenNode(handle, PATH_HOME_USER_FILE);
+  parent = fsOpenNode(handle, pathHomeUserFile);
   ck_assert_ptr_nonnull(parent);
   node = fsNodeHead(parent);
   ck_assert_ptr_null(node);
@@ -592,9 +592,9 @@ START_TEST(testTfsErrors)
 
   /* Try to remove nondescendant node */
 
-  parent = fsOpenNode(handle, PATH_HOME);
+  parent = fsOpenNode(handle, pathHome);
   ck_assert_ptr_nonnull(parent);
-  node = fsOpenNode(handle, PATH_BOOT);
+  node = fsOpenNode(handle, pathBoot);
   ck_assert_ptr_nonnull(node);
   res = fsNodeRemove(parent, node);
   ck_assert_uint_eq(res, E_ENTRY);
@@ -603,7 +603,7 @@ START_TEST(testTfsErrors)
 
   /* Try to read unavailable attributes */
 
-  node = fsOpenNode(handle, PATH_HOME);
+  node = fsOpenNode(handle, pathHome);
   ck_assert_ptr_nonnull(node);
 
   char buffer[MAX_BUFFER_LENGTH];
@@ -659,7 +659,7 @@ START_TEST(testTfsErrors)
 
   /* Create incorrect nodes */
 
-  parent = fsOpenNode(handle, PATH_HOME);
+  parent = fsOpenNode(handle, pathHome);
   ck_assert_ptr_nonnull(parent);
 
   const struct FsFieldDescriptor incorrectNodeDesc[] = {
@@ -687,7 +687,7 @@ START_TEST(testTfsMemoryErrors)
   static const char data[MAX_BUFFER_LENGTH] = {0};
 
   struct FsHandle * const handle = makeTestHandle();
-  struct FsNode * const parent = fsOpenNode(handle, PATH_HOME);
+  struct FsNode * const parent = fsOpenNode(handle, pathHome);
   ck_assert_ptr_nonnull(parent);
 
   const struct FsFieldDescriptor incorrectNodeDesc[] = {
@@ -713,7 +713,7 @@ START_TEST(testTfsMemoryErrors)
       ARRAY_SIZE(incorrectNodeDesc));
   ck_assert_uint_eq(res, E_MEMORY);
 
-  struct FsNode * const node = fsOpenNode(handle, PATH_HOME_USER_FILE);
+  struct FsNode * const node = fsOpenNode(handle, pathHomeUserFile);
   ck_assert_ptr_nonnull(node);
   mallocHookFails = 1;
   res = fsNodeWrite(node, FS_NODE_DATA, 0, data, MAX_BUFFER_LENGTH, NULL);
@@ -727,7 +727,7 @@ END_TEST
 /*----------------------------------------------------------------------------*/
 START_TEST(testUsedSpaceCalculation)
 {
-  static const size_t MAX_FILE_SIZE = 16384;
+  static const size_t maxFileSize = 16384;
   static const char data[MAX_BUFFER_LENGTH] = {0};
 
   struct FsHandle * const handle = makeTestHandle();
@@ -737,10 +737,10 @@ START_TEST(testUsedSpaceCalculation)
 
   /* Node with full capacity usage */
 
-  node = fsOpenNode(handle, PATH_HOME_USER_FILE);
+  node = fsOpenNode(handle, pathHomeUserFile);
   ck_assert_ptr_nonnull(node);
 
-  for (size_t i = 0; i < MAX_FILE_SIZE / MAX_BUFFER_LENGTH; ++i)
+  for (size_t i = 0; i < maxFileSize / MAX_BUFFER_LENGTH; ++i)
   {
     res = fsNodeWrite(node, FS_NODE_DATA, (FsLength)(i * MAX_BUFFER_LENGTH),
         data, MAX_BUFFER_LENGTH, NULL);
@@ -750,14 +750,14 @@ START_TEST(testUsedSpaceCalculation)
   fsNodeFree(node);
 
   used = fsFindUsedSpace(handle, NULL);
-  ck_assert_uint_eq(used, MAX_FILE_SIZE);
+  ck_assert_uint_eq(used, maxFileSize);
 
   /* Node with partial capacity usage */
 
-  node = fsOpenNode(handle, PATH_HOME_USER_FILE);
+  node = fsOpenNode(handle, pathHomeUserFile);
   ck_assert_ptr_nonnull(node);
 
-  for (size_t i = 0; i < (MAX_FILE_SIZE * 3) / (MAX_BUFFER_LENGTH * 4); ++i)
+  for (size_t i = 0; i < (maxFileSize * 3) / (MAX_BUFFER_LENGTH * 4); ++i)
   {
     res = fsNodeWrite(node, FS_NODE_DATA, (FsLength)(i * MAX_BUFFER_LENGTH),
         data, MAX_BUFFER_LENGTH, NULL);
@@ -767,7 +767,7 @@ START_TEST(testUsedSpaceCalculation)
   fsNodeFree(node);
 
   used = fsFindUsedSpace(handle, NULL);
-  ck_assert_uint_eq(used, MAX_FILE_SIZE);
+  ck_assert_uint_eq(used, maxFileSize);
 
   freeTestHandle(handle);
 }
@@ -775,7 +775,7 @@ END_TEST
 /*----------------------------------------------------------------------------*/
 START_TEST(testUsedSpaceErrors)
 {
-  static const size_t MAX_FILE_SIZE = 16384;
+  static const size_t maxFileSize = 16384;
   static const char data[MAX_BUFFER_LENGTH] = {0};
 
   struct FsHandle * const handle = makeTestHandle();
@@ -784,10 +784,10 @@ START_TEST(testUsedSpaceErrors)
 
   /* Make node with filled with data */
 
-  node = fsOpenNode(handle, PATH_HOME_USER_FILE);
+  node = fsOpenNode(handle, pathHomeUserFile);
   ck_assert_ptr_nonnull(node);
 
-  for (size_t i = 0; i < MAX_FILE_SIZE / MAX_BUFFER_LENGTH; ++i)
+  for (size_t i = 0; i < maxFileSize / MAX_BUFFER_LENGTH; ++i)
   {
     res = fsNodeWrite(node, FS_NODE_DATA, (FsLength)(i * MAX_BUFFER_LENGTH),
         data, MAX_BUFFER_LENGTH, NULL);
@@ -798,7 +798,7 @@ START_TEST(testUsedSpaceErrors)
 
   /* Test usage */
 
-  node = fsOpenNode(handle, PATH_HOME_RESERVED);
+  node = fsOpenNode(handle, pathHomeReserved);
   ck_assert_ptr_nonnull(node);
 
   FsCapacity used;
@@ -807,7 +807,7 @@ START_TEST(testUsedSpaceErrors)
   res = fsNodeWrite(node, FS_NODE_NAME, 0, "..", 3, NULL);
   ck_assert_uint_eq(res, E_OK);
   used = fsFindUsedSpace(handle, NULL);
-  ck_assert_uint_eq(used, MAX_FILE_SIZE);
+  ck_assert_uint_eq(used, maxFileSize);
 
   /* Test head allocation failure */
   mallocHookFails = 1;
@@ -818,7 +818,7 @@ START_TEST(testUsedSpaceErrors)
   res = fsNodeWrite(node, FS_NODE_NAME, 0, NULL, 0, NULL);
   ck_assert_uint_eq(res, E_OK);
   used = fsFindUsedSpace(handle, NULL);
-  ck_assert_uint_eq(used, MAX_FILE_SIZE);
+  ck_assert_uint_eq(used, maxFileSize);
 
   /* Test incorrect name reading */
   res = fsNodeWrite(node, FS_NODE_NAME, 0, "\x7F", 2, NULL);

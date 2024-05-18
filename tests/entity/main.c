@@ -9,7 +9,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 /*----------------------------------------------------------------------------*/
-static const char TEST_MESSAGE[] = "Lorem ipsum";
+static const char testObjectData[] = "Lorem ipsum";
 /*----------------------------------------------------------------------------*/
 struct TestObjectConfig
 {
@@ -82,18 +82,18 @@ static void testClassDeinit(void *objectBase)
   ck_assert_ptr_nonnull(objectBase);
 
   struct TestObject * const object = objectBase;
-  ck_assert_str_eq(object->message, TEST_MESSAGE);
+  ck_assert_str_eq(object->message, testObjectData);
   free(object->message);
 }
 /*----------------------------------------------------------------------------*/
 START_TEST(testObjectCreation)
 {
-  static const struct TestObjectConfig config = {TEST_MESSAGE};
+  static const struct TestObjectConfig config = {testObjectData};
 
   /* Simply construct and delete item */
   struct TestObject * const correctObject = init(DefaultEntity, &config);
   ck_assert_ptr_nonnull(correctObject);
-  ck_assert_str_eq(correctObject->message, TEST_MESSAGE);
+  ck_assert_str_eq(correctObject->message, testObjectData);
   deinit(correctObject);
 
   /* Create an object of class without constructor and destructor */
@@ -109,7 +109,7 @@ END_TEST
 /*----------------------------------------------------------------------------*/
 START_TEST(testMemoryFailure)
 {
-  static const struct TestObjectConfig config = {TEST_MESSAGE};
+  static const struct TestObjectConfig config = {testObjectData};
 
   mallocHookActive = true;
   struct TestObject * const object = init(DefaultEntity, &config);
