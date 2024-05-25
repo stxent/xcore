@@ -16,6 +16,41 @@
 /*----------------------------------------------------------------------------*/
 BEGIN_DECLS
 
+static inline bool atomicCompareExchangeULL(unsigned long long *pointer,
+    unsigned long long *expected, unsigned long long desired)
+{
+  return __atomic_compare_exchange_n(pointer, expected,
+      desired, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
+}
+
+static inline bool atomicCompareExchangeUL(unsigned long *pointer,
+    unsigned long *expected, unsigned long desired)
+{
+  return __atomic_compare_exchange_n(pointer, expected,
+      desired, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
+}
+
+static inline bool atomicCompareExchangeU(unsigned int *pointer,
+    unsigned int *expected, unsigned int desired)
+{
+  return __atomic_compare_exchange_n(pointer, expected,
+      desired, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
+}
+
+static inline bool atomicCompareExchangeUS(unsigned short *pointer,
+    unsigned short *expected, unsigned short desired)
+{
+  return __atomic_compare_exchange_n(pointer, expected,
+      desired, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
+}
+
+static inline bool atomicCompareExchangeUC(unsigned char *pointer,
+    unsigned char *expected, unsigned char desired)
+{
+  return __atomic_compare_exchange_n(pointer, expected,
+      desired, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
+}
+
 static inline unsigned long long atomicFetchAddULL(unsigned long long *pointer,
     unsigned long long value)
 {
@@ -165,12 +200,20 @@ static inline unsigned char atomicLoadUC(const unsigned char *pointer)
 static inline bool compareExchangePointer(void *pointer, void *expected,
     void *desired)
 {
-  return __atomic_compare_exchange((void **)pointer, (void **)expected,
-      &desired, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
+  return __atomic_compare_exchange_n((void **)pointer, (void **)expected,
+      desired, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
 }
 
 END_DECLS
 /*----------------------------------------------------------------------------*/
+#define atomicCompareExchange(pointer, expected, desired) _Generic((pointer), \
+    unsigned long long *: atomicCompareExchangeULL, \
+    unsigned long *: atomicCompareExchangeUL, \
+    unsigned int *: atomicCompareExchangeU, \
+    unsigned short *: atomicCompareExchangeUS, \
+    unsigned char *: atomicCompareExchangeUC \
+)((pointer), (expected), (desired))
+
 #define atomicFetchAdd(pointer, value) _Generic((pointer), \
     unsigned long long *: atomicFetchAddULL, \
     unsigned long *: atomicFetchAddUL, \

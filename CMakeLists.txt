@@ -6,9 +6,9 @@ project(xcore C)
 
 # Library configuration
 
-option(BITWISE_CRC "Enable bitwise implementations of CRC." OFF)
 option(BUILD_TESTING "Enable testing support." OFF)
-set(FS_NAME_LENGTH 64 CACHE STRING "Maximum length of filesystem entry name in bytes.")
+option(XCORE_BITWISE_CRC "Enable bitwise implementations of CRC." OFF)
+set(XCORE_ENTRY_LENGTH 64 CACHE STRING "Maximum length of a filesystem entry name in bytes.")
 
 # Default compiler flags
 
@@ -20,7 +20,7 @@ endif()
 
 # Collect files for object libraries
 
-set(DIRECTORY_LIST core fs generic)
+set(DIRECTORY_LIST core fs generic os)
 set(LIBRARY_OBJECTS "")
 set(LIBRARY_TARGETS "")
 

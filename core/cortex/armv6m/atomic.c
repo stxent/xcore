@@ -7,6 +7,98 @@
 #include <xcore/asm.h>
 #include <xcore/atomic.h>
 /*----------------------------------------------------------------------------*/
+bool atomicCompareExchangeUL(unsigned long *pointer, unsigned long *expected,
+    unsigned long desired)
+{
+  const uint32_t state = __mrs_primask();
+  __cpsid();
+
+  bool result;
+
+  if (*pointer == *expected)
+  {
+    *pointer = desired;
+    result = true;
+  }
+  else
+  {
+    *expected = *pointer;
+    result = false;
+  }
+
+  __msr_primask(state);
+  return result;
+}
+/*----------------------------------------------------------------------------*/
+bool atomicCompareExchangeU(unsigned int *pointer, unsigned int *expected,
+    unsigned int desired)
+{
+  const uint32_t state = __mrs_primask();
+  __cpsid();
+
+  bool result;
+
+  if (*pointer == *expected)
+  {
+    *pointer = desired;
+    result = true;
+  }
+  else
+  {
+    *expected = *pointer;
+    result = false;
+  }
+
+  __msr_primask(state);
+  return result;
+}
+/*----------------------------------------------------------------------------*/
+bool atomicCompareExchangeUS(unsigned short *pointer, unsigned short *expected,
+    unsigned short desired)
+{
+  const uint32_t state = __mrs_primask();
+  __cpsid();
+
+  bool result;
+
+  if (*pointer == *expected)
+  {
+    *pointer = desired;
+    result = true;
+  }
+  else
+  {
+    *expected = *pointer;
+    result = false;
+  }
+
+  __msr_primask(state);
+  return result;
+}
+/*----------------------------------------------------------------------------*/
+bool atomicCompareExchangeUC(unsigned char *pointer, unsigned char *expected,
+    unsigned char desired)
+{
+  const uint32_t state = __mrs_primask();
+  __cpsid();
+
+  bool result;
+
+  if (*pointer == *expected)
+  {
+    *pointer = desired;
+    result = true;
+  }
+  else
+  {
+    *expected = *pointer;
+    result = false;
+  }
+
+  __msr_primask(state);
+  return result;
+}
+/*----------------------------------------------------------------------------*/
 unsigned long atomicFetchAddUL(unsigned long *pointer, unsigned long value)
 {
   const uint32_t state = __mrs_primask();

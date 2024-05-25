@@ -16,6 +16,15 @@
 /*----------------------------------------------------------------------------*/
 BEGIN_DECLS
 
+bool atomicCompareExchangeUL(unsigned long *, unsigned long *,
+    unsigned long);
+bool atomicCompareExchangeU(unsigned int *, unsigned int *,
+    unsigned int);
+bool atomicCompareExchangeUS(unsigned short *, unsigned short *,
+    unsigned short);
+bool atomicCompareExchangeUC(unsigned char *, unsigned char *,
+    unsigned char);
+
 unsigned long atomicFetchAddUL(unsigned long *, unsigned long);
 unsigned int atomicFetchAddU(unsigned int *, unsigned int);
 unsigned short atomicFetchAddUS(unsigned short *, unsigned short);
@@ -58,6 +67,13 @@ bool compareExchangePointer(void *, void *, void *);
 
 END_DECLS
 /*----------------------------------------------------------------------------*/
+#define atomicCompareExchange(pointer, expected, desired) _Generic((pointer), \
+    unsigned long *: atomicCompareExchangeUL, \
+    unsigned int *: atomicCompareExchangeU, \
+    unsigned short *: atomicCompareExchangeUS, \
+    unsigned char *: atomicCompareExchangeUC \
+)((pointer), (expected), (desired))
+
 #define atomicFetchAdd(pointer, value) _Generic((pointer), \
     unsigned long *: atomicFetchAddUL, \
     unsigned int *: atomicFetchAddU, \

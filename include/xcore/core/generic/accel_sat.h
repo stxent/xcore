@@ -16,6 +16,7 @@
 /*----------------------------------------------------------------------------*/
 BEGIN_DECLS
 
+#if defined(LLONG_MAX) && defined(LLONG_MIN)
 static inline long long saturatedAddSLL(long long a, long long b)
 {
   if (a > 0)
@@ -31,6 +32,7 @@ static inline long long saturatedAddSLL(long long a, long long b)
 
   return a + b;
 }
+#endif
 
 static inline long saturatedAddSL(long a, long b)
 {
@@ -96,11 +98,13 @@ static inline signed char saturatedAddSC(signed char a, signed char b)
   return a + b;
 }
 
+#ifdef ULLONG_MAX
 static inline unsigned long long saturatedAddULL(unsigned long long a,
     unsigned long long b)
 {
   return (a > ULLONG_MAX - b) ? ULLONG_MAX : a + b;
 }
+#endif
 
 static inline unsigned long saturatedAddUL(unsigned long a, unsigned long b)
 {
@@ -122,6 +126,7 @@ static inline unsigned char saturatedAddUC(unsigned char a, unsigned char b)
   return (a > UCHAR_MAX - b) ? UCHAR_MAX : a + b;
 }
 
+#if defined(LLONG_MAX) && defined(LLONG_MIN)
 static inline long long saturatedSubSLL(long long a, long long b)
 {
   if (a < 0)
@@ -137,6 +142,7 @@ static inline long long saturatedSubSLL(long long a, long long b)
 
   return a - b;
 }
+#endif
 
 static inline long saturatedSubSL(long a, long b)
 {

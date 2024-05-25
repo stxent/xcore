@@ -34,6 +34,6 @@ if(NOT UCHAR_FOUND)
     )
 endif()
 
-if(BITWISE_CRC)
+if(XCORE_BITWISE_CRC)
     target_compile_definitions(xcore_generic PRIVATE -DCONFIG_FLAG_BITWISE_CRC)
 endif()
