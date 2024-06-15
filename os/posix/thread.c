@@ -21,9 +21,8 @@ static void *threadLauncher(void *object)
   return NULL;
 }
 /*----------------------------------------------------------------------------*/
-void threadInit(struct Thread *thread, size_t size,
-    int priority __attribute__((unused)), void (*function)(void *),
-    void *functionArgument)
+void threadInit(struct Thread *thread, size_t size, int,
+    void (*function)(void *), void *functionArgument)
 {
   thread->onTerminateCallback = NULL;
   thread->function = function;

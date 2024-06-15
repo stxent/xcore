@@ -13,6 +13,30 @@
 /*----------------------------------------------------------------------------*/
 #include "../armv6m/asm_base.h"
 /*----------------------------------------------------------------------------*/
+#define DEFINE_SSAT(name, shift) \
+    static inline int32_t name(int32_t value) \
+    { \
+      int32_t result; \
+      __asm__ volatile ( \
+          "SSAT %[result], #"#shift", %[value]" \
+          : [result] "=r" (result) \
+          : [value] "r" (value) \
+      ); \
+      return result; \
+    }
+
+#define DEFINE_USAT(name, shift) \
+    static inline uint32_t name(uint32_t value) \
+    { \
+      uint32_t result; \
+      __asm__ volatile ( \
+          "USAT %[result], #"#shift", %[value]" \
+          : [result] "=r" (result) \
+          : [value] "r" (value) \
+      ); \
+      return result; \
+    }
+/*----------------------------------------------------------------------------*/
 BEGIN_DECLS
 
 static inline void __clrex(void)
