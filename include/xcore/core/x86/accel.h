@@ -24,6 +24,10 @@ static inline void invokeDebugger(void)
 {
 }
 
+static inline void invokeSupervisor(void)
+{
+}
+
 static inline uint32_t reverseBits32(uint32_t value)
 {
   /* Swap odd and even bits */

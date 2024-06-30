@@ -81,6 +81,11 @@ static inline void __nop(void)
   __asm__ volatile ("NOP");
 }
 
+static inline void __svc(void)
+{
+  __asm__ volatile ("SVC #0");
+}
+
 static inline void __wfe(void)
 {
   __asm__ volatile ("WFE");

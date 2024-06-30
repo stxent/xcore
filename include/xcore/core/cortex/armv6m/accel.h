@@ -22,6 +22,11 @@ static inline void invokeDebugger(void)
   __bkpt();
 }
 
+static inline void invokeSupervisor(void)
+{
+  __svc();
+}
+
 static inline uint32_t reverseBits32(uint32_t value)
 {
   /* Swap odd and even bits */
