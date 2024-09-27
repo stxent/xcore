@@ -123,6 +123,7 @@ static inline uint32_t __mrs_basepri(void)
   __asm__ volatile (
       "MRS %[priority], BASEPRI"
       : [priority] "=r" (priority)
+      :: "memory"
   );
   return priority;
 }
@@ -133,6 +134,7 @@ static inline void __msr_basepri_max(uint32_t priority)
       "MSR BASEPRI_MAX, %[priority]"
       :
       : [priority] "r" (priority)
+      : "memory"
   );
 }
 
@@ -142,6 +144,7 @@ static inline void __msr_basepri(uint32_t priority)
       "MSR BASEPRI, %[priority]"
       :
       : [priority] "r" (priority)
+      : "memory"
   );
 }
 

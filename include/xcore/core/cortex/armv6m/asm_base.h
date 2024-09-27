@@ -23,37 +23,37 @@ static inline void __bkpt(void)
 
 static inline void __cpsid(void)
 {
-  __asm__ volatile ("CPSID i");
+  __asm__ volatile ("CPSID i" ::: "memory");
 }
 
 static inline void __cpsid_fault(void)
 {
-  __asm__ volatile ("CPSID f");
+  __asm__ volatile ("CPSID f" ::: "memory");
 }
 
 static inline void __cpsie(void)
 {
-  __asm__ volatile ("CPSIE i");
+  __asm__ volatile ("CPSIE i" ::: "memory");
 }
 
 static inline void __cpsie_fault(void)
 {
-  __asm__ volatile ("CPSIE f");
+  __asm__ volatile ("CPSIE f" ::: "memory");
 }
 
 static inline void __dmb(void)
 {
-  __asm__ volatile ("DMB");
+  __asm__ volatile ("DMB" ::: "memory");
 }
 
 static inline void __dsb(void)
 {
-  __asm__ volatile ("DSB");
+  __asm__ volatile ("DSB" ::: "memory");
 }
 
 static inline void __isb(void)
 {
-  __asm__ volatile ("ISB");
+  __asm__ volatile ("ISB" ::: "memory");
 }
 
 static inline uint32_t __mrs_primask(void)
@@ -63,6 +63,7 @@ static inline uint32_t __mrs_primask(void)
   __asm__ volatile (
       "MRS %[state], PRIMASK"
       : [state] "=r" (state)
+      :: "memory"
   );
   return state;
 }
@@ -73,6 +74,7 @@ static inline void __msr_primask(uint32_t state)
       "MSR PRIMASK, %[state]"
       :
       : [state] "r" (state)
+      : "memory"
   );
 }
 
@@ -83,17 +85,17 @@ static inline void __nop(void)
 
 static inline void __svc(void)
 {
-  __asm__ volatile ("SVC #0");
+  __asm__ volatile ("SVC #0" ::: "memory");
 }
 
 static inline void __wfe(void)
 {
-  __asm__ volatile ("WFE");
+  __asm__ volatile ("WFE" ::: "memory");
 }
 
 static inline void __wfi(void)
 {
-  __asm__ volatile ("WFI");
+  __asm__ volatile ("WFI" ::: "memory");
 }
 
 END_DECLS
