@@ -37,9 +37,8 @@ static inline int semValue(struct Semaphore *sem)
 {
   int value;
 
-  const int result = sem_getvalue(&sem->handle, &value);
+  [[maybe_unused]] const int result = sem_getvalue(&sem->handle, &value);
   assert(result == 0);
-  (void)result;
 
   return value;
 }
