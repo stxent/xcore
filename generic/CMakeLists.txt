@@ -14,6 +14,7 @@ list(APPEND SOURCE_FILES "containers/byte_queue.c")
 list(APPEND SOURCE_FILES "containers/list.c")
 list(APPEND SOURCE_FILES "containers/queue.c")
 list(APPEND SOURCE_FILES "containers/tg_list.c")
+list(APPEND SOURCE_FILES "containers/tree.c")
 
 # Checksum directory
 list(APPEND SOURCE_FILES "crc/crc7.c")
