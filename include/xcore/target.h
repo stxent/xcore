@@ -27,6 +27,10 @@
 #  define CORE        armv7em
 #  define CORE_TYPE   cortex
 #  define CORE_OS     generic
+#elif defined(__riscv)
+#  define CORE        riscv
+#  define CORE_TYPE   riscv
+#  define CORE_OS     generic
 #else
 #  error "Target architecture is not supported"
 #endif
