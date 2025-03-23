@@ -179,7 +179,6 @@ static struct TreeNode *rotateRight(struct TreeNode *node)
 {
   struct TreeNode * const a = node;
   struct TreeNode * const b = a->left;
-  const int balance = b->balance;
 
   a->left = b->right;
   b->right = a;

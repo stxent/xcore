@@ -18,7 +18,7 @@
     { \
       int32_t result; \
       __asm__ volatile ( \
-          "SSAT %[result], #"#shift", %[value]" \
+          "SSAT %[result], #" EXPAND_TO_STRING(shift) ", %[value]" \
           : [result] "=r" (result) \
           : [value] "r" (value) \
       ); \
@@ -30,7 +30,7 @@
     { \
       uint32_t result; \
       __asm__ volatile ( \
-          "USAT %[result], #"#shift", %[value]" \
+          "USAT %[result], #" EXPAND_TO_STRING(shift) ", %[value]" \
           : [result] "=r" (result) \
           : [value] "r" (value) \
       ); \
