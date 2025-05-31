@@ -6,7 +6,6 @@
 
 #include <xcore/entity.h>
 #include <check.h>
-#include <stdbool.h>
 #include <stdlib.h>
 /*----------------------------------------------------------------------------*/
 static const char testObjectData[] = "Lorem ipsum";

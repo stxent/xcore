@@ -11,7 +11,6 @@
 #include <xcore/helpers.h>
 #include <assert.h>
 #include <semaphore.h>
-#include <stdbool.h>
 /*----------------------------------------------------------------------------*/
 struct Semaphore
 {

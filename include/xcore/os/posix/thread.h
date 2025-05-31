@@ -10,7 +10,6 @@
 #include <xcore/error.h>
 #include <xcore/helpers.h>
 #include <pthread.h>
-#include <stdbool.h>
 /*----------------------------------------------------------------------------*/
 struct Thread
 {

@@ -8,7 +8,6 @@
 #define XCORE_CONTAINERS_LIST_H_
 /*----------------------------------------------------------------------------*/
 #include <xcore/helpers.h>
-#include <stdbool.h>
 #include <stddef.h>
 #include <string.h>
 /*----------------------------------------------------------------------------*/

@@ -5,7 +5,6 @@
  */
 
 #include <xcore/realtime.h>
-#include <stdbool.h>
 /*----------------------------------------------------------------------------*/
 #define SECONDS_PER_DAY   86400
 #define SECONDS_PER_HOUR  3600
