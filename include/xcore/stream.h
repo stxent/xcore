@@ -56,8 +56,8 @@ struct Stream
 BEGIN_DECLS
 
 /**
- * Clear the descriptor queue.
- * @param stream Pointer to a Stream object.
+ * @brief Clears the descriptor queue.
+ * @param[in] stream Pointer to a Stream object.
  */
 static inline void streamClear(void *stream)
 {
@@ -65,10 +65,10 @@ static inline void streamClear(void *stream)
 }
 
 /**
- * Add the descriptor to the queue.
- * @param stream Pointer to a Stream object.
- * @param request Pointer to a StreamDescriptor object.
- * @return @b E_OK on success.
+ * @brief Adds a descriptor to the queue.
+ * @param[in] stream Pointer to a Stream object.
+ * @param[in] request Pointer to the StreamDescriptor object to be added.
+ * @return @b E_OK if the operation was successful.
  */
 static inline enum Result streamEnqueue(void *stream,
     struct StreamRequest *request)

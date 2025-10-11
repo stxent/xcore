@@ -50,17 +50,19 @@ unsigned short atomicLoadUS(const unsigned short *);
 unsigned char atomicLoadUC(const unsigned char *);
 
 /**
- * This function implements an atomic compare and swap operation.
- * This compares the contents of @b pointer with the contents of @b expected.
- * If equal, the operation is a read-modify-write operation that writes
- * a desired value into @b pointer and @b true is returned. Otherwise,
- * the current contents of @b pointer are written into @b expected
- * and @b false is returned.
- * @param pointer Pointer to the contents to be modified.
- * @param expected Pointer to the expected value.
- * @param desired Desired value.
- * @return @b true if a desired value is written into @b pointer
- * and @false otherwise.
+ * @brief Performs an atomic compare-and-swap operation.
+ *
+ * Compares the contents of @b pointer with the value pointed to by @b expected.
+ * If they are equal, performs a read-modify-write operation by writing the
+ * @b desired value into the memory location pointed to by @b pointer,
+ * and returns @b true. Otherwise, copies the current value of @b pointer
+ * into the memory location pointed to by @b expected and returns @b false.
+ *
+ * @param[out] pointer Pointer to the memory location to be modified.
+ * @param[in] expected Pointer to the expected value for comparison.
+ * @param[in] desired New value to be written if the comparison succeeds.
+ * @return @b true if the desired value was successfully written to @b pointer,
+ * @b false otherwise.
  */
 bool compareExchangePointer(void *, void *, void *);
 

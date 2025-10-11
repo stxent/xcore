@@ -97,6 +97,13 @@ static bool isReservedName(const char *name)
   return name[0] == '.' && (!name[1] || (name[1] == '.' && !name[2]));
 }
 /*----------------------------------------------------------------------------*/
+/**
+ * @brief Extracts directories name from a path.
+ * @param[out] buffer Buffer to store path without a leaf name
+ * or a last directory name.
+ * @param[in] path Input path.
+ * @return @b true if base name was extracted @b false otherwise.
+ */
 bool fsExtractBaseName(char *buffer, const char *path)
 {
   assert(buffer != NULL);
@@ -123,6 +130,11 @@ bool fsExtractBaseName(char *buffer, const char *path)
   return false;
 }
 /*----------------------------------------------------------------------------*/
+/**
+ * @brief Extracts the last component from a path.
+ * @param[in] path Input path.
+ * @return Pointer to the last component or @b NULL.
+ */
 const char *fsExtractName(const char *path)
 {
   assert(path != NULL);
@@ -138,6 +150,12 @@ const char *fsExtractName(const char *path)
   return length ? path : NULL;
 }
 /*----------------------------------------------------------------------------*/
+/**
+ * @brief Finds the used space in the file system.
+ * @param[in] handle Pointer to file system handle.
+ * @param[in] node Starting node or @b NULL for root.
+ * @return Used space in bytes.
+ */
 FsCapacity fsFindUsedSpace(struct FsHandle *handle, struct FsNode *node)
 {
   struct FsNode * const parent = node ? node : fsHandleRoot(handle);
@@ -156,6 +174,14 @@ FsCapacity fsFindUsedSpace(struct FsHandle *handle, struct FsNode *node)
     return 0;
 }
 /*----------------------------------------------------------------------------*/
+/**
+ * @brief Follows the next path part.
+ * @param[in] handle Pointer to file system handle.
+ * @param[in,out] node Pointer to current node.
+ * @param[in] path Path to follow.
+ * @param[in] leaf Whether to treat as leaf node.
+ * @return Remaining path or @b NULL on error.
+ */
 const char *fsFollowNextPart(struct FsHandle *handle, struct FsNode **node,
     const char *path, bool leaf)
 {
@@ -221,6 +247,13 @@ const char *fsFollowNextPart(struct FsHandle *handle, struct FsNode **node,
   return path;
 }
 /*----------------------------------------------------------------------------*/
+/**
+ * @brief Follows a full path in the file system.
+ * @param[in] handle Pointer to file system handle.
+ * @param[in] path Path to follow.
+ * @param[in] leaf Whether to treat as leaf node.
+ * @return Pointer to the resulting node or @b NULL.
+ */
 struct FsNode *fsFollowPath(struct FsHandle *handle, const char *path,
     bool leaf)
 {
@@ -232,6 +265,12 @@ struct FsNode *fsFollowPath(struct FsHandle *handle, const char *path,
   return path != NULL ? node : NULL;
 }
 /*----------------------------------------------------------------------------*/
+/**
+ * @brief Extracts a path chunk into a buffer.
+ * @param[out] dst Destination buffer.
+ * @param[in] src Source path.
+ * @return Remaining path after the chunk.
+ */
 const char *fsGetChunk(char *dst, const char *src)
 {
   assert(dst != NULL);
@@ -272,6 +311,12 @@ const char *fsGetChunk(char *dst, const char *src)
   return src;
 }
 /*----------------------------------------------------------------------------*/
+/**
+ * @brief Joins two paths together.
+ * @param[out] buffer Resulting path buffer.
+ * @param[in] prefix Prefix path.
+ * @param[in] suffix Suffix path.
+ */
 void fsJoinPaths(char *buffer, const char *prefix, const char *suffix)
 {
   assert(buffer != NULL);
@@ -296,16 +341,34 @@ void fsJoinPaths(char *buffer, const char *prefix, const char *suffix)
   *buffer = '\0';
 }
 /*----------------------------------------------------------------------------*/
+/**
+ * @brief Opens a base node by path.
+ * @param[in] handle Pointer to file system handle.
+ * @param[in] path Path to the node.
+ * @return Pointer to the opened node or @b NULL.
+ */
 struct FsNode *fsOpenBaseNode(struct FsHandle *handle, const char *path)
 {
   return fsFollowPath(handle, path, false);
 }
 /*----------------------------------------------------------------------------*/
+/**
+ * @brief Opens a node by path.
+ * @param[in] handle Pointer to file system handle.
+ * @param[in] path Path to the node.
+ * @return Pointer to the opened node or @b NULL.
+ */
 struct FsNode *fsOpenNode(struct FsHandle *handle, const char *path)
 {
   return fsFollowPath(handle, path, true);
 }
 /*----------------------------------------------------------------------------*/
+/**
+ * @brief Removes a leap name or directory name from path.
+ * @param[in,out] buffer Path buffer.
+ * @param[in] path Path to the node.
+ * @return @b true when name was removed or @b false otherwise.
+ */
 bool fsStripName(char *buffer)
 {
   const char * const position = fsExtractName(buffer);

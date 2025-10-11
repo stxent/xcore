@@ -16,19 +16,17 @@
 /*----------------------------------------------------------------------------*/
 BEGIN_DECLS
 
-/* TODO Doxygen */
-bool fsExtractBaseName(char *buffer, const char *path);
-const char *fsExtractName(const char *path);
-const char *fsFollowNextPart(struct FsHandle *handle, struct FsNode **node,
-    const char *path, bool leaf);
-FsCapacity fsFindUsedSpace(struct FsHandle *handle, struct FsNode *node);
-struct FsNode *fsFollowPath(struct FsHandle *handle, const char *path,
-    bool leaf);
-const char *fsGetChunk(char *dst, const char *src);
-void fsJoinPaths(char *buffer, const char *directory, const char *path);
-struct FsNode *fsOpenBaseNode(struct FsHandle *handle, const char *path);
-struct FsNode *fsOpenNode(struct FsHandle *handle, const char *path);
-bool fsStripName(char *buffer);
+bool fsExtractBaseName(char *, const char *);
+const char *fsExtractName(const char *);
+const char *fsFollowNextPart(struct FsHandle *, struct FsNode **, const char *,
+    bool);
+FsCapacity fsFindUsedSpace(struct FsHandle *, struct FsNode *);
+struct FsNode *fsFollowPath(struct FsHandle *, const char *, bool);
+const char *fsGetChunk(char *, const char *);
+void fsJoinPaths(char *, const char *, const char *);
+struct FsNode *fsOpenBaseNode(struct FsHandle *, const char *);
+struct FsNode *fsOpenNode(struct FsHandle *, const char *);
+bool fsStripName(char *);
 
 END_DECLS
 /*----------------------------------------------------------------------------*/

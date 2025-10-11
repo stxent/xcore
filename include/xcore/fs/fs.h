@@ -97,9 +97,9 @@ struct FsNode
 BEGIN_DECLS
 
 /**
- * Get a root node of the file system tree.
- * @param handle Pointer to a file system handle.
- * @return Pointer to a new FsNode object.
+ * @brief Retrieves the root node of the file system tree.
+ * @param[in] handle Pointer to the filesystem handle.
+ * @return Pointer to the new FsNode object.
  */
 static inline void *fsHandleRoot(void *handle)
 {
@@ -107,8 +107,8 @@ static inline void *fsHandleRoot(void *handle)
 }
 
 /**
- * Write information about changed entries to the physical device.
- * @param handle Pointer to a file system handle.
+ * @brief Writes information about modified entries to the physical device.
+ * @param[in] handle Pointer to the filesystem handle.
  */
 static inline enum Result fsHandleSync(void *handle)
 {
@@ -116,12 +116,12 @@ static inline enum Result fsHandleSync(void *handle)
 }
 
 /**
- * Create a new node.
- * @param root Root node where the new node should be placed.
- * @param descriptors Pointer to an array of field descriptors
- * with supplementary information about the new node.
- * @param number Number of descriptors in the array.
- * @return E_OK on success.
+ * @brief Creates a new node in the file system.
+ * @param[out] root Root node where the new node will be placed.
+ * @param[in] descriptors Pointer to an array of field descriptors
+ * containing supplementary information about the new node.
+ * @param[in] number Number of descriptors in the array.
+ * @return E_OK if successful.
  */
 static inline enum Result fsNodeCreate(void *root,
     const struct FsFieldDescriptor *descriptors, size_t number)
@@ -131,9 +131,10 @@ static inline enum Result fsNodeCreate(void *root,
 }
 
 /**
- * Get a first node from the chain of descendant nodes.
- * @param node Pointer to an FsNode object.
- * @return Pointer to a new object with basic information about the first node.
+ * @brief Retrieves the first node from the chain of descendant nodes.
+ * @param[in] node Pointer to the FsNode object.
+ * @return Pointer to a new object containing basic information
+ * about the first node.
  */
 static inline void *fsNodeHead(void *node)
 {
@@ -141,8 +142,8 @@ static inline void *fsNodeHead(void *node)
 }
 
 /**
- * Free memory allocated for the node.
- * @param node Pointer to a previously allocated FsNode object.
+ * @brief Releases memory allocated for the node.
+ * @param[in] node Pointer to the previously allocated FsNode object.
  */
 static inline void fsNodeFree(void *node)
 {
@@ -150,12 +151,11 @@ static inline void fsNodeFree(void *node)
 }
 
 /**
- * Read length of the specified field.
- * @param node Pointer to an FsNode object.
- * @param type Unique field identifier.
- * @param length Pointer to a buffer where the result of the operation
- * will be placed.
- * @return @b E_OK on success, @b E_INVALID when the field is not supported.
+ * @brief Retrieves the length of the specified field.
+ * @param[in] node Pointer to the FsNode object.
+ * @param[in] type Unique field identifier.
+ * @param[out] length Pointer to a buffer where the result will be stored.
+ * @return @b E_OK if successful, @b E_INVALID if the field is not supported.
  */
 static inline enum Result fsNodeLength(void *node, enum FsFieldType type,
     FsLength *length)
@@ -164,9 +164,9 @@ static inline enum Result fsNodeLength(void *node, enum FsFieldType type,
 }
 
 /**
- * Read basic information about the next node in the chain.
- * @param node Pointer to an FsNode object.
- * @return @b E_OK on success, @b E_ENTRY when @b node is the last node
+ * @brief Retrieves basic information about the next node in the chain.
+ * @param[in] node Pointer to the FsNode object.
+ * @return @b E_OK if successful, @b E_ENTRY if the node is the last
  * in the chain.
  */
 static inline enum Result fsNodeNext(void *node)
@@ -175,16 +175,18 @@ static inline enum Result fsNodeNext(void *node)
 }
 
 /**
- * Read supplementary information about the node.
- * @param node Pointer to an FsNode object.
- * @param type Unique field identifier.
- * @param position Offset from the beginning of the field.
- * @param buffer Pointer to a buffer with a size of at least @b length bytes.
- * @param length Number of data bytes to be read.
- * @param read Pointer to a buffer where the result of the operation
- * will be placed. May be left zero when the result is not needed.
- * @return @b E_OK on success, @b E_INVALID when this type of operation is not
- * supported.
+ * @brief Reads supplementary information about the node.
+ *
+ * @param[in] node Pointer to the FsNode object.
+ * @param[in] type Unique field identifier.
+ * @param[in] position Offset from the beginning of the field.
+ * @param[out] buffer Pointer to a buffer with a size of
+ * at least @b length bytes.
+ * @param[in] length Number of data bytes to read.
+ * @param[out] read Pointer to a buffer where the result will be stored.
+ * May be @b NULL if the result is not needed.
+ * @return @b E_OK if successful, @b E_INVALID if the operation
+ * is not supported.
  */
 static inline enum Result fsNodeRead(void *node, enum FsFieldType type,
     FsLength position, void *buffer, size_t length, size_t *read)
@@ -194,10 +196,10 @@ static inline enum Result fsNodeRead(void *node, enum FsFieldType type,
 }
 
 /**
- * Remove entry and make the space it was using available for reuse.
- * @param root Root node where the @b node to be removed is located.
- * @param node Node to be removed.
- * @return @b E_OK on success.
+ * @brief Removes an entry and frees the space it occupied for reuse.
+ * @param[in] root Root node containing the node to be removed.
+ * @param[in] node Node to be removed from the file system.
+ * @return @b E_OK if the operation was successful.
  */
 static inline enum Result fsNodeRemove(void *root, void *node)
 {
@@ -205,16 +207,18 @@ static inline enum Result fsNodeRemove(void *root, void *node)
 }
 
 /**
- * Write supplementary information about the node.
- * @param node Pointer to an FsNode object.
- * @param type Unique field identifier.
- * @param position Offset from the beginning of the data.
- * @param buffer Pointer to a buffer with a size of at least @b length bytes.
- * @param length Number of data bytes to be written.
- * @param written Pointer to a buffer where the result of the operation
- * will be placed. May be left zero when the result is not needed.
- * @return @b E_OK on success, @b E_INVALID when this type of operation is not
- * supported.
+ * @brief Writes supplementary information to the node.
+ *
+ * @param[in] node Pointer to the FsNode object.
+ * @param[in] type Unique field identifier for the data.
+ * @param[in] position Offset from the beginning of the data field.
+ * @param[in] buffer Pointer to the source buffer containing data to write.
+ * @param[in] length Number of bytes to write.
+ * @param[out] written Pointer to a buffer where the number of written bytes
+ * will be stored.
+ * Can be @b NULL if this information is not required.
+ * @return @b E_OK if the operation was successful,
+ * @b E_INVALID if the operation is not supported for this type of node.
  */
 static inline enum Result fsNodeWrite(void *node, enum FsFieldType type,
     FsLength position, const void *buffer, size_t length, size_t *written)

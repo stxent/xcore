@@ -20,11 +20,11 @@ static const uint16_t yearLengthMap[] = {
 };
 /*----------------------------------------------------------------------------*/
 /**
- * Convert a date and time structure to a UNIX timestamp.
- * @param result Pointer to an output value.
- * @param datetime Date and time structure to convert.
- * @return @b E_OK on success, @b E_VALUE when a date and time structure
- * contains incorrect values.
+ * @brief Converts a date and time structure to a UNIX timestamp.
+ * @param[out] result Pointer to the output value.
+ * @param[in] datetime Date and time structure to be converted.
+ * @return @b E_OK if successful, @b E_VALUE if the date and time structure
+ * contains invalid values.
  */
 enum Result rtMakeEpochTime(time64_t *result,
     const struct RtDateTime *datetime)
@@ -75,9 +75,9 @@ enum Result rtMakeEpochTime(time64_t *result,
 }
 /*----------------------------------------------------------------------------*/
 /**
- * Convert a UNIX timestamp to a date and time structure.
- * @param datetime Pointer to an output date and time structure.
- * @param timestamp UNIX timestamp to convert.
+ * @brief Converts a UNIX timestamp to a date and time structure.
+ * @param[out] datetime Pointer to the output date and time structure.
+ * @param[in] timestamp UNIX timestamp to be converted.
 */
 void rtMakeTime(struct RtDateTime *datetime, time64_t timestamp)
 {
