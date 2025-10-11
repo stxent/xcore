@@ -132,10 +132,10 @@ const char *fsExtractName(const char *path)
   for (size_t pos = strlen(path); pos > 0; --pos, ++length)
   {
     if (path[pos - 1] == '/')
-      return length ? path + pos : 0;
+      return length ? path + pos : NULL;
   }
 
-  return length ? path : 0;
+  return length ? path : NULL;
 }
 /*----------------------------------------------------------------------------*/
 FsCapacity fsFindUsedSpace(struct FsHandle *handle, struct FsNode *node)

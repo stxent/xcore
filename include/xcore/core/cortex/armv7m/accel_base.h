@@ -13,6 +13,11 @@
 /*----------------------------------------------------------------------------*/
 #include <xcore/asm.h>
 /*----------------------------------------------------------------------------*/
+#define XCORE_ACCEL_CLZ
+#define XCORE_ACCEL_REV
+#define XCORE_ACCEL_REV_BIT
+#define XCORE_ACCEL_SAT
+/*----------------------------------------------------------------------------*/
 BEGIN_DECLS
 
 static inline uint32_t countLeadingZeros32(uint32_t value)

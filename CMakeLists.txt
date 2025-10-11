@@ -12,7 +12,7 @@ set(XCORE_ENTRY_LENGTH 64 CACHE STRING "Maximum length of a filesystem entry nam
 
 # Default compiler flags
 
-if(BUILD_TESTING)
+if(PROJECT_IS_TOP_LEVEL)
     set(CMAKE_C_STANDARD 23)
 endif()
 
