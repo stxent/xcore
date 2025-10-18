@@ -14,6 +14,8 @@
 #include "../generic/accel_sat.h"
 #include <stdint.h>
 /*----------------------------------------------------------------------------*/
+BEGIN_DECLS
+
 static inline uint32_t countLeadingZeros32(uint32_t value)
 {
   /* If the input value is 0, the result is undefined */
@@ -41,5 +43,7 @@ static inline uint32_t reverseBits32(uint32_t value)
 
   return value;
 }
+
+END_DECLS
 /*----------------------------------------------------------------------------*/
 #endif /* XCORE_CORE_X86_ACCEL_H_ */
