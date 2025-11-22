@@ -145,7 +145,7 @@ size_t uFromUtf16(char *destination, const char16_t *source, size_t maxLength)
         value >>= 6;
         [[fallthrough]];
       case 1:
-        *--end = value | startMark[width - 1];
+        *--end = (char)(value | startMark[width - 1]);
         break;
     }
 
@@ -154,7 +154,7 @@ size_t uFromUtf16(char *destination, const char16_t *source, size_t maxLength)
   }
   *output = '\0';
 
-  return output - destination;
+  return (size_t)(output - destination);
 }
 /*----------------------------------------------------------------------------*/
 /* Convert the string from UTF-8 terminated with 0 to UTF-16LE string */
@@ -174,14 +174,14 @@ size_t uToUtf16(char16_t *destination, const char *source, size_t maxLength)
     else if ((value & 0xF8) == 0xF0) /* U+10000 to U+1FFFFF */
       width = 3;
 
-    uint32_t code = (value & ~startMark[width]) << (6 * width);
+    uint32_t code = (uint32_t)((value & ~startMark[width]) << (6 * width));
 
     while (width--)
       code |= (*source++ & 0x3F) << (6 * width);
 
     if (code < 0x10000)
     {
-      *destination++ = toLittleEndian16(code);
+      *destination++ = toLittleEndian16((uint16_t)code);
       ++count;
     }
     else

@@ -375,7 +375,7 @@ bool fsStripName(char *buffer)
 
   if (position != NULL)
   {
-    size_t offset = position - buffer;
+    size_t offset = (size_t)(position - buffer);
 
     if (offset > 1)
       --offset;

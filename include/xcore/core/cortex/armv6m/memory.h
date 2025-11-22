@@ -17,8 +17,8 @@ BEGIN_DECLS
 
 static inline uint64_t toBigEndian64(uint64_t value)
 {
-  const uint32_t high = value >> 32;
-  const uint32_t low = value;
+  const uint32_t high = (uint32_t)(value >> 32);
+  const uint32_t low = (uint32_t)value;
 
   return ((uint64_t)__rev(low) << 32) | (uint64_t)__rev(high);
 }

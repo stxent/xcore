@@ -5,6 +5,7 @@
  */
 
 #include <xcore/realtime.h>
+#include <stdlib.h>
 /*----------------------------------------------------------------------------*/
 #define SECONDS_PER_DAY   86400
 #define SECONDS_PER_HOUR  3600
@@ -82,21 +83,21 @@ enum Result rtMakeEpochTime(time64_t *result,
 void rtMakeTime(struct RtDateTime *datetime, time64_t timestamp)
 {
   /* TODO Add handling of negative times and years after 2100 */
-  const uint64_t seconds = timestamp > 0 ? timestamp : -timestamp;
-  const uint32_t daySeconds = seconds % SECONDS_PER_DAY;
+  const uint64_t seconds = (uint64_t)llabs(timestamp);
+  const uint32_t daySeconds = (uint32_t)(seconds % SECONDS_PER_DAY);
 
-  datetime->second = daySeconds % 60;
-  datetime->minute = (daySeconds % 3600) / 60;
-  datetime->hour = daySeconds / 3600;
+  datetime->second = (uint8_t)(daySeconds % 60);
+  datetime->minute = (uint8_t)((daySeconds % 3600) / 60);
+  datetime->hour = (uint8_t)(daySeconds / 3600);
 
-  uint32_t days = seconds / SECONDS_PER_DAY;
+  uint32_t days = (uint32_t)(seconds / SECONDS_PER_DAY);
   uint32_t years;
 
   if (seconds > OFFSET_SECONDS)
   {
     const uint64_t offset = seconds - OFFSET_SECONDS;
-    const uint32_t estimatedYears = (offset / (SECONDS_PER_DAY / 100))
-        / (365 * 100 + 25);
+    const uint32_t estimatedYears = (uint32_t)((offset / (SECONDS_PER_DAY / 100))
+        / (365 * 100 + 25));
     const uint32_t leapCycles = estimatedYears / 4;
 
     years = leapCycles * 4 + OFFSET_YEARS;
@@ -114,7 +115,7 @@ void rtMakeTime(struct RtDateTime *datetime, time64_t timestamp)
     days -= years * 365;
   }
 
-  datetime->year = START_YEAR + years;
+  datetime->year = (uint16_t)(START_YEAR + years);
 
   const uint8_t offset = !(datetime->year % 4) && days >= 60 ? 1 : 0;
   uint8_t month = 0;
@@ -126,6 +127,6 @@ void rtMakeTime(struct RtDateTime *datetime, time64_t timestamp)
   if (month == 1)
     days += offset;
 
-  datetime->day = days + 1;
+  datetime->day = (uint8_t)(days + 1);
   datetime->month = month + 1;
 }
