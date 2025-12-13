@@ -11,11 +11,11 @@
 #ifndef XCORE_CORE_CORTEX_ATOMIC_H_
 #define XCORE_CORE_CORTEX_ATOMIC_H_
 /*----------------------------------------------------------------------------*/
-#if defined(__ARM_ARCH_6M__)
+#ifdef __ARM_ARCH_6M__
 #  include "armv6m/atomic.h"
-#elif defined(__ARM_ARCH_7M__)
+#elifdef __ARM_ARCH_7M__
 #  include "armv7m/atomic.h"
-#elif defined(__ARM_ARCH_7EM__)
+#elifdef __ARM_ARCH_7EM__
 #  include "armv7em/atomic.h"
 #endif
 /*----------------------------------------------------------------------------*/
