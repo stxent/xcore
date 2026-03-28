@@ -26,8 +26,12 @@ struct TreeNode
 /*----------------------------------------------------------------------------*/
 struct Tree
 {
+  void *data;
+
   /** Comparator function. */
   int (*compare)(const void *, const void *);
+  /** Linked list of statically allocated nodes. */
+  struct TreeNode *pool;
   /** Root node. */
   struct TreeNode *root;
   /** Size in bytes of each element. */
@@ -36,8 +40,12 @@ struct Tree
 /*----------------------------------------------------------------------------*/
 BEGIN_DECLS
 
-void treeInit(struct Tree *, size_t, int (*)(const void *, const void *));
+bool treeInit(struct Tree *, size_t, size_t,
+    int (*)(const void *, const void *));
+void treeInitArena(struct Tree *, size_t, size_t,
+    int (*)(const void *, const void *), void *);
 void treeDeinit(struct Tree *);
+void treeDeinitArena(struct Tree *);
 void treeErase(struct Tree *, struct TreeNode *);
 struct TreeNode *treeFind(struct Tree *, const void *);
 bool treeInsert(struct Tree *, const void *);

@@ -5,8 +5,14 @@
  */
 
 #include <xcore/containers/tree.h>
+#include <stdint.h>
 #include <stdlib.h>
 /*----------------------------------------------------------------------------*/
+static inline size_t getNodeSize(size_t);
+static void makeNodeList(struct Tree *, size_t, size_t);
+static inline struct TreeNode *nodeAllocate(struct Tree *);
+static inline void nodeRelease(struct Tree *, struct TreeNode *);
+
 static struct TreeNode *fetchFirst(struct TreeNode *);
 static struct TreeNode *fetchNextInOrder(struct TreeNode *);
 static struct TreeNode *fetchNextPostOrder(struct TreeNode *);
@@ -18,6 +24,43 @@ static struct TreeNode *rotateLeftLeft(struct TreeNode *);
 static struct TreeNode *rotateLeftRight(struct TreeNode *);
 static struct TreeNode *rotateRightRight(struct TreeNode *);
 static struct TreeNode *rotateRightLeft(struct TreeNode *);
+/*----------------------------------------------------------------------------*/
+static inline size_t getNodeSize(size_t width)
+{
+  return offsetof(struct TreeNode, data)
+      + ((width + (sizeof(uintptr_t) - 1)) & ~(sizeof(uintptr_t) - 1));
+}
+/*----------------------------------------------------------------------------*/
+static void makeNodeList(struct Tree *tree, size_t size, size_t capacity)
+{
+  struct TreeNode *current = (struct TreeNode *)tree->data;
+
+  for (size_t index = 0; index < capacity - 1; ++index)
+  {
+    current->left = (struct TreeNode *)((uintptr_t)current + size);
+    current = current->left;
+  }
+  current->left = NULL;
+}
+/*----------------------------------------------------------------------------*/
+static inline struct TreeNode *nodeAllocate(struct Tree *tree)
+{
+  if (tree->pool != NULL)
+  {
+    struct TreeNode * const node = tree->pool;
+
+    tree->pool = tree->pool->left;
+    return node;
+  }
+  else
+    return NULL;
+}
+/*----------------------------------------------------------------------------*/
+static inline void nodeRelease(struct Tree *tree, struct TreeNode *node)
+{
+  node->left = tree->pool;
+  tree->pool = node;
+}
 /*----------------------------------------------------------------------------*/
 static struct TreeNode *fetchFirst(struct TreeNode *node)
 {
@@ -268,17 +311,55 @@ static struct TreeNode *rotateRightLeft(struct TreeNode *node)
   return node;
 }
 /*----------------------------------------------------------------------------*/
-void treeInit(struct Tree *tree, size_t width,
+bool treeInit(struct Tree *tree, size_t width, size_t capacity,
     int (*comparator)(const void *, const void *))
 {
   tree->compare = comparator;
   tree->root = NULL;
   tree->width = width;
+
+  if (capacity)
+  {
+    const size_t totalNodeSize = getNodeSize(width);
+
+    tree->data = malloc(capacity * totalNodeSize);
+    if (tree->data == NULL)
+      return false;
+    tree->pool = tree->data;
+
+    makeNodeList(tree, totalNodeSize, capacity);
+  }
+  else
+  {
+    tree->data = NULL;
+    tree->pool = NULL;
+  }
+
+  return true;
+}
+/*----------------------------------------------------------------------------*/
+void treeInitArena(struct Tree *tree, size_t width, size_t capacity,
+    int (*comparator)(const void *, const void *), void *arena)
+{
+  tree->compare = comparator;
+  tree->data = arena;
+  tree->pool = capacity ? arena : NULL;
+  tree->root = NULL;
+  tree->width = width;
+
+  makeNodeList(tree, getNodeSize(width), capacity);
 }
 /*----------------------------------------------------------------------------*/
 void treeDeinit(struct Tree *tree)
 {
-  treeClear(tree);
+  if (tree->data != NULL)
+    free(tree->data);
+  else
+    treeClear(tree);
+}
+/*----------------------------------------------------------------------------*/
+void treeDeinitArena(struct Tree *)
+{
 }
 /*----------------------------------------------------------------------------*/
 void treeErase(struct Tree *tree, struct TreeNode *node)
@@ -393,13 +474,12 @@ void treeErase(struct Tree *tree, struct TreeNode *node)
     tree->root = child;
   }
 
-  free(sacrifice);
+  nodeRelease(tree, sacrifice);
 }
 /*----------------------------------------------------------------------------*/
 bool treeInsert(struct Tree *tree, const void *element)
 {
-  struct TreeNode * const node =
-      malloc(offsetof(struct TreeNode, data) + tree->width);
+  struct TreeNode * const node = nodeAllocate(tree);
 
   if (node != NULL)
   {
@@ -451,7 +531,7 @@ void treeClear(struct Tree *tree)
     struct TreeNode * const previous = current;
 
     current = fetchNextPostOrder(current);
-    free(previous);
+    nodeRelease(tree, previous);
   }
 
   tree->root = NULL;

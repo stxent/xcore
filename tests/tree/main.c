@@ -70,10 +70,13 @@ START_TEST(testClear)
   static const int SEEDS[] = {
       127, 131, 137, 139, 283, 293, 307, 311
   };
-  TestStruct values[MAX_SIZE];
 
+  TestStruct values[MAX_SIZE];
   struct Tree tree;
-  treeInit(&tree, sizeof(TestStruct), compareElements);
+
+  const bool result = treeInit(&tree, sizeof(TestStruct), MAX_SIZE,
+      compareElements);
+  ck_assert(result == true);
 
   for (size_t seed = 0; seed < ARRAY_SIZE(SEEDS); ++seed)
   {
@@ -92,7 +95,32 @@ START_TEST(testClear)
     treeClear(&tree);
     ck_assert_uint_eq(treeSize(&tree), 0);
     ck_assert(treeEmpty(&tree) == true);
+
+    /* Try to clear empty tree */
+    treeClear(&tree);
+    ck_assert_uint_eq(treeSize(&tree), 0);
+    ck_assert(treeEmpty(&tree) == true);
   }
+
+  treeDeinit(&tree);
+}
+END_TEST
+/*----------------------------------------------------------------------------*/
+START_TEST(testEmpty)
+{
+  const TestStruct element = createElement(0);
+  struct Tree tree;
+
+  const bool result = treeInit(&tree, sizeof(TestStruct), 0, compareElements);
+  ck_assert(result == true);
+
+  ck_assert(treeInsert(&tree, &element) == false);
+  ck_assert_uint_eq(treeSize(&tree), 0);
+  ck_assert(treeEmpty(&tree) == true);
+
+  treeClear(&tree);
+  ck_assert_uint_eq(treeSize(&tree), 0);
+  ck_assert(treeEmpty(&tree) == true);
 
   treeDeinit(&tree);
 }
@@ -103,10 +131,13 @@ START_TEST(testInsert)
   static const int SEEDS[] = {
       1002109, 1002121, 1002143, 1002149, 1002151, 1002173, 1002191, 1002227,
   };
-  TestStruct values[MAX_SIZE];
 
+  TestStruct values[MAX_SIZE];
   struct Tree tree;
-  treeInit(&tree, sizeof(TestStruct), compareElements);
+
+  const bool result = treeInit(&tree, sizeof(TestStruct), MAX_SIZE,
+      compareElements);
+  ck_assert(result == true);
 
   for (size_t seed = 0; seed < ARRAY_SIZE(SEEDS); ++seed)
   {
@@ -150,20 +181,67 @@ START_TEST(testInsert)
 }
 END_TEST
 /*----------------------------------------------------------------------------*/
+START_TEST(testInsertArena)
+{
+  static const size_t totalNodeSize = offsetof(struct TreeNode, data)
+      + ((sizeof(TestStruct) + (sizeof(uintptr_t) - 1))
+          & ~(sizeof(uintptr_t) - 1));
+
+  uint8_t arena[MAX_SIZE * totalNodeSize];
+  struct Tree tree;
+
+  treeInitArena(&tree, sizeof(TestStruct), MAX_SIZE, compareElements, arena);
+
+  for (size_t i = 0; i < MAX_SIZE; ++i)
+  {
+    const TestStruct element = createElement((int)i);
+    ck_assert(treeInsert(&tree, &element) == true);
+  }
+  ck_assert_uint_eq(treeSize(&tree), MAX_SIZE);
+
+  for (size_t i = 0; i < MAX_SIZE; ++i)
+  {
+    const TestStruct target = createElement((int)i);
+    struct TreeNode * const node = treeFind(&tree, &target);
+    ck_assert_ptr_nonnull(node);
+
+    TestStruct element;
+    treeData(&tree, node, &element);
+    ck_assert(compareElements(&element, &target) == 0);
+  }
+
+  treeDeinitArena(&tree);
+}
+END_TEST
+/*----------------------------------------------------------------------------*/
+START_TEST(testAllocationFailure)
+{
+  const TestStruct element = createElement(0);
+  struct Tree tree;
+  bool result;
+
+  result = treeInit(&tree, sizeof(TestStruct), 1, compareElements);
+  ck_assert(result == true);
+
+  result = treeInsert(&tree, &element);
+  ck_assert(result == true);
+  result = treeInsert(&tree, &element);
+  ck_assert(result == false);
+
+  treeDeinit(&tree);
+}
+END_TEST
+/*----------------------------------------------------------------------------*/
 START_TEST(testMemoryFailure)
 {
   const TestStruct element = createElement(0);
   struct Tree tree;
   bool result;
 
-  treeInit(&tree, sizeof(TestStruct), compareElements);
-
   mallocHookActive = true;
-  result = treeInsert(&tree, &element);
+  result = treeInit(&tree, sizeof(TestStruct), MAX_SIZE, compareElements);
   mallocHookActive = false;
   ck_assert(result == false);
-
-  treeDeinit(&tree);
 }
 END_TEST
 /*----------------------------------------------------------------------------*/
@@ -173,7 +251,10 @@ int main(void)
   TCase * const testcase = tcase_create("Core");
 
   tcase_add_test(testcase, testClear);
+  tcase_add_test(testcase, testEmpty);
   tcase_add_test(testcase, testInsert);
+  tcase_add_test(testcase, testInsertArena);
+  tcase_add_test(testcase, testAllocationFailure);
   tcase_add_test(testcase, testMemoryFailure);
   suite_add_tcase(suite, testcase);
 
