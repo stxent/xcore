@@ -64,13 +64,10 @@ static inline void nodeRelease(struct Tree *tree, struct TreeNode *node)
 /*----------------------------------------------------------------------------*/
 static struct TreeNode *fetchFirst(struct TreeNode *node)
 {
-  struct TreeNode *current = node->left;
+  struct TreeNode *current = node;
 
-  if (current != NULL)
-  {
-    while (current->left != NULL)
-      current = current->left;
-  }
+  while (current->left != NULL)
+    current = current->left;
 
   return current;
 }

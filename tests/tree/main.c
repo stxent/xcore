@@ -149,8 +149,10 @@ START_TEST(testInsert)
     shuffleElements(values, ARRAY_SIZE(values), SEEDS[seed]);
 
     for (size_t i = 0; i < ARRAY_SIZE(values); ++i)
+    {
       ck_assert(treeInsert(&tree, &values[i]) == true);
-    ck_assert_uint_eq(treeSize(&tree), ARRAY_SIZE(values));
+      ck_assert_uint_eq(treeSize(&tree), i + 1);
+    }
 
     for (size_t i = 0; i < ARRAY_SIZE(values); ++i)
     {
@@ -170,6 +172,7 @@ START_TEST(testInsert)
       ck_assert_ptr_nonnull(node);
 
       treeErase(&tree, node);
+      ck_assert_uint_eq(treeSize(&tree), ARRAY_SIZE(values) - 1 - i);
 
       node = treeFind(&tree, &values[i]);
       ck_assert_ptr_null(node);
