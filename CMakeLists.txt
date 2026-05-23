@@ -63,6 +63,7 @@ foreach(ENTRY ${DIRECTORY_LIST})
 endforeach()
 
 add_library(${PROJECT_NAME} ${LIBRARY_OBJECTS})
+target_compile_options(${PROJECT_NAME} INTERFACE SHELL:${FLAGS_CPU})
 target_link_libraries(${PROJECT_NAME} PUBLIC ${LIBRARY_TARGETS})
 
 if(BUILD_TESTING)
