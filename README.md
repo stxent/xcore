@@ -1,11 +1,11 @@
 # Xcore
 
-![C21](https://img.shields.io/badge/C-21-blue)
+![C23](https://img.shields.io/badge/C-23-blue)
 ![CMake](https://img.shields.io/badge/CMake-3.21+-blue)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A lightweight C21 library for embedded systems containing basic interfaces,
-algorithms, and containers. It is written using the C21 standard and CMake.
+A lightweight C library for embedded systems containing basic interfaces,
+algorithms, and containers. It is written using the C23 standard and CMake.
 CTest is used for testing.
 
 ## Supported Platforms
