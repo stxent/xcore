@@ -1,5 +1,5 @@
 /*
- * xcore/core/generic/accel_saturated.h
+ * xcore/core/generic/accel_clz.h
  * Copyright (C) 2024 xent
  * Project is distributed under the terms of the MIT License
  */

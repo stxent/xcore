@@ -1,0 +1,35 @@
+/*
+ * xcore/core/generic/accel_rev.h
+ * Copyright (C) 2026 xent
+ * Project is distributed under the terms of the MIT License
+ */
+
+#ifndef XCORE_ACCEL_H_
+#error This header should not be included directly
+#endif
+
+#ifndef XCORE_CORE_GENERIC_ACCEL_REV_H_
+#define XCORE_CORE_GENERIC_ACCEL_REV_H_
+/*----------------------------------------------------------------------------*/
+#include <xcore/helpers.h>
+#include <stdint.h>
+/*----------------------------------------------------------------------------*/
+BEGIN_DECLS
+
+static inline uint32_t reverseBits32(uint32_t value)
+{
+  /* Swap odd and even bits */
+  value = ((value >> 1) & 0x55555555UL) | ((value & 0x55555555UL) << 1);
+  /* Swap consecutive pairs */
+  value = ((value >> 2) & 0x33333333UL) | ((value & 0x33333333UL) << 2);
+  /* Swap nibbles */
+  value = ((value >> 4) & 0x0F0F0F0FUL) | ((value & 0x0F0F0F0FUL) << 4);
+  /* Swap bytes and pairs */
+  value = __builtin_bswap32(value);
+
+  return value;
+}
+
+END_DECLS
+/*----------------------------------------------------------------------------*/
+#endif /* XCORE_CORE_GENERIC_ACCEL_REV_H_ */
