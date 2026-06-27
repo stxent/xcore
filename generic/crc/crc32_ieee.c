@@ -1,14 +1,15 @@
 /*
- * crc32.c
+ * crc32_ieee.c
  * Copyright (C) 2015 xent
  * Project is distributed under the terms of the MIT License
  */
 
-#include <xcore/crc/crc32.h>
+#include <xcore/crc/crc32_ieee.h>
 /*----------------------------------------------------------------------------*/
-[[gnu::weak]] uint32_t crc32Update(uint32_t, const void *, size_t);
+[[gnu::weak]] uint32_t crc32IEEEUpdate(uint32_t, const void *, size_t);
 /*----------------------------------------------------------------------------*/
 #ifndef CONFIG_FLAG_BITWISE_CRC
+/* CRC-32/ISO-HDLC table, polynomial 0x04C11DB7, reflected input */
 static const uint32_t crcTable[256] = {
     0x00000000, 0x77073096, 0xEE0E612C, 0x990951BA,
     0x076DC419, 0x706AF48F, 0xE963A535, 0x9E6495A3,
@@ -77,7 +78,7 @@ static const uint32_t crcTable[256] = {
 };
 #endif
 /*----------------------------------------------------------------------------*/
-uint32_t crc32Update(uint32_t crc, const void *buffer, size_t length)
+uint32_t crc32IEEEUpdate(uint32_t crc, const void *buffer, size_t length)
 {
   const uint8_t *pointer = buffer;
 
@@ -86,21 +87,19 @@ uint32_t crc32Update(uint32_t crc, const void *buffer, size_t length)
 #ifdef CONFIG_FLAG_BITWISE_CRC
   while (length--)
   {
-    uint8_t value = *pointer++;
+    crc ^= *pointer++;
 
     for (unsigned int bit = 0; bit < 8; ++bit)
     {
-      if ((crc ^ value) & 0x01)
+      if (crc & 1)
         crc = (crc >> 1) ^ 0xEDB88320UL;
       else
         crc >>= 1;
-
-      value >>= 1;
     }
   }
 #else
   while (length--)
-    crc = (crc >> 8) ^ crcTable[(crc ^ *pointer++) & 0xFF];
+    crc = (crc >> 8) ^ crcTable[(uint8_t)(crc ^ *pointer++)];
 #endif
 
   return ~crc;

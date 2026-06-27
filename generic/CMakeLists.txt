@@ -17,10 +17,10 @@ list(APPEND SOURCE_FILES "containers/tg_list.c")
 list(APPEND SOURCE_FILES "containers/tree.c")
 
 # Checksum directory
-list(APPEND SOURCE_FILES "crc/crc7.c")
-list(APPEND SOURCE_FILES "crc/crc8_dallas.c")
+list(APPEND SOURCE_FILES "crc/crc7_mmc.c")
+list(APPEND SOURCE_FILES "crc/crc8_maxim.c")
 list(APPEND SOURCE_FILES "crc/crc16_ccitt.c")
-list(APPEND SOURCE_FILES "crc/crc32.c")
+list(APPEND SOURCE_FILES "crc/crc32_ieee.c")
 
 add_library(xcore_generic OBJECT ${SOURCE_FILES})
 

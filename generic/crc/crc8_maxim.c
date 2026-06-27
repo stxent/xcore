@@ -1,14 +1,15 @@
 /*
- * crc8_dallas.c
+ * crc8_maxim.c
  * Copyright (C) 2015 xent
  * Project is distributed under the terms of the MIT License
  */
 
-#include <xcore/crc/crc8_dallas.h>
+#include <xcore/crc/crc8_maxim.h>
 /*----------------------------------------------------------------------------*/
-[[gnu::weak]] uint8_t crc8DallasUpdate(uint8_t, const void *, size_t);
+[[gnu::weak]] uint8_t crc8MaximUpdate(uint8_t, const void *, size_t);
 /*----------------------------------------------------------------------------*/
 #ifndef CONFIG_FLAG_BITWISE_CRC
+/* CRC-8/MAXIM-DOW table, polynomial 0x31, reflected input */
 static const uint8_t crcTable[256] = {
     0x00, 0x5E, 0xBC, 0xE2, 0x61, 0x3F, 0xDD, 0x83,
     0xC2, 0x9C, 0x7E, 0x20, 0xA3, 0xFD, 0x1F, 0x41,
@@ -45,23 +46,21 @@ static const uint8_t crcTable[256] = {
 };
 #endif
 /*----------------------------------------------------------------------------*/
-uint8_t crc8DallasUpdate(uint8_t crc, const void *buffer, size_t length)
+uint8_t crc8MaximUpdate(uint8_t crc, const void *buffer, size_t length)
 {
   const uint8_t *pointer = buffer;
 
 #ifdef CONFIG_FLAG_BITWISE_CRC
   while (length--)
   {
-    uint8_t value = *pointer++;
+    crc ^= *pointer++;
 
     for (unsigned int bit = 0; bit < 8; ++bit)
     {
-      if ((crc ^ value) & 0x01)
-        crc = ((crc ^ 0x18) >> 1) | 0x80;
+      if (crc & 1)
+        crc = (crc >> 1) ^ 0x8C;
       else
         crc >>= 1;
-
-      value >>= 1;
     }
   }
 #else

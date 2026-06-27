@@ -25,7 +25,31 @@ START_TEST(testDateTimeToTimestamp)
   };
   res = rtMakeEpochTime(&timestamp, &dtLeapYear);
   ck_assert_uint_eq(res, E_OK);
-  ck_assert_uint_eq(timestamp, 951906599);
+  ck_assert_int_eq(timestamp, 951906599LL);
+
+  static const struct RtDateTime dtNotLeapYear = {
+      .year = 2100,
+      .month = 1,
+      .day = 1,
+      .hour = 12,
+      .minute = 0,
+      .second = 0
+  };
+  res = rtMakeEpochTime(&timestamp, &dtNotLeapYear);
+  ck_assert_uint_eq(res, E_OK);
+  ck_assert_int_eq(timestamp, 4102488000LL);
+
+  static const struct RtDateTime dtNegativeYear = {
+      .year = 1930,
+      .month = 4,
+      .day = 23,
+      .hour = 12,
+      .minute = 0,
+      .second = 0
+  };
+  res = rtMakeEpochTime(&timestamp, &dtNegativeYear);
+  ck_assert_uint_eq(res, E_OK);
+  ck_assert_int_eq(timestamp, -1252584000LL);
 
   /* Test month errors */
 
@@ -129,7 +153,7 @@ START_TEST(testTimestampToDateTime)
 
   /* Test 01.01.1971 12:00:00 */
 
-  static const time64_t timestamp0 = 31579200;
+  static const time64_t timestamp0 = 31579200LL;
 
   rtMakeTime(&dt, timestamp0);
   ck_assert_uint_eq(dt.year, 1971);
@@ -141,7 +165,7 @@ START_TEST(testTimestampToDateTime)
 
   /* Test 01.02.2003 10:29:59 */
 
-  static const time64_t timestamp1 = 1044095399;
+  static const time64_t timestamp1 = 1044095399LL;
 
   rtMakeTime(&dt, timestamp1);
   ck_assert_uint_eq(dt.year, 2003);
@@ -150,6 +174,18 @@ START_TEST(testTimestampToDateTime)
   ck_assert_uint_eq(dt.hour, 10);
   ck_assert_uint_eq(dt.minute, 29);
   ck_assert_uint_eq(dt.second, 59);
+
+  /* Test 03.04.1933 12:00:00 */
+
+  static const time64_t timestamp2 = -1159617600;
+
+  rtMakeTime(&dt, timestamp2);
+  ck_assert_uint_eq(dt.year, 1933);
+  ck_assert_uint_eq(dt.month, 4);
+  ck_assert_uint_eq(dt.day, 3);
+  ck_assert_uint_eq(dt.hour, 12);
+  ck_assert_uint_eq(dt.minute, 0);
+  ck_assert_uint_eq(dt.second, 0);
 }
 END_TEST
 /*----------------------------------------------------------------------------*/

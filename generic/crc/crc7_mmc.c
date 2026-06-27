@@ -1,14 +1,15 @@
 /*
- * crc7.c
+ * crc7_mmc.c
  * Copyright (C) 2014 xent
  * Project is distributed under the terms of the MIT License
  */
 
-#include <xcore/crc/crc7.h>
+#include <xcore/crc/crc7_mmc.h>
 /*----------------------------------------------------------------------------*/
-[[gnu::weak]] uint8_t crc7Update(uint8_t, const void *, size_t);
+[[gnu::weak]] uint8_t crc7MMCUpdate(uint8_t, const void *, size_t);
 /*----------------------------------------------------------------------------*/
 #ifndef CONFIG_FLAG_BITWISE_CRC
+/* CRC-7/MMC table, polynomial 0x09, normal input */
 static const uint8_t crcTable[256] = {
     0x00, 0x12, 0x24, 0x36, 0x48, 0x5A, 0x6C, 0x7E,
     0x90, 0x82, 0xB4, 0xA6, 0xD8, 0xCA, 0xFC, 0xEE,
@@ -45,31 +46,28 @@ static const uint8_t crcTable[256] = {
 };
 #endif
 /*----------------------------------------------------------------------------*/
-uint8_t crc7Update(uint8_t crc, const void *buffer, size_t length)
+uint8_t crc7MMCUpdate(uint8_t crc, const void *buffer, size_t length)
 {
   const uint8_t *pointer = buffer;
+
+  crc <<= 1;
 
 #ifdef CONFIG_FLAG_BITWISE_CRC
   while (length--)
   {
-    uint8_t value = *pointer++;
+    crc ^= *pointer++;
 
     for (unsigned int bit = 0; bit < 8; ++bit)
     {
-      crc <<= 1;
-
-      if ((value & 0x80) ^ (crc & 0x80))
+      if (crc & 0x80)
         crc ^= 0x09;
-
-      value <<= 1;
+      crc <<= 1;
     }
   }
-  crc &= ~0x80;
 #else
   while (length--)
-    crc = crcTable[crc ^ *pointer++] ^ (crc << 7);
-  crc >>= 1;
+    crc = (crc << 7) ^ crcTable[crc ^ *pointer++];
 #endif
-
-  return crc;
+  
+  return crc >> 1;
 }

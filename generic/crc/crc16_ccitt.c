@@ -9,7 +9,7 @@
 [[gnu::weak]] uint16_t crc16CCITTUpdate(uint16_t, const void *, size_t);
 /*----------------------------------------------------------------------------*/
 #ifndef CONFIG_FLAG_BITWISE_CRC
-/* CRC-16-CCITT table, polynomial 0x1021 */
+/* CRC-16/CCITT table, polynomial 0x1021, normal input */
 static const uint16_t crcTable[256] = {
     0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50A5, 0x60C6, 0x70E7,
     0x8108, 0x9129, 0xA14A, 0xB16B, 0xC18C, 0xD1AD, 0xE1CE, 0xF1EF,
@@ -56,11 +56,16 @@ uint16_t crc16CCITTUpdate(uint16_t crc, const void *buffer, size_t length)
     crc ^= *pointer++ << 8;
 
     for (unsigned int bit = 0; bit < 8; ++bit)
-      crc = crc & 0x8000 ? (crc << 1) ^ 0x1021 : crc << 1;
+    {
+      if (crc & 0x8000)
+        crc = (crc << 1) ^ 0x1021;
+      else
+        crc <<= 1;
+    }
   }
 #else
   while (length--)
-    crc = (crc << 8) ^ crcTable[(uint8_t)(crc >> 8) ^ *pointer++];
+    crc = (crc << 8) ^ crcTable[(uint8_t)((crc >> 8) ^ *pointer++)];
 #endif
 
   return crc;

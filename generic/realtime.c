@@ -5,19 +5,19 @@
  */
 
 #include <xcore/realtime.h>
-#include <stdlib.h>
 /*----------------------------------------------------------------------------*/
-#define SECONDS_PER_DAY   86400
-#define SECONDS_PER_HOUR  3600
-#define START_YEAR        1970
-#define OFFSET_YEARS      2
-#define OFFSET_SECONDS    (OFFSET_YEARS * 365 * SECONDS_PER_DAY)
+#define DAYS_PER_400_YEARS  146097
+#define DAYS_PER_100_YEARS  36524
+#define DAYS_PER_4_YEARS    1461
+#define SECONDS_PER_DAY     86400
+#define SECONDS_PER_HOUR    3600
+#define START_YEAR          1970
+#define OFFSET_UNIX_DAYS    719162
+#define OFFSET_YEARS        2
+#define OFFSET_SECONDS      (OFFSET_YEARS * 365 * SECONDS_PER_DAY)
 /*----------------------------------------------------------------------------*/
 static const uint8_t monthLengthMap[] = {
     31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
-};
-static const uint16_t yearLengthMap[] = {
-    366, 365, 365, 365
 };
 /*----------------------------------------------------------------------------*/
 /**
@@ -35,40 +35,43 @@ enum Result rtMakeEpochTime(time64_t *result,
   if (datetime->hour >= 24 || datetime->minute >= 60 || datetime->second >= 60)
     return E_VALUE;
 
-  unsigned int month = datetime->month - 1;
-  const bool leapYear = datetime->year % 4 == 0;
+  int month = datetime->month;
+  int year = datetime->year;
 
-  if (leapYear && month == 1)
+  if (month == 2 && (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)))
   {
-    if (datetime->day > monthLengthMap[month] + 1)
+    if (datetime->day > monthLengthMap[month - 1] + 1)
       return E_VALUE;
   }
   else
   {
-    if (datetime->day > monthLengthMap[month])
+    if (datetime->day > monthLengthMap[month - 1])
       return E_VALUE;
   }
 
-  /* Stores how many seconds have passed from 01.01.1970, 00:00:00 */
+  /* Stores how many seconds have passed from Jan 1, 1970 */
   time64_t seconds = 0;
 
-  /* If the current year is a leap one than add one day or 86400 seconds */
-  if (leapYear && month > 1)
-    seconds += SECONDS_PER_DAY;
+  /* Shift the calendar so the year begins in March */
+  if (month <= 2)
+  {
+    year -= 1;
+    month += 12;
+  }
 
-  /* Sum the days from January to the current month */
-  while (month)
-    seconds += monthLengthMap[--month] * SECONDS_PER_DAY;
+  /* Count eras (400-year cycles) since Year 0 */
+  const long zeroBasisDays = (long)year * 365
+      + (year / 4) - (year / 100) + (year / 400)
+      + ((306 * (month + 1)) / 10) + ((int)datetime->day - 428);
 
-  /* Add the number of days from each year with leap years */
-  seconds += ((datetime->year - START_YEAR) * 365
-      + ((datetime->year - START_YEAR + 1) / 4)) * SECONDS_PER_DAY;
+  /* Subtract the exact number of days between epochs */
+  const long days = zeroBasisDays - OFFSET_UNIX_DAYS;
 
   /*
    * Add the number of days from the current month, each hour,
    * minute and second from the current day.
    */
-  seconds += (datetime->day - 1) * SECONDS_PER_DAY + datetime->second
+  seconds += (days - 1) * SECONDS_PER_DAY + datetime->second
       + datetime->minute * 60 + datetime->hour * SECONDS_PER_HOUR;
 
   *result = seconds;
@@ -82,51 +85,67 @@ enum Result rtMakeEpochTime(time64_t *result,
 */
 void rtMakeTime(struct RtDateTime *datetime, time64_t timestamp)
 {
-  /* TODO Add handling of negative times and years after 2100 */
-  const uint64_t seconds = (uint64_t)llabs(timestamp);
-  const uint32_t daySeconds = (uint32_t)(seconds % SECONDS_PER_DAY);
+  /* Howard Hinnant's date conversion algorithm */
 
-  datetime->second = (uint8_t)(daySeconds % 60);
-  datetime->minute = (uint8_t)((daySeconds % 3600) / 60);
-  datetime->hour = (uint8_t)(daySeconds / 3600);
+  long unixBaseDays = timestamp / SECONDS_PER_DAY;
+  int seconds = timestamp - unixBaseDays * SECONDS_PER_DAY;
 
-  uint32_t days = (uint32_t)(seconds / SECONDS_PER_DAY);
-  uint32_t years;
-
-  if (seconds > OFFSET_SECONDS)
+  if (seconds < 0)
   {
-    const uint64_t offset = seconds - OFFSET_SECONDS;
-    const uint32_t estimatedYears = (uint32_t)((offset / (SECONDS_PER_DAY / 100))
-        / (365 * 100 + 25));
-    const uint32_t leapCycles = estimatedYears / 4;
-
-    years = leapCycles * 4 + OFFSET_YEARS;
-    days -= years * 365 + leapCycles;
-
-    for (uint8_t number = 0; days >= yearLengthMap[number]; ++number)
-    {
-      days -= yearLengthMap[number];
-      ++years;
-    }
-  }
-  else
-  {
-    years = days / 365;
-    days -= years * 365;
+    seconds += SECONDS_PER_DAY;
+    unixBaseDays -= 1;
   }
 
-  datetime->year = (uint16_t)(START_YEAR + years);
+  /* Extract time components */
+  datetime->hour = seconds / 3600;
+  seconds %= 3600;
+  datetime->minute = seconds / 60;
+  datetime->second = seconds % 60;
 
-  const uint8_t offset = !(datetime->year % 4) && days >= 60 ? 1 : 0;
-  uint8_t month = 0;
+  const long zeroBasisDays = unixBaseDays + OFFSET_UNIX_DAYS;
 
-  days -= offset;
+  /* 400-year era */
+  const int era = zeroBasisDays / DAYS_PER_400_YEARS;
+  const int dayOfEra = zeroBasisDays % DAYS_PER_400_YEARS; /* 0..146096 */
+
+  /* 100-year block within era */
+  int century = dayOfEra / DAYS_PER_100_YEARS;
+  int dayOfCentury = dayOfEra % DAYS_PER_100_YEARS; /* 0..36523 */
+
+  if (century == 4)
+  {
+    century = 3;
+    dayOfCentury = DAYS_PER_100_YEARS - 1;
+  }
+
+  /* 4-year block within century */
+  const int block = dayOfCentury / DAYS_PER_4_YEARS;
+  const int dayOfBlock = dayOfCentury % DAYS_PER_4_YEARS; /* 0..1460 */
+
+  /* Year within 4-year block */
+  int yearOfBlock = dayOfBlock / 365;
+  int dayOfYear = dayOfBlock % 365; /* 0..364 */
+
+  if (yearOfBlock == 4)
+  {
+    yearOfBlock = 3;
+    dayOfYear = 364;
+  }
+
+  /* Compute full year (AD, year 1 based) */
+  const int year = 1 + yearOfBlock + block * 4 + century * 100 + era * 400;
+  const int leapYearAdjust =
+      (year % 400 == 0) || ((year % 100 != 0) && (year % 4 == 0)) ? 1 : 0;
+
+  int days = dayOfYear - leapYearAdjust;
+  int month = 0;
+
   while (days >= monthLengthMap[month])
     days -= monthLengthMap[month++];
-
   if (month == 1)
-    days += offset;
+    days += leapYearAdjust;
 
-  datetime->day = (uint8_t)(days + 1);
+  datetime->year = year;
   datetime->month = month + 1;
+  datetime->day = days + 1;
 }
