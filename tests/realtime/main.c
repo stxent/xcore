@@ -11,7 +11,7 @@
 START_TEST(testDateTimeToTimestamp)
 {
   time64_t timestamp;
-  enum Result res;
+  bool result;
 
   /* Test leap year calculations */
 
@@ -23,8 +23,8 @@ START_TEST(testDateTimeToTimestamp)
       .minute = 29,
       .second = 59
   };
-  res = rtMakeEpochTime(&timestamp, &dtLeapYear);
-  ck_assert_uint_eq(res, E_OK);
+  result = rtMakeEpochTime(&timestamp, &dtLeapYear);
+  ck_assert(result == true);
   ck_assert_int_eq(timestamp, 951906599LL);
 
   static const struct RtDateTime dtNotLeapYear = {
@@ -35,8 +35,8 @@ START_TEST(testDateTimeToTimestamp)
       .minute = 0,
       .second = 0
   };
-  res = rtMakeEpochTime(&timestamp, &dtNotLeapYear);
-  ck_assert_uint_eq(res, E_OK);
+  result = rtMakeEpochTime(&timestamp, &dtNotLeapYear);
+  ck_assert(result == true);
   ck_assert_int_eq(timestamp, 4102488000LL);
 
   static const struct RtDateTime dtNegativeYear = {
@@ -47,8 +47,8 @@ START_TEST(testDateTimeToTimestamp)
       .minute = 0,
       .second = 0
   };
-  res = rtMakeEpochTime(&timestamp, &dtNegativeYear);
-  ck_assert_uint_eq(res, E_OK);
+  result = rtMakeEpochTime(&timestamp, &dtNegativeYear);
+  ck_assert(result == true);
   ck_assert_int_eq(timestamp, -1252584000LL);
 
   /* Test month errors */
@@ -61,8 +61,8 @@ START_TEST(testDateTimeToTimestamp)
       .minute = 0,
       .second = 0
   };
-  res = rtMakeEpochTime(&timestamp, &dtZeroMonth);
-  ck_assert_uint_eq(res, E_VALUE);
+  result = rtMakeEpochTime(&timestamp, &dtZeroMonth);
+  ck_assert(result == false);
 
   static const struct RtDateTime dtMonthOverflow = {
       .year = 2000,
@@ -72,8 +72,8 @@ START_TEST(testDateTimeToTimestamp)
       .minute = 0,
       .second = 0
   };
-  res = rtMakeEpochTime(&timestamp, &dtMonthOverflow);
-  ck_assert_uint_eq(res, E_VALUE);
+  result = rtMakeEpochTime(&timestamp, &dtMonthOverflow);
+  ck_assert(result == false);
 
   /* Test day errors */
 
@@ -85,8 +85,8 @@ START_TEST(testDateTimeToTimestamp)
       .minute = 0,
       .second = 0
   };
-  res = rtMakeEpochTime(&timestamp, &dtZeroDay);
-  ck_assert_uint_eq(res, E_VALUE);
+  result = rtMakeEpochTime(&timestamp, &dtZeroDay);
+  ck_assert(result == false);
 
   static const struct RtDateTime dtFebLeapYear = {
       .year = 2000,
@@ -96,8 +96,8 @@ START_TEST(testDateTimeToTimestamp)
       .minute = 0,
       .second = 0
   };
-  res = rtMakeEpochTime(&timestamp, &dtFebLeapYear);
-  ck_assert_uint_eq(res, E_VALUE);
+  result = rtMakeEpochTime(&timestamp, &dtFebLeapYear);
+  ck_assert(result == false);
 
   static const struct RtDateTime dtFebYear = {
       .year = 2001,
@@ -107,8 +107,8 @@ START_TEST(testDateTimeToTimestamp)
       .minute = 0,
       .second = 0
   };
-  res = rtMakeEpochTime(&timestamp, &dtFebYear);
-  ck_assert_uint_eq(res, E_VALUE);
+  result = rtMakeEpochTime(&timestamp, &dtFebYear);
+  ck_assert(result == false);
 
   /* Test hour, minute and second errors */
 
@@ -120,8 +120,8 @@ START_TEST(testDateTimeToTimestamp)
       .minute = 0,
       .second = 0
   };
-  res = rtMakeEpochTime(&timestamp, &dtHourOverflow);
-  ck_assert_uint_eq(res, E_VALUE);
+  result = rtMakeEpochTime(&timestamp, &dtHourOverflow);
+  ck_assert(result == false);
 
   static const struct RtDateTime dtMinuteOverflow = {
       .year = 2000,
@@ -131,8 +131,8 @@ START_TEST(testDateTimeToTimestamp)
       .minute = 60,
       .second = 0
   };
-  res = rtMakeEpochTime(&timestamp, &dtMinuteOverflow);
-  ck_assert_uint_eq(res, E_VALUE);
+  result = rtMakeEpochTime(&timestamp, &dtMinuteOverflow);
+  ck_assert(result == false);
 
   static const struct RtDateTime dtSecondOverflow = {
       .year = 2000,
@@ -142,8 +142,8 @@ START_TEST(testDateTimeToTimestamp)
       .minute = 0,
       .second = 60
   };
-  res = rtMakeEpochTime(&timestamp, &dtSecondOverflow);
-  ck_assert_uint_eq(res, E_VALUE);
+  result = rtMakeEpochTime(&timestamp, &dtSecondOverflow);
+  ck_assert(result == false);
 }
 END_TEST
 /*----------------------------------------------------------------------------*/

@@ -12,13 +12,13 @@ CTest is used for testing.
 
 Xcore supports the following platforms:
 
-* **ARM Cortex‑M series**:
-  * Cortex‑M0
-  * Cortex‑M0+
-  * Cortex‑M3
-  * Cortex‑M4
-  * Cortex‑M7
-* **RISC‑V RV32**
+* **ARM Cortex-M series**:
+  * Cortex-M0
+  * Cortex-M0+
+  * Cortex-M3
+  * Cortex-M4
+  * Cortex-M7
+* **RISC-V RV32**
 * **x86**
 
 ## Required Packages
@@ -40,23 +40,23 @@ To build and use Xcore, you need the following packages:
 
 ### Header Files
 
-Platform‑specific header files provide access to hardware‑accelerated
-computation functions and architecture‑optimized routines. These allow
-developers to take advantage of low‑level capabilities when available.
+Platform-specific header files provide access to hardware-accelerated
+computation functions and architecture-optimized routines. These allow
+developers to take advantage of low-level capabilities when available.
 
 ### Containers
 
 A selection of containers with different allocation strategies:
 
-* **Statically allocated** (memory is pre‑reserved, no runtime allocation):
-  * Array — fixed‑size sequential container
-  * AVL Tree — self‑balancing binary search tree
+* **Statically allocated** (memory is pre-reserved, no runtime allocation):
+  * Array — fixed-size sequential container
+  * AVL Tree — self-balancing binary search tree
   * Queue — FIFO structure
   * Byte Queue — optimized for byte stream handling
 * **Dynamically allocated**:
   * List — linked list with dynamic memory management
 * **Type-generic statically allocated**:
-  * TG Array — generic fixed‑size array
+  * TG Array — generic fixed-size array
   * TG Queue — generic FIFO
 * **Type-generic dynamically allocated**:
   * TG List — generic linked list
@@ -65,12 +65,12 @@ A selection of containers with different allocation strategies:
 
 Core abstractions for building robust applications:
 
-* **OOP implementation in C** — object‑oriented patterns using structs
+* **OOP implementation in C** — object-oriented patterns using structs
   and function pointers
-* **Generic I/O interface** — for byte‑stream devices (e.g., UART, SPI)
-* **Generic I/O stream** — packet‑based communication (e.g., Ethernet)
+* **Generic I/O interface** — for byte-stream devices (e.g., UART, SPI)
+* **Generic I/O stream** — packet-based communication (e.g., Ethernet)
 * **Date and time handling** — utilities for timestamp operations
-* **Unicode support** — basic UTF‑8/UTF‑16 handling and string utilities
+* **Unicode support** — basic UTF-8/UTF-16 handling and string utilities
 * **OS primitives** — abstractions for threading, mutexes, and signaling
   (where available)
 * **File system interface** — portable access to files and directories
@@ -113,9 +113,9 @@ make
 make install
 ```
 
-4. Building for Cortex‑M3 Outside the Project Tree
+4. Building for Cortex-M3 Outside the Project Tree
 
-For cross‑compilation to Cortex‑M3, use a predefined toolchain file:
+For cross-compilation to Cortex-M3, use a predefined toolchain file:
 
 ```sh
 mkdir build_cortex_m3 && cd build_cortex_m3

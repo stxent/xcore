@@ -24,16 +24,15 @@ static const uint8_t monthLengthMap[] = {
  * @brief Converts a date and time structure to a UNIX timestamp.
  * @param[out] result Pointer to the output value.
  * @param[in] datetime Date and time structure to be converted.
- * @return @b E_OK if successful, @b E_VALUE if the date and time structure
+ * @return @b true if successful, @b false if the date and time structure
  * contains invalid values.
  */
-enum Result rtMakeEpochTime(time64_t *result,
-    const struct RtDateTime *datetime)
+bool rtMakeEpochTime(time64_t *result, const struct RtDateTime *datetime)
 {
   if (!datetime->day || !datetime->month || datetime->month > 12)
-    return E_VALUE;
+    return false;
   if (datetime->hour >= 24 || datetime->minute >= 60 || datetime->second >= 60)
-    return E_VALUE;
+    return false;
 
   int month = datetime->month;
   int year = datetime->year;
@@ -41,12 +40,12 @@ enum Result rtMakeEpochTime(time64_t *result,
   if (month == 2 && (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)))
   {
     if (datetime->day > monthLengthMap[month - 1] + 1)
-      return E_VALUE;
+      return false;
   }
   else
   {
     if (datetime->day > monthLengthMap[month - 1])
-      return E_VALUE;
+      return false;
   }
 
   /* Stores how many seconds have passed from Jan 1, 1970 */
@@ -75,7 +74,7 @@ enum Result rtMakeEpochTime(time64_t *result,
       + datetime->minute * 60 + datetime->hour * SECONDS_PER_HOUR;
 
   *result = seconds;
-  return E_OK;
+  return true;
 }
 /*----------------------------------------------------------------------------*/
 /**
