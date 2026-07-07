@@ -9,12 +9,15 @@
 #define DAYS_PER_400_YEARS  146097
 #define DAYS_PER_100_YEARS  36524
 #define DAYS_PER_4_YEARS    1461
+#define DAYS_PER_YEAR       365
+#define DAYS_PER_JAN_FEB    59
 #define SECONDS_PER_DAY     86400
 #define SECONDS_PER_HOUR    3600
-#define START_YEAR          1970
+
+/* Exact number of days between Jan 1, 1 AD and the Unix Epoch on Jan 1, 1970 */
 #define OFFSET_UNIX_DAYS    719162
-#define OFFSET_YEARS        2
-#define OFFSET_SECONDS      (OFFSET_YEARS * 365 * SECONDS_PER_DAY)
+/* Calibration offset to shift the New Year to Mar 1 */
+#define OFFSET_JAN_TO_MAR   428
 /*----------------------------------------------------------------------------*/
 static const uint8_t monthLengthMap[] = {
     31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
@@ -48,9 +51,6 @@ bool rtMakeEpochTime(time64_t *result, const struct RtDateTime *datetime)
       return false;
   }
 
-  /* Stores how many seconds have passed from Jan 1, 1970 */
-  time64_t seconds = 0;
-
   /* Shift the calendar so the year begins in March */
   if (month <= 2)
   {
@@ -59,9 +59,10 @@ bool rtMakeEpochTime(time64_t *result, const struct RtDateTime *datetime)
   }
 
   /* Count eras (400-year cycles) since Year 0 */
-  const long zeroBasisDays = (long)year * 365
+  const long zeroBasisDays = (long)year * DAYS_PER_YEAR
       + (year / 4) - (year / 100) + (year / 400)
-      + ((306 * (month + 1)) / 10) + ((int)datetime->day - 428);
+      + (((DAYS_PER_YEAR - DAYS_PER_JAN_FEB) * (month + 1)) / 10)
+      + ((long)datetime->day - OFFSET_JAN_TO_MAR);
 
   /* Subtract the exact number of days between epochs */
   const long days = zeroBasisDays - OFFSET_UNIX_DAYS;
@@ -70,7 +71,7 @@ bool rtMakeEpochTime(time64_t *result, const struct RtDateTime *datetime)
    * Add the number of days from the current month, each hour,
    * minute and second from the current day.
    */
-  seconds += (days - 1) * SECONDS_PER_DAY + datetime->second
+  const time64_t seconds = (days - 1) * SECONDS_PER_DAY + datetime->second
       + datetime->minute * 60 + datetime->hour * SECONDS_PER_HOUR;
 
   *result = seconds;
@@ -96,8 +97,8 @@ void rtMakeTime(struct RtDateTime *datetime, time64_t timestamp)
   }
 
   /* Extract time components */
-  datetime->hour = seconds / 3600;
-  seconds %= 3600;
+  datetime->hour = seconds / SECONDS_PER_HOUR;
+  seconds %= SECONDS_PER_HOUR;
   datetime->minute = seconds / 60;
   datetime->second = seconds % 60;
 
@@ -114,7 +115,7 @@ void rtMakeTime(struct RtDateTime *datetime, time64_t timestamp)
   if (century == 4)
   {
     century = 3;
-    dayOfCentury = DAYS_PER_100_YEARS - 1;
+    dayOfCentury = DAYS_PER_100_YEARS;
   }
 
   /* 4-year block within century */
@@ -122,29 +123,38 @@ void rtMakeTime(struct RtDateTime *datetime, time64_t timestamp)
   const int dayOfBlock = dayOfCentury % DAYS_PER_4_YEARS; /* 0..1460 */
 
   /* Year within 4-year block */
-  int yearOfBlock = dayOfBlock / 365;
-  int dayOfYear = dayOfBlock % 365; /* 0..364 */
+  int yearOfBlock = dayOfBlock / DAYS_PER_YEAR;
+  int dayOfYear = dayOfBlock % DAYS_PER_YEAR; /* 0..364 */
 
   if (yearOfBlock == 4)
   {
     yearOfBlock = 3;
-    dayOfYear = 364;
+    dayOfYear = DAYS_PER_YEAR;
   }
 
   /* Compute full year (AD, year 1 based) */
   const int year = 1 + yearOfBlock + block * 4 + century * 100 + era * 400;
-  const int leapYearAdjust =
-      (year % 400 == 0) || ((year % 100 != 0) && (year % 4 == 0)) ? 1 : 0;
+  int daysInJanFeb = DAYS_PER_JAN_FEB;
 
-  int days = dayOfYear - leapYearAdjust;
-  int month = 0;
+  if ((year % 4 == 0) && (year % 100 != 0 || year % 400 == 0))
+    ++daysInJanFeb;
 
-  while (days >= monthLengthMap[month])
-    days -= monthLengthMap[month++];
-  if (month == 1)
-    days += leapYearAdjust;
+  if (dayOfYear >= daysInJanFeb)
+  {
+    /* Date is March 1st or later: shift backwards */
+    dayOfYear -= daysInJanFeb;
+  }
+  else
+  {
+    /* Date is Jan or Feb: shift forwards */
+    dayOfYear += DAYS_PER_YEAR - DAYS_PER_JAN_FEB;
+  }
 
+  const int monthIndex = (5 * dayOfYear + 2) / 153; /* 0..11 (Mar = 0) */
+  const int day = dayOfYear - (153 * monthIndex + 2) / 5 + 1; /* 1..31 */
+  const int month = monthIndex + (monthIndex < 10 ? 3 : -9); /* 1..12 */
+
+  datetime->month = month;
+  datetime->day = day;
   datetime->year = year;
-  datetime->month = month + 1;
-  datetime->day = days + 1;
 }

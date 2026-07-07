@@ -7,11 +7,68 @@
 #include <xcore/realtime.h>
 #include <check.h>
 #include <stdlib.h>
+#include <time.h>
+/*----------------------------------------------------------------------------*/
+START_TEST(testBidirectionalConversion)
+{
+  static const unsigned int monthLengthMap[] = {
+      31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
+  };
+  static const unsigned int secondsPerDay = 86400;
+
+  static const time64_t start = 915192000LL; /* 01.01.1999 12:00:00 */
+  static const time64_t end = 1104494400LL; /* 31.12.2004 12:00:00 */
+  time64_t timestamp = start;
+
+  while (timestamp <= end)
+  {
+    const struct tm * const ref = gmtime(&timestamp);
+    struct RtDateTime dt;
+
+    /* Unix time to date and time conversion */
+    rtMakeTime(&dt, timestamp);
+
+    ck_assert_uint_eq(ref->tm_year + 1900, dt.year);
+    ck_assert_uint_eq(ref->tm_mon + 1, dt.month);
+    ck_assert_uint_eq(ref->tm_mday, dt.day);
+    ck_assert_uint_eq(ref->tm_hour, dt.hour);
+    ck_assert_uint_eq(ref->tm_min, dt.minute);
+    ck_assert_uint_eq(ref->tm_sec, dt.second);
+
+    /* Date and time to Unix time conversion */
+    time64_t converted;
+    const bool result = rtMakeEpochTime(&converted, &dt);
+
+    ck_assert(result == true);
+    ck_assert_int_eq(timestamp, converted);
+
+    /* Choose a next time stamp */
+    if (dt.day == 1)
+      timestamp += (monthLengthMap[dt.month - 1] - 1) * secondsPerDay;
+    else
+      timestamp += secondsPerDay;
+  }
+}
+END_TEST
 /*----------------------------------------------------------------------------*/
 START_TEST(testDateTimeToTimestamp)
 {
   time64_t timestamp;
   bool result;
+
+  /* Test simple cases */
+
+  static const struct RtDateTime dtSimpleCase = {
+      .year = 1970,
+      .month = 1,
+      .day = 1,
+      .hour = 18,
+      .minute = 49,
+      .second = 59
+  };
+  result = rtMakeEpochTime(&timestamp, &dtSimpleCase);
+  ck_assert(result == true);
+  ck_assert_int_eq(timestamp, 67799LL);
 
   /* Test leap year calculations */
 
@@ -28,8 +85,8 @@ START_TEST(testDateTimeToTimestamp)
   ck_assert_int_eq(timestamp, 951906599LL);
 
   static const struct RtDateTime dtNotLeapYear = {
-      .year = 2100,
-      .month = 1,
+      .year = 2200,
+      .month = 3,
       .day = 1,
       .hour = 12,
       .minute = 0,
@@ -37,9 +94,11 @@ START_TEST(testDateTimeToTimestamp)
   };
   result = rtMakeEpochTime(&timestamp, &dtNotLeapYear);
   ck_assert(result == true);
-  ck_assert_int_eq(timestamp, 4102488000LL);
+  ck_assert_int_eq(timestamp, 7263259200LL);
 
-  static const struct RtDateTime dtNegativeYear = {
+  /* Test negative time stamps */
+
+  static const struct RtDateTime dtNegativeTime = {
       .year = 1930,
       .month = 4,
       .day = 23,
@@ -47,7 +106,7 @@ START_TEST(testDateTimeToTimestamp)
       .minute = 0,
       .second = 0
   };
-  result = rtMakeEpochTime(&timestamp, &dtNegativeYear);
+  result = rtMakeEpochTime(&timestamp, &dtNegativeTime);
   ck_assert(result == true);
   ck_assert_int_eq(timestamp, -1252584000LL);
 
@@ -151,24 +210,24 @@ START_TEST(testTimestampToDateTime)
 {
   struct RtDateTime dt;
 
-  /* Test 01.01.1971 12:00:00 */
+  /* Test 01.01.1970 12:00:00 */
 
-  static const time64_t timestamp0 = 31579200LL;
+  static const time64_t timestamp0 = 43759LL;
 
   rtMakeTime(&dt, timestamp0);
-  ck_assert_uint_eq(dt.year, 1971);
+  ck_assert_uint_eq(dt.year, 1970);
   ck_assert_uint_eq(dt.month, 1);
   ck_assert_uint_eq(dt.day, 1);
   ck_assert_uint_eq(dt.hour, 12);
-  ck_assert_uint_eq(dt.minute, 0);
-  ck_assert_uint_eq(dt.second, 0);
+  ck_assert_uint_eq(dt.minute, 9);
+  ck_assert_uint_eq(dt.second, 19);
 
-  /* Test 01.02.2003 10:29:59 */
+  /* Test 01.02.2200 10:29:59 */
 
-  static const time64_t timestamp1 = 1044095399LL;
+  static const time64_t timestamp1 = 7260834599LL;
 
   rtMakeTime(&dt, timestamp1);
-  ck_assert_uint_eq(dt.year, 2003);
+  ck_assert_uint_eq(dt.year, 2200);
   ck_assert_uint_eq(dt.month, 2);
   ck_assert_uint_eq(dt.day, 1);
   ck_assert_uint_eq(dt.hour, 10);
@@ -177,7 +236,7 @@ START_TEST(testTimestampToDateTime)
 
   /* Test 03.04.1933 12:00:00 */
 
-  static const time64_t timestamp2 = -1159617600;
+  static const time64_t timestamp2 = -1159617600LL;
 
   rtMakeTime(&dt, timestamp2);
   ck_assert_uint_eq(dt.year, 1933);
@@ -194,6 +253,7 @@ int main(void)
   Suite * const suite = suite_create("Realtime");
   TCase * const testcase = tcase_create("Core");
 
+  tcase_add_test(testcase, testBidirectionalConversion);
   tcase_add_test(testcase, testDateTimeToTimestamp);
   tcase_add_test(testcase, testTimestampToDateTime);
   suite_add_tcase(suite, testcase);
