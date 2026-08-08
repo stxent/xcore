@@ -83,14 +83,12 @@ Here are practical examples to help you integrate Xcore into your projects.
 
 1. Including in a CMake Project
 
-To add Xcore as a subdirectory in your CMake project, use:
+To link against the Xcore target (e.g., xcore) and include headers from
+the library, add Xcore as a subdirectory in your CMake project. Use:
 
 ```cmake
 add_subdirectory("/path/to/xcore" xcore)
 ```
-
-After this, you can link against Xcore target (e.g., xcore) and include headers
-from the library.
 
 2. Building for x86 with Unit Tests
 

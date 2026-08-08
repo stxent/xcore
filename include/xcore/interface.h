@@ -20,65 +20,65 @@ enum IfParameter
   /**
    * Number of elements available in the receive queue. Depending on
    * the interface type these may be messages, frames, bytes or other elements.
-   * Read-only parameter. Parameter type is \a size_t.
+   * Read-only parameter. Parameter type is \p size_t.
    */
   IF_RX_AVAILABLE,
   /**
    * Free space in the receive queue. Read-only parameter.
-   * Parameter type is \a size_t.
+   * Parameter type is \p size_t.
    */
   IF_RX_PENDING,
   /**
    * Highest number of elements in the receive queue. Read-only parameter.
-   * Parameter type is \a size_t.
+   * Parameter type is \p size_t.
    */
   IF_RX_WATERMARK,
   /**
    * Free space in the transmit queue. Read-only parameter.
-   * Parameter type is \a size_t.
+   * Parameter type is \p size_t.
    */
   IF_TX_AVAILABLE,
   /**
    * Number of pending elements in the transmit queue. Read-only parameter.
-   * Parameter type is \a size_t.
+   * Parameter type is \p size_t.
    */
   IF_TX_PENDING,
   /**
    * Maximum number of elements in the transmit queue. Read-only parameter.
-   * Parameter type is \a size_t.
+   * Parameter type is \p size_t.
    */
   IF_TX_WATERMARK,
 
   /**
    * Unique device identifier, 32-bit value.
-   * Parameter type is \a uint32_t.
+   * Parameter type is \p uint32_t.
    */
   IF_ADDRESS,
   /**
    * Unique device identifier, 64-bit value.
-   * Parameter type is \a uint64_t.
+   * Parameter type is \p uint64_t.
    */
   IF_ADDRESS_64,
-  /** Data transfer rate. Parameter type is \a uint32_t. */
+  /** Data transfer rate. Parameter type is \p uint32_t. */
   IF_RATE,
 
-  /** Position in the 32-bit address space. Parameter type is \a uint32_t. */
+  /** Position in the 32-bit address space. Parameter type is \p uint32_t. */
   IF_POSITION,
-  /** Position in the 64-bit address space. Parameter type is \a uint64_t. */
+  /** Position in the 64-bit address space. Parameter type is \p uint64_t. */
   IF_POSITION_64,
   /**
    * Volume size, 32-bit value. Read-only parameter.
-   * Parameter type is \a uint32_t.
+   * Parameter type is \p uint32_t.
    */
   IF_SIZE,
   /**
    * Volume size, 64-bit value. Read-only parameter.
-   * Parameter type is \a uint64_t.
+   * Parameter type is \p uint64_t.
    */
   IF_SIZE_64,
   /**
    * Data word size in bits. Read-only parameter.
-   * Parameter type is \a size_t.
+   * Parameter type is \p size_t.
    */
   IF_WIDTH,
 

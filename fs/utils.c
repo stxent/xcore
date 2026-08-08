@@ -6,7 +6,6 @@
 
 #include <xcore/fs/utils.h>
 #include <assert.h>
-#include <stddef.h>
 #include <string.h>
 /*----------------------------------------------------------------------------*/
 static enum Result computeNodeUsage(struct FsNode *, FsCapacity *);
@@ -109,9 +108,7 @@ bool fsExtractBaseName(char *buffer, const char *path)
   assert(buffer != NULL);
   assert(path != NULL);
 
-  size_t length = 0;
-
-  for (size_t pos = strlen(path); pos > 0; --pos, ++length)
+  for (size_t pos = strlen(path); pos > 0; --pos)
   {
     if (path[pos - 1] == '/')
     {

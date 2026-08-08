@@ -32,21 +32,21 @@ enum
 
 enum FsFieldType
 {
-  /** Access rights to the node. Field type is \a FsAccess. */
+  /** Access rights to the node. Field type is \p FsAccess. */
   FS_NODE_ACCESS,
-  /** Space allocated for the node data. Field type is \a FsCapacity. */
+  /** Space allocated for the node data. Field type is \p FsCapacity. */
   FS_NODE_CAPACITY,
   /** Node data. */
   FS_NODE_DATA,
-  /** Device identifier. Field type is \a FsDevice. */
+  /** Device identifier. Field type is \p FsDevice. */
   FS_NODE_DEVICE,
-  /** Numeric identifier of the node. Field type is \a FsIdentifier. */
+  /** Numeric identifier of the node. Field type is \p FsIdentifier. */
   FS_NODE_ID,
-  /** Symbolic name of the node. Null-terminated array of \a char. */
+  /** Symbolic name of the node. Null-terminated array of \p char. */
   FS_NODE_NAME,
-  /** Owner of the node. Field type is \a FsOwner. */
+  /** Owner of the node. Field type is \p FsOwner. */
   FS_NODE_OWNER,
-  /** Access time in microseconds. Field type is \a time64_t. */
+  /** Access time in microseconds. Field type is \p time64_t. */
   FS_NODE_TIME,
 
   /** End of the list. */
