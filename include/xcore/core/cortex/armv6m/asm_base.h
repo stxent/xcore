@@ -85,7 +85,7 @@ static inline void __nop(void)
 
 static inline void __sev(void)
 {
-  __asm__ volatile ("SEV");
+  __asm__ volatile ("SEV" ::: "memory");
 }
 
 static inline void __svc(void)

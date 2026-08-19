@@ -133,3 +133,7 @@ Customize the build process using the following CMake options:
   Flash/ROM space (slower but smaller).
 * **XCORE_ENTRY_LENGTH** — maximum file name length in file system functions
   (affects internal buffers).
+
+## Development Guidelines
+
+* Ensure code conforms to the specified [Coding Style Guide](CODING_STYLE.md)
