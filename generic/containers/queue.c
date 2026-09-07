@@ -14,7 +14,7 @@ bool queueInit(struct Queue *queue, size_t width, size_t capacity)
 {
   queue->data = malloc(width * capacity);
 
-  if (queue->data != NULL)
+  if (queue->data != nullptr)
   {
     queue->capacity = capacity;
     queue->width = width;
@@ -43,7 +43,7 @@ void *queueAt(struct Queue *queue, size_t index)
 /*----------------------------------------------------------------------------*/
 void queueBack(const struct Queue *queue, void *element)
 {
-  assert(element != NULL);
+  assert(element != nullptr);
   assert(queue->size > 0);
 
   const size_t index = (queue->tail ? queue->tail : queue->capacity) - 1;
@@ -53,7 +53,7 @@ void queueBack(const struct Queue *queue, void *element)
 /*----------------------------------------------------------------------------*/
 void queueFront(const struct Queue *queue, void *element)
 {
-  assert(element != NULL);
+  assert(element != nullptr);
   assert(queue->size > 0);
 
   const uintptr_t address = (uintptr_t)queue->data + queue->head * queue->width;
@@ -79,7 +79,7 @@ void queuePopFront(struct Queue *queue)
 /*----------------------------------------------------------------------------*/
 void queuePushBack(struct Queue *queue, const void *element)
 {
-  assert(element != NULL);
+  assert(element != nullptr);
   assert(queue->size < queue->capacity);
 
   const uintptr_t address = (uintptr_t)queue->data + queue->tail * queue->width;
@@ -92,7 +92,7 @@ void queuePushBack(struct Queue *queue, const void *element)
 /*----------------------------------------------------------------------------*/
 void queuePushFront(struct Queue *queue, const void *element)
 {
-  assert(element != NULL);
+  assert(element != nullptr);
   assert(queue->size < queue->capacity);
 
   const size_t index = (queue->head ? queue->head : queue->capacity) - 1;

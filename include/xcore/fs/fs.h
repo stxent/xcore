@@ -184,7 +184,7 @@ static inline enum Result fsNodeNext(void *node)
  * at least @b length bytes.
  * @param[in] length Number of data bytes to read.
  * @param[out] read Pointer to a buffer where the result will be stored.
- * May be @b NULL if the result is not needed.
+ * May be @b nullptr if the result is not needed.
  * @return @b E_OK if successful, @b E_INVALID if the operation
  * is not supported.
  */
@@ -216,7 +216,7 @@ static inline enum Result fsNodeRemove(void *root, void *node)
  * @param[in] length Number of bytes to write.
  * @param[out] written Pointer to a buffer where the number of written bytes
  * will be stored.
- * Can be @b NULL if this information is not required.
+ * Can be @b nullptr if this information is not required.
  * @return @b E_OK if the operation was successful,
  * @b E_INVALID if the operation is not supported for this type of node.
  */

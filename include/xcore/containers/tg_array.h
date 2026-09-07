@@ -108,7 +108,7 @@
     { \
       array->data = malloc(capacity * sizeof(type)); \
       \
-      if (array->data != NULL) \
+      if (array->data != nullptr) \
       { \
         array->capacity = capacity; \
         array->size = 0; \

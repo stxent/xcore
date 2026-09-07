@@ -11,7 +11,7 @@ bool arrayInit(struct Array *array, size_t width, size_t capacity)
 {
   array->data = malloc(width * capacity);
 
-  if (array->data != NULL)
+  if (array->data != nullptr)
   {
     array->capacity = capacity;
     array->size = 0;
@@ -42,7 +42,7 @@ void arrayErase(struct Array *array, size_t index)
 /*----------------------------------------------------------------------------*/
 void arrayInsert(struct Array *array, size_t before, const void *element)
 {
-  assert(element != NULL);
+  assert(element != nullptr);
   assert(before <= array->size);
   assert(array->size < array->capacity);
 
@@ -64,7 +64,7 @@ void arrayPopBack(struct Array *array)
 /*----------------------------------------------------------------------------*/
 void arrayPushBack(struct Array *array, const void *element)
 {
-  assert(element != NULL);
+  assert(element != nullptr);
   assert(array->size < array->capacity);
 
   const uintptr_t address = (uintptr_t)array->data + array->size * array->width;

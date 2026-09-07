@@ -11,7 +11,7 @@
 /*----------------------------------------------------------------------------*/
 enum Result mutexInit(struct Mutex *mutex)
 {
-  return pthread_mutex_init(&mutex->handle, NULL) == 0 ? E_OK : E_ERROR;
+  return pthread_mutex_init(&mutex->handle, nullptr) == 0 ? E_OK : E_ERROR;
 }
 /*----------------------------------------------------------------------------*/
 void mutexDeinit(struct Mutex *mutex)

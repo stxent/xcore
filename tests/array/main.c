@@ -26,7 +26,7 @@ void *malloc(size_t size)
   if (!mallocHookActive)
     return __libc_malloc(size);
   else
-    return NULL;
+    return nullptr;
 }
 /*----------------------------------------------------------------------------*/
 static bool compareElements(const TestStruct *a, const TestStruct *b)

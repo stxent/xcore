@@ -12,19 +12,19 @@ static void *threadLauncher(void *object)
   struct Thread * const thread = object;
 
   /* Configure the thread */
-  pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
+  pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, nullptr);
 
   /* Run user defined function */
   thread->running = true;
   thread->function(thread->functionArgument);
 
-  return NULL;
+  return nullptr;
 }
 /*----------------------------------------------------------------------------*/
 void threadInit(struct Thread *thread, size_t size, int,
     void (*function)(void *), void *functionArgument)
 {
-  thread->onTerminateCallback = NULL;
+  thread->onTerminateCallback = nullptr;
   thread->function = function;
   thread->functionArgument = functionArgument;
   thread->stackSize = size;
@@ -75,12 +75,12 @@ void threadTerminate(struct Thread *thread)
   if (!thread->running)
     return;
 
-  if (thread->onTerminateCallback != NULL)
+  if (thread->onTerminateCallback != nullptr)
     thread->onTerminateCallback(thread->onTerminateArgument);
   else
     pthread_cancel(thread->handle);
 
-  pthread_join(thread->handle, NULL);
+  pthread_join(thread->handle, nullptr);
   thread->running = false;
 }
 /*----------------------------------------------------------------------------*/
@@ -91,5 +91,5 @@ void msleep(unsigned int interval)
       .tv_nsec = (interval % 1000) * 1000000
   };
 
-  nanosleep(&timestamp, NULL);
+  nanosleep(&timestamp, nullptr);
 }

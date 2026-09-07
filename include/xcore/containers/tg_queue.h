@@ -122,7 +122,7 @@
     { \
       queue->data = malloc(capacity * sizeof(type)); \
       \
-      if (queue->data != NULL) \
+      if (queue->data != nullptr) \
       { \
         queue->capacity = capacity; \
         prefix##QueueClear(queue); \

@@ -26,7 +26,7 @@ void *malloc(size_t size)
   if (!mallocHookActive)
     return __libc_malloc(size);
   else
-    return NULL;
+    return nullptr;
 }
 /*----------------------------------------------------------------------------*/
 static bool compareElements(const TestStruct *a, const TestStruct *b)
@@ -48,7 +48,7 @@ static void checkElements(struct List *list, int base, int step)
   struct ListNode *node = listFront(list);
   int i = 0;
 
-  while (node != NULL)
+  while (node != nullptr)
   {
     const TestStruct referenceElement = createElement(base + i * step);
 
@@ -186,10 +186,10 @@ START_TEST(testEraseNode)
 
   /* Remove even elements */
   node = listFront(&list);
-  while (node != NULL)
+  while (node != nullptr)
   {
     node = listEraseNode(&list, node);
-    if (node != NULL)
+    if (node != nullptr)
       node = listNext(node);
   }
   ck_assert_uint_eq(listSize(&list), MAX_SIZE / 2);

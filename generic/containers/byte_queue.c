@@ -13,7 +13,7 @@ bool byteQueueInit(struct ByteQueue *queue, size_t capacity)
 {
   queue->data = malloc(capacity);
 
-  if (queue->data != NULL)
+  if (queue->data != nullptr)
   {
     queue->capacity = capacity;
     byteQueueClear(queue);
@@ -30,7 +30,7 @@ bool byteQueueInitAligned(struct ByteQueue *queue, size_t capacity,
 
   queue->data = memalign(alignment, alignedCapacity);
 
-  if (queue->data != NULL)
+  if (queue->data != nullptr)
   {
     queue->capacity = capacity;
     byteQueueClear(queue);
@@ -58,7 +58,7 @@ void byteQueueDeinitArena(struct ByteQueue *)
 /*----------------------------------------------------------------------------*/
 size_t byteQueuePopArray(struct ByteQueue *queue, void *buffer, size_t length)
 {
-  assert(buffer != NULL);
+  assert(buffer != nullptr);
 
   if (!queue->size)
     return 0;
@@ -108,7 +108,7 @@ size_t byteQueuePopArray(struct ByteQueue *queue, void *buffer, size_t length)
 size_t byteQueuePushArray(struct ByteQueue *queue, const void *buffer,
     size_t length)
 {
-  assert(buffer != NULL);
+  assert(buffer != nullptr);
 
   if (queue->capacity == queue->size)
     return 0;

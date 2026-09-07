@@ -49,10 +49,10 @@ END_DECLS
     [[maybe_unused]] static inline void prefix##ListClear( \
         name##List *list) \
     { \
-      if (list->head != NULL) \
+      if (list->head != nullptr) \
       { \
         tgListFreeChain(list->head); \
-        list->head = NULL; \
+        list->head = nullptr; \
       } \
     } \
     \
@@ -65,7 +65,7 @@ END_DECLS
     [[maybe_unused]] static inline bool prefix##ListEmpty( \
         const name##List *list) \
     { \
-      return list->head == NULL; \
+      return list->head == nullptr; \
     } \
     \
     [[maybe_unused]] static inline void prefix##ListErase( \
@@ -113,11 +113,11 @@ END_DECLS
     { \
       name##ListNode * const node = malloc(sizeof(name##ListNode)); \
       \
-      if (node != NULL) \
+      if (node != nullptr) \
       { \
         node->data = element; \
         \
-        if (previous == NULL) \
+        if (previous == nullptr) \
         { \
           node->next = list->head; \
           list->head = (struct TgListNode *)node; \
@@ -145,10 +145,10 @@ END_DECLS
     { \
       name##ListNode * const node = malloc(sizeof(name##ListNode)); \
       \
-      if (node != NULL) \
+      if (node != nullptr) \
       { \
         node->data = element; \
-        node->next = NULL; \
+        node->next = nullptr; \
         \
         tgListAppend(&list->head, (struct TgListNode *)node); \
         return true; \
@@ -162,7 +162,7 @@ END_DECLS
     { \
       name##ListNode * const node = malloc(sizeof(name##ListNode)); \
       \
-      if (node != NULL) \
+      if (node != nullptr) \
       { \
         node->data = element; \
         node->next = list->head; \
@@ -183,7 +183,7 @@ END_DECLS
     [[maybe_unused]] static inline void prefix##ListInit( \
         name##List *list) \
     { \
-      list->head = NULL; \
+      list->head = nullptr; \
     } \
     \
     [[maybe_unused]] static inline void prefix##ListDeinit( \

@@ -21,7 +21,7 @@ void *malloc(size_t size)
   if (!mallocHookActive)
     return __libc_malloc(size);
   else
-    return NULL;
+    return nullptr;
 }
 
 void *memalign(size_t alignment, size_t bytes)
@@ -29,7 +29,7 @@ void *memalign(size_t alignment, size_t bytes)
   if (!mallocHookActive)
     return __libc_memalign(alignment, bytes);
   else
-    return NULL;
+    return nullptr;
 }
 /*----------------------------------------------------------------------------*/
 static void checkElements(const uint8_t *buffer, size_t base, size_t count)

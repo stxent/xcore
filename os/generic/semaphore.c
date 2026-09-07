@@ -20,7 +20,7 @@
 enum Result semInit(struct Semaphore *sem, int value)
 {
   sem->data = malloc(sizeof(int));
-  if (sem->data == NULL)
+  if (sem->data == nullptr)
     return E_MEMORY;
 
   *(int *)sem->data = value;

@@ -127,7 +127,7 @@ static bool reallocateDataBuffer(struct TfsNode *node, size_t length)
 
   uint8_t * const reallocatedDataBuffer = malloc(dataCapacity);
 
-  if (reallocatedDataBuffer == NULL)
+  if (reallocatedDataBuffer == nullptr)
     return false;
 
   if (node->dataLength > 0)
@@ -146,7 +146,7 @@ static bool renameNode(struct TfsNode *node, const char *name)
   {
     char * const buffer = malloc(length + 1);
 
-    if (buffer != NULL)
+    if (buffer != nullptr)
     {
       strcpy(buffer, name);
 
@@ -160,7 +160,7 @@ static bool renameNode(struct TfsNode *node, const char *name)
   else
   {
     free(node->name);
-    node->name = NULL;
+    node->name = nullptr;
     return true;
   }
 }
@@ -180,7 +180,7 @@ static enum Result writeDataBuffer(struct TfsNode *node, FsLength position,
   if (end > node->dataLength)
     node->dataLength = end;
 
-  if (written != NULL)
+  if (written != nullptr)
     *written = length;
 
   return E_OK;
@@ -192,8 +192,8 @@ static enum Result tfsHandleInit(void *object, const void *)
 
   const struct TfsNodeConfig config = {
       .handle = handle,
-      .parent = NULL,
-      .name = NULL
+      .parent = nullptr,
+      .name = nullptr
   };
   handle->root = init(TfsNode, &config);
   return handle->root ? E_OK : E_MEMORY;
@@ -231,21 +231,21 @@ static enum Result tfsNodeInit(void *object, const void *configBase)
   node->parent = config->parent;
   pointerListInit(&node->children);
 
-  if (config->name != NULL)
+  if (config->name != nullptr)
   {
     node->name = malloc(strlen(config->name) + 1);
 
-    if (node->name == NULL)
+    if (node->name == nullptr)
       return E_MEMORY;
 
     strcpy(node->name, config->name);
   }
   else
-    node->name = NULL;
+    node->name = nullptr;
 
   node->dataCapacity = 0;
   node->dataLength = 0;
-  node->dataBuffer = NULL;
+  node->dataBuffer = nullptr;
   node->access = FS_ACCESS_READ | FS_ACCESS_WRITE;
 
   return E_OK;
@@ -275,7 +275,7 @@ static enum Result tfsNodeProxyCreate(void *object,
 {
   const struct TfsNodeProxy * const proxy = object;
   struct TfsNode * const node = proxy->node;
-  const struct FsFieldDescriptor *name = NULL;
+  const struct FsFieldDescriptor *name = nullptr;
 
   if (!(node->access & FS_ACCESS_WRITE))
     return E_ACCESS;
@@ -300,7 +300,7 @@ static enum Result tfsNodeProxyCreate(void *object,
     }
   }
 
-  if (name != NULL)
+  if (name != nullptr)
   {
     const struct TfsNodeConfig config = {
         .handle = node->handle,
@@ -309,7 +309,7 @@ static enum Result tfsNodeProxyCreate(void *object,
     };
     struct TfsNode * const child = init(TfsNode, &config);
 
-    if (child == NULL)
+    if (child == nullptr)
       return E_MEMORY;
 
     if (!pointerListPushFront(&node->children, child))
@@ -334,7 +334,7 @@ static void *tfsNodeProxyHead(void *object)
 
   PointerListNode *current = pointerListFront(&node->children);
 
-  if (current != NULL)
+  if (current != nullptr)
   {
     const struct TfsNodeProxyConfig config = {
         .node = *pointerListData(current)
@@ -359,25 +359,25 @@ static enum Result tfsNodeProxyLength(void *object, enum FsFieldType type,
   switch (type)
   {
     case FS_NODE_ACCESS:
-      if (length != NULL)
+      if (length != nullptr)
         *length = (FsLength)sizeof(FsAccess);
       return E_OK;
 
     case FS_NODE_CAPACITY:
-      if (length != NULL)
+      if (length != nullptr)
         *length = (FsLength)sizeof(FsCapacity);
       return E_OK;
 
     case FS_NODE_DATA:
-      if (length != NULL)
+      if (length != nullptr)
         *length = (FsLength)node->dataLength;
       return E_OK;
 
     case FS_NODE_NAME:
-      if (node->name == NULL)
+      if (node->name == nullptr)
         return E_INVALID;
 
-      if (length != NULL)
+      if (length != nullptr)
         *length = (FsLength)(strlen(node->name) + 1);
       return E_OK;
 
@@ -391,14 +391,14 @@ static enum Result tfsNodeProxyNext(void *object)
   struct TfsNodeProxy * const proxy = object;
   struct TfsNode * const parent = proxy->node->parent;
 
-  if (parent == NULL)
+  if (parent == nullptr)
     return E_ENTRY;
   if (!(parent->access & FS_ACCESS_READ))
     return E_ACCESS;
 
   PointerListNode *current = pointerListFront(&parent->children);
 
-  while (current != NULL)
+  while (current != nullptr)
   {
     struct TfsNode * const child = *pointerListData(current);
 
@@ -406,7 +406,7 @@ static enum Result tfsNodeProxyNext(void *object)
     {
       current = pointerListNext(current);
 
-      if (current != NULL)
+      if (current != nullptr)
       {
         proxy->node = *pointerListData(current);
         return E_OK;
@@ -433,7 +433,7 @@ static enum Result tfsNodeProxyRead(void *object, enum FsFieldType type,
       if (position == 0 && length >= sizeof(node->access))
       {
         memcpy(buffer, &node->access, sizeof(node->access));
-        if (read != NULL)
+        if (read != nullptr)
           *read = sizeof(node->access);
         return E_OK;
       }
@@ -446,7 +446,7 @@ static enum Result tfsNodeProxyRead(void *object, enum FsFieldType type,
         const FsCapacity capacity = (FsCapacity)node->dataCapacity;
 
         memcpy(buffer, &capacity, sizeof(capacity));
-        if (read != NULL)
+        if (read != nullptr)
           *read = sizeof(capacity);
         return E_OK;
       }
@@ -464,14 +464,14 @@ static enum Result tfsNodeProxyRead(void *object, enum FsFieldType type,
       const size_t chunk = MIN(remaining, length);
 
       memcpy(buffer, node->dataBuffer + position, chunk);
-      if (read != NULL)
+      if (read != nullptr)
         *read = chunk;
       return E_OK;
     }
 
     case FS_NODE_NAME:
     {
-      if (node->name == NULL)
+      if (node->name == nullptr)
         return E_INVALID;
 
       const size_t nameLength = strlen(node->name) + 1;
@@ -494,7 +494,7 @@ static enum Result tfsNodeProxyRead(void *object, enum FsFieldType type,
       return E_INVALID;
   }
 
-  if (read != NULL)
+  if (read != nullptr)
     *read = (FsLength)count;
   return E_OK;
 }
@@ -506,7 +506,7 @@ static enum Result tfsNodeProxyRemove(void *rootObject, void *nodeObject)
 
   if (!(root->access & FS_ACCESS_WRITE) || !(node->access & FS_ACCESS_WRITE))
     return E_ACCESS;
-  if (pointerListFind(&root->children, node) == NULL)
+  if (pointerListFind(&root->children, node) == nullptr)
     return E_ENTRY;
 
   pointerListErase(&root->children, node);
@@ -527,7 +527,7 @@ static enum Result tfsNodeProxyWrite(void *object, enum FsFieldType type,
         return E_VALUE;
 
       memcpy(&node->access, buffer, sizeof(node->access));
-      if (written != NULL)
+      if (written != nullptr)
         *written = sizeof(node->access);
       return E_OK;
 
@@ -543,7 +543,7 @@ static enum Result tfsNodeProxyWrite(void *object, enum FsFieldType type,
 
       if (renameNode(node, length ? buffer : 0))
       {
-        if (written != NULL)
+        if (written != nullptr)
           *written = length;
         return E_OK;
       }

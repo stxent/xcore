@@ -65,7 +65,7 @@ static inline void treeData(const struct Tree *tree,
 
 static inline bool treeEmpty(const struct Tree *tree)
 {
-  return tree->root == NULL;
+  return tree->root == nullptr;
 }
 
 END_DECLS

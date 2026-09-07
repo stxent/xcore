@@ -19,12 +19,12 @@ static enum Result computeNodeUsage(struct FsNode *node, FsCapacity *result)
   enum Result res;
 
   res = fsNodeRead(node, FS_NODE_CAPACITY, 0, &capacity, sizeof(capacity),
-      NULL);
+      nullptr);
   if (res == E_OK)
     *result += capacity;
   res = E_OK;
 
-  while (child != NULL)
+  while (child != nullptr)
   {
     FsLength nameLength;
     bool reserved = false;
@@ -35,7 +35,7 @@ static enum Result computeNodeUsage(struct FsNode *node, FsCapacity *result)
       {
         char name[FS_NAME_LENGTH];
 
-        res = fsNodeRead(child, FS_NODE_NAME, 0, name, sizeof(name), NULL);
+        res = fsNodeRead(child, FS_NODE_NAME, 0, name, sizeof(name), nullptr);
         if (res != E_OK)
           break;
 
@@ -59,7 +59,7 @@ static enum Result computeNodeUsage(struct FsNode *node, FsCapacity *result)
     }
   }
 
-  if (child != NULL)
+  if (child != nullptr)
     fsNodeFree(child);
 
   return res;
@@ -105,8 +105,8 @@ static bool isReservedName(const char *name)
  */
 bool fsExtractBaseName(char *buffer, const char *path)
 {
-  assert(buffer != NULL);
-  assert(path != NULL);
+  assert(buffer != nullptr);
+  assert(path != nullptr);
 
   for (size_t pos = strlen(path); pos > 0; --pos)
   {
@@ -130,39 +130,39 @@ bool fsExtractBaseName(char *buffer, const char *path)
 /**
  * @brief Extracts the last component from a path.
  * @param[in] path Input path.
- * @return Pointer to the last component or @b NULL.
+ * @return Pointer to the last component or @b nullptr.
  */
 const char *fsExtractName(const char *path)
 {
-  assert(path != NULL);
+  assert(path != nullptr);
 
   size_t length = 0;
 
   for (size_t pos = strlen(path); pos > 0; --pos, ++length)
   {
     if (path[pos - 1] == '/')
-      return length ? path + pos : NULL;
+      return length ? path + pos : nullptr;
   }
 
-  return length ? path : NULL;
+  return length ? path : nullptr;
 }
 /*----------------------------------------------------------------------------*/
 /**
  * @brief Finds the used space in the file system.
  * @param[in] handle Pointer to file system handle.
- * @param[in] node Starting node or @b NULL for root.
+ * @param[in] node Starting node or @b nullptr for root.
  * @return Used space in bytes.
  */
 FsCapacity fsFindUsedSpace(struct FsHandle *handle, struct FsNode *node)
 {
   struct FsNode * const parent = node ? node : fsHandleRoot(handle);
 
-  if (parent != NULL)
+  if (parent != nullptr)
   {
     FsCapacity used = 0;
     const enum Result res = computeNodeUsage(parent, &used);
 
-    if (node == NULL)
+    if (node == nullptr)
       fsNodeFree(parent);
 
     return res == E_OK ? used : 0;
@@ -177,7 +177,7 @@ FsCapacity fsFindUsedSpace(struct FsHandle *handle, struct FsNode *node)
  * @param[in,out] node Pointer to current node.
  * @param[in] path Path to follow.
  * @param[in] leaf Whether to treat as leaf node.
- * @return Remaining path or @b NULL on error.
+ * @return Remaining path or @b nullptr on error.
  */
 const char *fsFollowNextPart(struct FsHandle *handle, struct FsNode **node,
     const char *path, bool leaf)
@@ -187,14 +187,14 @@ const char *fsFollowNextPart(struct FsHandle *handle, struct FsNode **node,
 
   if (!strlen(nextPart))
   {
-    path = NULL;
+    path = nullptr;
   }
   else if (isReservedName(nextPart))
   {
     /* Path contains forbidden directories */
-    path = NULL;
+    path = nullptr;
   }
-  else if (*node == NULL)
+  else if (*node == nullptr)
   {
     if (nextPart[0] == '/')
     {
@@ -203,7 +203,7 @@ const char *fsFollowNextPart(struct FsHandle *handle, struct FsNode **node,
     else
     {
       /* Relative path is used but the previous state is not available */
-      path = NULL;
+      path = nullptr;
     }
   }
   else if (leaf || strlen(path))
@@ -211,13 +211,13 @@ const char *fsFollowNextPart(struct FsHandle *handle, struct FsNode **node,
     struct FsNode *child = fsNodeHead(*node);
     fsNodeFree(*node);
 
-    while (child != NULL)
+    while (child != nullptr)
     {
       char nodeName[FS_NAME_LENGTH];
       enum Result res;
 
       res = fsNodeRead(child, FS_NODE_NAME, 0, nodeName, sizeof(nodeName),
-          NULL);
+          nullptr);
 
       if (res == E_OK && !strcmp(nextPart, nodeName))
       {
@@ -229,16 +229,16 @@ const char *fsFollowNextPart(struct FsHandle *handle, struct FsNode **node,
       if (res != E_OK)
       {
         fsNodeFree(child);
-        child = NULL;
+        child = nullptr;
         break;
       }
     }
 
     /* Check whether the node is found */
-    if (child != NULL)
+    if (child != nullptr)
       *node = child;
     else
-      path = NULL;
+      path = nullptr;
   }
 
   return path;
@@ -249,17 +249,17 @@ const char *fsFollowNextPart(struct FsHandle *handle, struct FsNode **node,
  * @param[in] handle Pointer to file system handle.
  * @param[in] path Path to follow.
  * @param[in] leaf Whether to treat as leaf node.
- * @return Pointer to the resulting node or @b NULL.
+ * @return Pointer to the resulting node or @b nullptr.
  */
 struct FsNode *fsFollowPath(struct FsHandle *handle, const char *path,
     bool leaf)
 {
-  struct FsNode *node = NULL;
+  struct FsNode *node = nullptr;
 
-  while (path != NULL && *path)
+  while (path != nullptr && *path)
     path = fsFollowNextPart(handle, &node, path, leaf);
 
-  return path != NULL ? node : NULL;
+  return path != nullptr ? node : nullptr;
 }
 /*----------------------------------------------------------------------------*/
 /**
@@ -270,8 +270,8 @@ struct FsNode *fsFollowPath(struct FsHandle *handle, const char *path,
  */
 const char *fsGetChunk(char *dst, const char *src)
 {
-  assert(dst != NULL);
-  assert(src != NULL);
+  assert(dst != nullptr);
+  assert(src != nullptr);
 
   /* Output buffer length should be greater or equal to maximum name length */
   size_t counter = 0;
@@ -316,9 +316,9 @@ const char *fsGetChunk(char *dst, const char *src)
  */
 void fsJoinPaths(char *buffer, const char *prefix, const char *suffix)
 {
-  assert(buffer != NULL);
-  assert(prefix != NULL);
-  assert(suffix != NULL);
+  assert(buffer != nullptr);
+  assert(prefix != nullptr);
+  assert(suffix != nullptr);
 
   const char * const begin = buffer;
 
@@ -342,7 +342,7 @@ void fsJoinPaths(char *buffer, const char *prefix, const char *suffix)
  * @brief Opens a base node by path.
  * @param[in] handle Pointer to file system handle.
  * @param[in] path Path to the node.
- * @return Pointer to the opened node or @b NULL.
+ * @return Pointer to the opened node or @b nullptr.
  */
 struct FsNode *fsOpenBaseNode(struct FsHandle *handle, const char *path)
 {
@@ -353,7 +353,7 @@ struct FsNode *fsOpenBaseNode(struct FsHandle *handle, const char *path)
  * @brief Opens a node by path.
  * @param[in] handle Pointer to file system handle.
  * @param[in] path Path to the node.
- * @return Pointer to the opened node or @b NULL.
+ * @return Pointer to the opened node or @b nullptr.
  */
 struct FsNode *fsOpenNode(struct FsHandle *handle, const char *path)
 {
@@ -370,7 +370,7 @@ bool fsStripName(char *buffer)
 {
   const char * const position = fsExtractName(buffer);
 
-  if (position != NULL)
+  if (position != nullptr)
   {
     size_t offset = (size_t)(position - buffer);
 

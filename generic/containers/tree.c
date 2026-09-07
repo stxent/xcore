@@ -40,12 +40,12 @@ static void makeNodeList(struct Tree *tree, size_t size, size_t capacity)
     current->left = (struct TreeNode *)((uintptr_t)current + size);
     current = current->left;
   }
-  current->left = NULL;
+  current->left = nullptr;
 }
 /*----------------------------------------------------------------------------*/
 static inline struct TreeNode *nodeAllocate(struct Tree *tree)
 {
-  if (tree->pool != NULL)
+  if (tree->pool != nullptr)
   {
     struct TreeNode * const node = tree->pool;
 
@@ -53,7 +53,7 @@ static inline struct TreeNode *nodeAllocate(struct Tree *tree)
     return node;
   }
   else
-    return NULL;
+    return nullptr;
 }
 /*----------------------------------------------------------------------------*/
 static inline void nodeRelease(struct Tree *tree, struct TreeNode *node)
@@ -66,7 +66,7 @@ static struct TreeNode *fetchFirst(struct TreeNode *node)
 {
   struct TreeNode *current = node;
 
-  while (current->left != NULL)
+  while (current->left != nullptr)
     current = current->left;
 
   return current;
@@ -74,11 +74,11 @@ static struct TreeNode *fetchFirst(struct TreeNode *node)
 /*----------------------------------------------------------------------------*/
 static struct TreeNode *fetchNextInOrder(struct TreeNode *node)
 {
-  if (node->right != NULL)
+  if (node->right != nullptr)
   {
     struct TreeNode *current = node->right;
 
-    while (current != NULL && current->left != NULL)
+    while (current != nullptr && current->left != nullptr)
       current = current->left;
 
     return current;
@@ -86,7 +86,7 @@ static struct TreeNode *fetchNextInOrder(struct TreeNode *node)
 
   struct TreeNode *parent = node->parent;
 
-  while (parent != NULL && parent->right == node)
+  while (parent != nullptr && parent->right == node)
   {
     node = parent;
     parent = parent->parent;
@@ -99,18 +99,18 @@ static struct TreeNode *fetchNextPostOrder(struct TreeNode *node)
 {
   struct TreeNode * const parent = node->parent;
 
-  if (parent == NULL)
-    return NULL;
+  if (parent == nullptr)
+    return nullptr;
 
-  if (parent->right == node || parent->right == NULL)
+  if (parent->right == node || parent->right == nullptr)
     return parent;
 
   struct TreeNode *current = parent->right;
 
-  while (current != NULL
-      && (current->left != NULL || current->right != NULL))
+  while (current != nullptr
+      && (current->left != nullptr || current->right != nullptr))
   {
-    current = current->left != NULL ? current->left : current->right;
+    current = current->left != nullptr ? current->left : current->right;
   }
 
   return current;
@@ -119,10 +119,10 @@ static struct TreeNode *fetchNextPostOrder(struct TreeNode *node)
 static void insertNode(struct Tree *tree, struct TreeNode *node)
 {
   struct TreeNode *current = tree->root;
-  struct TreeNode *parent = NULL;
+  struct TreeNode *parent = nullptr;
   bool left = false;
 
-  while (current != NULL)
+  while (current != nullptr)
   {
     parent = current;
 
@@ -130,7 +130,7 @@ static void insertNode(struct Tree *tree, struct TreeNode *node)
     current = left ? current->left : current->right;
   }
 
-  if (parent != NULL)
+  if (parent != nullptr)
   {
     node->parent = parent;
     current = node;
@@ -146,11 +146,11 @@ static void insertNode(struct Tree *tree, struct TreeNode *node)
     return;
   }
 
-  while (parent != NULL)
+  while (parent != nullptr)
   {
     const int newBalance = parent->balance + (parent->left == current ? -1 : 1);
     struct TreeNode * const ancestor = parent->parent;
-    struct TreeNode *root = NULL;
+    struct TreeNode *root = nullptr;
     bool propagate = false;
 
     if (newBalance <= -2)
@@ -176,9 +176,9 @@ static void insertNode(struct Tree *tree, struct TreeNode *node)
       parent->balance = newBalance;
     }
 
-    if (root != NULL)
+    if (root != nullptr)
     {
-      if (ancestor != NULL)
+      if (ancestor != nullptr)
       {
         if (ancestor->left == parent)
           ancestor->left = root;
@@ -212,7 +212,7 @@ static struct TreeNode *rotateLeft(struct TreeNode *node)
   b->parent = a->parent;
   a->parent = b;
   b->left->parent = b;
-  if (a->right != NULL)
+  if (a->right != nullptr)
     a->right->parent = a;
 
   return b;
@@ -229,7 +229,7 @@ static struct TreeNode *rotateRight(struct TreeNode *node)
   b->parent = a->parent;
   a->parent = b;
   b->right->parent = b;
-  if (a->left != NULL)
+  if (a->left != nullptr)
     a->left->parent = a;
 
   return b;
@@ -315,7 +315,7 @@ bool treeInit(struct Tree *tree, size_t width, size_t capacity,
     int (*comparator)(const void *, const void *))
 {
   tree->compare = comparator;
-  tree->root = NULL;
+  tree->root = nullptr;
   tree->width = width;
 
   if (capacity)
@@ -323,7 +323,7 @@ bool treeInit(struct Tree *tree, size_t width, size_t capacity,
     const size_t totalNodeSize = getNodeSize(width);
 
     tree->data = malloc(capacity * totalNodeSize);
-    if (tree->data == NULL)
+    if (tree->data == nullptr)
       return false;
     tree->pool = tree->data;
 
@@ -331,8 +331,8 @@ bool treeInit(struct Tree *tree, size_t width, size_t capacity,
   }
   else
   {
-    tree->data = NULL;
-    tree->pool = NULL;
+    tree->data = nullptr;
+    tree->pool = nullptr;
   }
 
   return true;
@@ -343,8 +343,8 @@ void treeInitArena(struct Tree *tree, size_t width, size_t capacity,
 {
   tree->compare = comparator;
   tree->data = arena;
-  tree->pool = capacity ? arena : NULL;
-  tree->root = NULL;
+  tree->pool = capacity ? arena : nullptr;
+  tree->root = nullptr;
   tree->width = width;
 
   makeNodeList(tree, getNodeSize(width), capacity);
@@ -352,7 +352,7 @@ void treeInitArena(struct Tree *tree, size_t width, size_t capacity,
 /*----------------------------------------------------------------------------*/
 void treeDeinit(struct Tree *tree)
 {
-  if (tree->data != NULL)
+  if (tree->data != nullptr)
     free(tree->data);
   else
     treeClear(tree);
@@ -364,18 +364,18 @@ void treeDeinitArena(struct Tree *)
 /*----------------------------------------------------------------------------*/
 void treeErase(struct Tree *tree, struct TreeNode *node)
 {
-  struct TreeNode *child = NULL;
+  struct TreeNode *child = nullptr;
   struct TreeNode *current = tree->root;
   struct TreeNode *parent = node->parent;
   struct TreeNode *sacrifice = node;
   bool erased = false;
 
-  if (node->right != NULL && node->left != NULL)
+  if (node->right != nullptr && node->left != nullptr)
   {
     parent = node;
     current = node->right;
 
-    while (current->left != NULL)
+    while (current->left != nullptr)
     {
       parent = current;
       current = current->left;
@@ -390,25 +390,25 @@ void treeErase(struct Tree *tree, struct TreeNode *node)
     current = node;
     sacrifice = node;
 
-    if (node->right != NULL)
+    if (node->right != nullptr)
       child = node->right;
-    else if (node->left != NULL)
+    else if (node->left != nullptr)
       child = node->left;
   }
 
-  while (parent != NULL)
+  while (parent != nullptr)
   {
     const int oldBalance = parent->balance;
     const int newBalance = oldBalance + (parent->left == current ? 1 : -1);
     struct TreeNode * const ancestor = parent->parent;
-    struct TreeNode *root = NULL;
+    struct TreeNode *root = nullptr;
     bool propagate = false;
 
     if (!erased)
     {
       erased = true;
 
-      if (child != NULL)
+      if (child != nullptr)
         child->parent = parent;
 
       if (parent->left == current)
@@ -440,9 +440,9 @@ void treeErase(struct Tree *tree, struct TreeNode *node)
       parent->balance = newBalance;
     }
 
-    if (root != NULL)
+    if (root != nullptr)
     {
-      if (ancestor != NULL)
+      if (ancestor != nullptr)
       {
         if (oldBalance && !root->balance)
           propagate = true;
@@ -469,8 +469,8 @@ void treeErase(struct Tree *tree, struct TreeNode *node)
 
   if (sacrifice == tree->root)
   {
-    if (child != NULL)
-      child->parent = NULL;
+    if (child != nullptr)
+      child->parent = nullptr;
     tree->root = child;
   }
 
@@ -481,11 +481,11 @@ bool treeInsert(struct Tree *tree, const void *element)
 {
   struct TreeNode * const node = nodeAllocate(tree);
 
-  if (node != NULL)
+  if (node != nullptr)
   {
-    node->parent = NULL;
-    node->left = NULL;
-    node->right = NULL;
+    node->parent = nullptr;
+    node->left = nullptr;
+    node->right = nullptr;
     node->balance = 0;
 
     memcpy(node->data, element, tree->width);
@@ -501,7 +501,7 @@ struct TreeNode *treeFind(struct Tree *tree, const void *element)
 {
   struct TreeNode *current = tree->root;
 
-  while (current != NULL)
+  while (current != nullptr)
   {
     const int difference = tree->compare(element, current->data);
 
@@ -518,15 +518,15 @@ struct TreeNode *treeFind(struct Tree *tree, const void *element)
 /*----------------------------------------------------------------------------*/
 void treeClear(struct Tree *tree)
 {
-  if (tree->root == NULL)
+  if (tree->root == nullptr)
     return;
 
   struct TreeNode *current = fetchFirst(tree->root);
 
-  while (current->right != NULL)
+  while (current->right != nullptr)
     current = current->right;
 
-  while (current != NULL)
+  while (current != nullptr)
   {
     struct TreeNode * const previous = current;
 
@@ -534,18 +534,18 @@ void treeClear(struct Tree *tree)
     nodeRelease(tree, previous);
   }
 
-  tree->root = NULL;
+  tree->root = nullptr;
 }
 /*----------------------------------------------------------------------------*/
 size_t treeSize(const struct Tree *tree)
 {
-  if (tree->root == NULL)
+  if (tree->root == nullptr)
     return 0;
 
   struct TreeNode *current = fetchFirst(tree->root);
   size_t count = 0;
 
-  while (current != NULL)
+  while (current != nullptr)
   {
     current = fetchNextInOrder(current);
     ++count;

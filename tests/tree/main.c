@@ -33,7 +33,7 @@ void *malloc(size_t size)
   if (!mallocHookActive)
     return __libc_malloc(size);
   else
-    return NULL;
+    return nullptr;
 }
 /*----------------------------------------------------------------------------*/
 static int compareElements(const void *a, const void *b)

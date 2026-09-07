@@ -41,8 +41,8 @@ const struct EntityClass * const InconstructibleEntity =
 const struct EntityClass * const UninitializedEntity =
     &(const struct EntityClass){
     .size = sizeof(struct TestObject),
-    .init = NULL,
-    .deinit = NULL
+    .init = nullptr,
+    .deinit = nullptr
 };
 /*----------------------------------------------------------------------------*/
 extern void *__libc_malloc(size_t);
@@ -54,7 +54,7 @@ void *malloc(size_t size)
   if (!mallocHookActive)
     return __libc_malloc(size);
   else
-    return NULL;
+    return nullptr;
 }
 /*----------------------------------------------------------------------------*/
 static enum Result testClassInit(void *objectBase, const void *configBase)
@@ -96,7 +96,7 @@ START_TEST(testObjectCreation)
   deinit(correctObject);
 
   /* Create an object of class without constructor and destructor */
-  struct TestObject * const plainObject = init(UninitializedEntity, NULL);
+  struct TestObject * const plainObject = init(UninitializedEntity, nullptr);
   ck_assert_ptr_nonnull(plainObject);
   deinit(plainObject);
 

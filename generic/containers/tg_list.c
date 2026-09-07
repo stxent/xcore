@@ -15,11 +15,11 @@ struct TgListNode
 /*----------------------------------------------------------------------------*/
 void tgListAppend(struct TgListNode **first, struct TgListNode *node)
 {
-  if (*first != NULL)
+  if (*first != nullptr)
   {
     struct TgListNode *current = *first;
 
-    while (current->next != NULL)
+    while (current->next != nullptr)
       current = current->next;
 
     current->next = node;
@@ -32,7 +32,7 @@ size_t tgListCountNodes(const struct TgListNode *current)
 {
   size_t count = 0;
 
-  while (current != NULL)
+  while (current != nullptr)
   {
     ++count;
     current = current->next;
@@ -46,7 +46,7 @@ void tgListEraseIf(struct TgListNode **first, void *argument,
 {
   struct TgListNode **node = first;
 
-  while (*node != NULL)
+  while (*node != nullptr)
   {
     if (predicate((*node)->data, argument))
     {
@@ -69,7 +69,7 @@ struct TgListNode *tgListEraseNode(struct TgListNode **first,
   while (*current != node)
     current = &(*current)->next;
 
-  assert(current != NULL);
+  assert(current != nullptr);
 
   *current = next;
   free(node);
@@ -82,7 +82,7 @@ struct TgListNode *tgListFindIf(struct TgListNode *first, void *argument,
 {
   struct TgListNode *node = first;
 
-  while (node != NULL)
+  while (node != nullptr)
   {
     if (predicate(node->data, argument))
       return node;
@@ -96,7 +96,7 @@ void tgListFreeChain(struct TgListNode *node)
 {
   struct TgListNode *next;
 
-  while (node != NULL)
+  while (node != nullptr)
   {
     next = node->next;
     free(node);

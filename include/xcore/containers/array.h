@@ -45,7 +45,7 @@ static inline void *arrayAt(const struct Array *array, size_t index)
 
 static inline void arrayBack(struct Array *array, void *element)
 {
-  assert(element != NULL);
+  assert(element != nullptr);
   assert(array->size > 0);
 
   const uintptr_t address = (uintptr_t)array->data
