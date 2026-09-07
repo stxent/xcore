@@ -248,7 +248,8 @@ START_TEST(testFindIf)
   {
     element.z = i;
     ck_assert_ptr_null(testListFind(&list, element));
-    ck_assert_ptr_nonnull(testListFindIf(&list, &element, simplifiedComparator));
+    ck_assert_ptr_nonnull(testListFindIf(&list, &element,
+        simplifiedComparator));
   }
 
   testListDeinit(&list);

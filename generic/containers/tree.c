@@ -107,8 +107,11 @@ static struct TreeNode *fetchNextPostOrder(struct TreeNode *node)
 
   struct TreeNode *current = parent->right;
 
-  while (current != NULL && (current->left != NULL || current->right != NULL))
+  while (current != NULL
+      && (current->left != NULL || current->right != NULL))
+  {
     current = current->left != NULL ? current->left : current->right;
+  }
 
   return current;
 }

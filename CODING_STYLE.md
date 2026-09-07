@@ -29,10 +29,10 @@ These rules define the formatting style for C code. They are intended to ensure 
   switch (value)
   {
     case 0:
-      do_something();
+      doSomething();
       break;
     default:
-      handle_error();
+      handleError();
       break;
   }
   ```
@@ -96,11 +96,11 @@ These rules define the formatting style for C code. They are intended to ensure 
   ```c
   if (condition)
   {
-    do_work();
+    doWork();
   }
   else
   {
-    handle_error();
+    handleError();
   }
 
   struct MyStruct
@@ -126,7 +126,7 @@ Braces (`{}`) can be omitted for simple control flow statements (`if`, `else`, `
   ```
 * **Incorrect**:
   ```c
-  if (res != 0) return res; // Prohibited: statement must be on a new line
+  if (res != 0) return res; /* Prohibited: statement must be on a new line */
   ```
 
 While braces (`{}`) can be omitted for single-statement bodies, they are **strictly mandatory** if the control flow condition (`if`, `else`, `while`, `for`) is wrapped across multiple lines.
@@ -144,7 +144,7 @@ While braces (`{}`) can be omitted for single-statement bodies, they are **stric
   ```c
   if (cache->isValid
       && cache->cachedBlock == block)
-    return 0; // Prohibited: condition is multi-line, braces must be present
+    return 0; /* Prohibited: condition is multi-line, braces must be present */
   ```
 
 ## 7. Initialization Formatting
@@ -174,17 +174,17 @@ While braces (`{}`) can be omitted for single-statement bodies, they are **stric
     * Subsequent levels: +4 spaces per nesting level
 * **Example**:
   ```c
-  long_variable_name = very_long_function_call(
+  longVariableName = veryLongFunctionCall(
       arg1,
       arg2,
       arg3
   );
 
-  complex_expression = part_one
-      + part_two
-          + deeply_nested_part;
+  complexExpression = partOne
+      + partTwo
+          + deeplyNestedPart;
 
-  // Ternary operator exception
+  /* Ternary operator exception */
   result = condition ?
       if_true
           : if_false;
@@ -223,15 +223,15 @@ While braces (`{}`) can be omitted for single-statement bodies, they are **stric
 
 * **Completely Unused**: If a parameter is never used in any build configuration, omit the name entirely (C23 standard).
   ```c
-  void callback(void *ignored) // Old style
-  void callback(void *)        // New style (C23)
+  void callback(void *ignored) /* Old style */
+  void callback(void *)        /* New style (C23) */
   ```
 * **Debug-Only Usage**: If a variable is used only in debug builds and unused in release builds, mark it with the `[[maybe_unused]]` attribute.
   ```c
-  void debug_func([[maybe_unused]] int debug_val)
+  void debugFunc([[maybe_unused]] int debugVal)
   {
   #ifdef DEBUG
-    log_value(debug_val);
+    logValue(debugVal);
   #endif
   }
   ```
@@ -244,7 +244,7 @@ While braces (`{}`) can be omitted for single-statement bodies, they are **stric
   void process(const int *data, const struct Config *config)
   {
     const int limit = 100;
-    // ...
+    /* ... */
   }
   ```
 
