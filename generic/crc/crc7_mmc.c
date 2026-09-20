@@ -68,6 +68,6 @@ uint8_t crc7MMCUpdate(uint8_t crc, const void *buffer, size_t length)
   while (length--)
     crc = (crc << 7) ^ crcTable[crc ^ *pointer++];
 #endif
-  
+
   return crc >> 1;
 }
