@@ -23,6 +23,7 @@ static inline uint32_t __qadd(uint32_t valueA, uint32_t valueB)
       "QADD %[result], %[valueA], %[valueB]"
       : [result] "=r" (result)
       : [valueA] "r" (valueA), [valueB] "r" (valueB)
+      : "cc"
   );
   return result;
 }
@@ -59,6 +60,7 @@ static inline uint32_t __qsub(uint32_t valueA, uint32_t valueB)
       "QSUB %[result], %[valueA], %[valueB]"
       : [result] "=r" (result)
       : [valueA] "r" (valueA), [valueB] "r" (valueB)
+      : "cc"
   );
   return result;
 }

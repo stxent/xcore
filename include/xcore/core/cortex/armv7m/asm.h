@@ -21,6 +21,7 @@
           "SSAT %[result], #" EXPAND_TO_STRING(shift) ", %[value]" \
           : [result] "=r" (result) \
           : [value] "r" (value) \
+          : "cc" \
       ); \
       return result; \
     }
@@ -33,6 +34,7 @@
           "USAT %[result], #" EXPAND_TO_STRING(shift) ", %[value]" \
           : [result] "=r" (result) \
           : [value] "r" (value) \
+          : "cc" \
       ); \
       return result; \
     }
@@ -123,7 +125,7 @@ static inline uint32_t __mrs_basepri(void)
   __asm__ volatile (
       "MRS %[priority], BASEPRI"
       : [priority] "=r" (priority)
-      :: "memory"
+      :: "memory", "cc"
   );
   return priority;
 }
@@ -134,7 +136,7 @@ static inline void __msr_basepri_max(uint32_t priority)
       "MSR BASEPRI_MAX, %[priority]"
       :
       : [priority] "r" (priority)
-      : "memory"
+      : "memory", "cc"
   );
 }
 
@@ -144,7 +146,7 @@ static inline void __msr_basepri(uint32_t priority)
       "MSR BASEPRI, %[priority]"
       :
       : [priority] "r" (priority)
-      : "memory"
+      : "memory", "cc"
   );
 }
 

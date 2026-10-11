@@ -63,7 +63,7 @@ static inline uint32_t __mrs_primask(void)
   __asm__ volatile (
       "MRS %[state], PRIMASK"
       : [state] "=r" (state)
-      :: "memory"
+      :: "memory", "cc"
   );
   return state;
 }
@@ -74,7 +74,7 @@ static inline void __msr_primask(uint32_t state)
       "MSR PRIMASK, %[state]"
       :
       : [state] "r" (state)
-      : "memory"
+      : "memory", "cc"
   );
 }
 

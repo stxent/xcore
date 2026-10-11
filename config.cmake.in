@@ -3,3 +3,10 @@
 
 find_package(Threads REQUIRED)
 include("${CMAKE_CURRENT_LIST_DIR}/xcore-targets.cmake")
+
+# CPU-specific compile options are provided by the toolchain file of the
+# consuming project through the FLAGS_CPU variable, since the installed
+# package is built for a specific toolchain and cannot carry them itself
+if(DEFINED FLAGS_CPU)
+    target_compile_options(xcore INTERFACE SHELL:${FLAGS_CPU})
+endif()
