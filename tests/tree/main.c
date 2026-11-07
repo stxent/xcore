@@ -237,7 +237,6 @@ END_TEST
 /*----------------------------------------------------------------------------*/
 START_TEST(testMemoryFailure)
 {
-  const TestStruct element = createElement(0);
   struct Tree tree;
   bool result;
 

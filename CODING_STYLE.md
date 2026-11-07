@@ -279,6 +279,7 @@ When implementing object-oriented style in C using the `xcore` framework:
 * **Methods**: Implement methods as standalone functions that accept a pointer to the object struct as the first argument (simulating `this`/`self`).
 * **Virtual Tables**: Use function pointers within the struct (vtable) to allow for polymorphism where required by the driver architecture.
 * **Initialization**: Always provide an explicit `init` function to construct the object, ensuring all internal pointers are nulled or initialized safely.
+* **Null Pointer Handling**: Use the C23 `nullptr` keyword for all zero pointers; the `0` and `NULL` forms are prohibited. In `if` expressions, pointers must be compared explicitly against `nullptr` rather than relying on implicit conversion to `bool`.
 * **Defensive Null Pointer Verification**: Public-facing API methods and framework-exposed virtual functions must check all incoming object pointers against `nullptr` before dereferencing. Internal helper functions (`static`) may omit this check if validated upstream.
   ```c
   if (object == nullptr)
